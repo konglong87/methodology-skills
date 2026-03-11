@@ -10,7 +10,7 @@
 
 > 让 AI 掌握方法论，更聪明地思考和执行任务
 
-一个包含第一性原理、目标导向、PDCA 循环等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor。
+一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor。
 
 ---
 
@@ -49,6 +49,22 @@ Plan-Do-Check-Act 持续改进循环。适用于迭代优化、质量保障。
 
 **触发方式**: 自动识别场景 或 用户说"用 PDCA 循环"
 
+### 🎯 DDD 战略设计 (Domain-Driven Design: Strategic Design)
+
+领域驱动设计的战略层面：定义限界上下文、上下文映射、架构决策。适用于系统架构设计、微服务拆分。
+
+**适用场景**: 新项目架构设计、微服务拆分、多团队协作、领域建模
+
+**触发方式**: 自动识别场景 或 用户提到"DDD"、"限界上下文"、"领域建模"等关键词
+
+### 🎯 DDD 战术设计 (Domain-Driven Design: Tactical Design)
+
+领域驱动设计的战术层面：聚合、实体、值对象、领域服务、仓储、领域事件。适用于领域逻辑实现。
+
+**适用场景**: 实现复杂业务逻辑、设计聚合、保证数据一致性、保护业务规则
+
+**触发方式**: 自动识别场景 或 用户提到"聚合设计"、"实体与值对象"、"领域事件"等关键词
+
 ---
 
 ## 安装
@@ -84,6 +100,16 @@ curl -o ~/.opencode/skills/goal-oriented/SKILL.md \
 mkdir -p ~/.opencode/skills/pdca-cycle
 curl -o ~/.opencode/skills/pdca-cycle/SKILL.md \
   https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/pdca-cycle/SKILL.md
+
+# 全局安装 - DDD 战略设计
+mkdir -p ~/.opencode/skills/ddd-strategic-design
+curl -o ~/.opencode/skills/ddd-strategic-design/SKILL.md \
+  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/ddd-strategic-design/SKILL.md
+
+# 全局安装 - DDD 战术设计
+mkdir -p ~/.opencode/skills/ddd-tactical-design
+curl -o ~/.opencode/skills/ddd-tactical-design/SKILL.md \
+  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/ddd-tactical-design/SKILL.md
 ```
 
 ### Cursor
