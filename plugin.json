@@ -1,6 +1,6 @@
 {
   "name": "methodology-skills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "方法论工具箱：第一性原理、目标导向、PDCA循环等思维方法论 Skills",
   "author": {
     "name": "恐龙创新部",
@@ -18,6 +18,8 @@
     "problem-solving",
     "productivity",
     "claude-code",
-    "skill"
+    "skill",
+    "skills",
+    "opencode"
   ]
 }
