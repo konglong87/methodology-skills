@@ -1,0 +1,23 @@
+{
+  "name": "methodology-skills",
+  "version": "1.0.0",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环等思维方法论 Skills",
+  "author": {
+    "name": "恐龙创新部",
+    "url": "https://github.com/konglong87"
+  },
+  "homepage": "https://github.com/konglong87/methodology-skills",
+  "repository": "https://github.com/konglong87/methodology-skills",
+  "license": "MIT",
+  "keywords": [
+    "methodology",
+    "first-principles",
+    "goal-oriented",
+    "pdca",
+    "thinking-framework",
+    "problem-solving",
+    "productivity",
+    "claude-code",
+    "skill"
+  ]
+}
