@@ -56,11 +56,12 @@ Plan-Do-Check-Act 持续改进循环。适用于迭代优化、质量保障。
 ### Claude Code / Cline
 
 ```bash
-# 添加 marketplace
+# 方式一：添加 marketplace 后安装
 claude plugin marketplace add konglong87/methodology-skills
-
-# 安装插件
 claude plugin install methodology-skills@methodology-skills
+
+# 方式二：手动安装
+git clone https://github.com/konglong87/methodology-skills.git ~/.claude/plugins/methodology-skills
 
 # 验证安装
 claude plugin list
