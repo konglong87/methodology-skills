@@ -27,5 +27,7 @@ __pycache__/
 .env.local
 
 # Project specific
+.claude/
 CLAUDE.md
+AGENTS.md
 docs/plans/
