@@ -2126,11 +2126,13 @@ Python是一种高级编程语言，由Guido van Rossum于1991年创建。Python
 
 #### 技能渲染（推荐）
 
+**方式1：使用自然语言**
+
 ```bash
-# 方式1：直接使用node命令
+# 直接使用node命令
 node skill-render.js "请帮我生成一个关于[主题]的信息图"
 
-# 方式2：使用npm脚本（推荐）
+# 使用npm脚本（推荐）
 cd assets
 npm run skill-render "请帮我生成一个关于[主题]的信息图"
 
@@ -2140,12 +2142,29 @@ node skill-render.js "请帮我生成一个关于[主题]的信息图" --output 
 # 不保存配置文件
 node skill-render.js "请帮我生成一个关于[主题]的信息图" --no-save-config
 
-# 指定配置文件路径
-node skill-render.js "请帮我生成一个关于[主题]的信息图" --config config/[文件名].json
-
 # 使用特定模板和风格
 node skill-render.js "请帮我生成一个关于[主题]的信息图，使用[模板名称]模板，包含[内容要点]，使用[风格名称]风格"
 ```
+
+**方式2：使用JSON配置文件（推荐）**
+
+```bash
+# 直接使用JSON配置文件
+node skill-render.js config/[文件名].json
+
+# 指定输出路径
+node skill-render.js config/[文件名].json --output output/[文件名].png
+
+# 强制使用JSON配置
+node skill-render.js config/[文件名].json --use-config
+```
+
+**工作流程**：
+1. LLM根据用户需求生成JSON配置
+2. LLM将JSON配置保存为文件（如config/python.json）
+3. LLM执行命令：`node skill-render.js config/python.json`
+4. skill-render.js直接使用JSON配置，不再解析自然语言
+5. 渲染PNG图片
 
 #### AI驱动渲染
 
@@ -2187,15 +2206,62 @@ npm run render config/[配置文件名].json
 **LLM**：
 1. 识别需求：用户请求生成信息图
 2. 选择方式：使用技能渲染方式
-3. 执行命令：
-```bash
-node skill-render.js "请帮我生成一个关于Python编程语言的信息图"
+3. 生成JSON配置：
+```json
+{
+  "template": "knowledge",
+  "output": "output/python-infographic.png",
+  "content": {
+    "title": "Python编程语言",
+    "subtitle": "Python编程语言的详细介绍",
+    "meta_info": "创建于2024-03-12 | 主题：Python编程语言",
+    "items": [
+      {
+        "icon": "📌",
+        "title": "语法简洁",
+        "description": "Python的语法简洁明了，易于学习和使用"
+      },
+      {
+        "icon": "📌",
+        "title": "应用广泛",
+        "description": "Python在Web开发、数据分析、人工智能等领域广泛应用"
+      },
+      {
+        "icon": "📌",
+        "title": "生态丰富",
+        "description": "Python拥有丰富的第三方库和工具"
+      },
+      {
+        "icon": "📌",
+        "title": "跨平台",
+        "description": "Python可以在Windows、Linux、macOS等多个平台上运行"
+      }
+    ],
+    "summary": [
+      "Python是一个重要的编程语言",
+      "了解Python对个人发展很有帮助",
+      "Python在未来有广阔的发展前景"
+    ]
+  },
+  "style": {
+    "background_color": "#F8F9FA",
+    "primary_color": "#306998",
+    "secondary_color": "#FFD43B",
+    "text_color": "#212529",
+    "gray_color": "#6C757D"
+  }
+}
 ```
-4. 验证输出：检查生成的PNG图片
-5. 反馈结果：
+4. 保存JSON配置文件：`config/python.json`
+5. 执行命令：
+```bash
+node skill-render.js config/python.json
+```
+6. 验证输出：检查生成的PNG图片
+7. 反馈结果：
 ```
 ✅ 已成功生成Python编程语言信息图！
-📄 输出文件：/path/to/Python编程语言-infographic.png
+📄 输出文件：output/python-infographic.png
 📋 使用模板：知识科普模板
 🎨 使用风格：默认风格
 📝 内容概要：包含Python编程语言的4个核心特点

@@ -9,47 +9,104 @@ const path = require('path');
 
 /**
  * 技能渲染函数
- * @param {string} naturalLanguageInput - 自然语言描述
+ * @param {string} input - 自然语言描述或JSON配置文件路径
  * @param {Object} options - 选项
  * @param {string} options.outputPath - 输出PNG文件路径（可选）
  * @param {boolean} options.saveConfig - 是否保存JSON配置（默认true）
  * @param {string} options.configPath - JSON配置文件路径（可选）
+ * @param {boolean} options.useConfig - 是否直接使用JSON配置（默认false）
  * @returns {Object} 渲染结果
  */
-async function skillRender(naturalLanguageInput, options = {}) {
+async function skillRender(input, options = {}) {
   const {
     outputPath = null,
     saveConfig = true,
-    configPath = null
+    configPath = null,
+    useConfig = false
   } = options;
 
   console.log('🚀 技能渲染启动...');
-  console.log(`📝 输入: ${naturalLanguageInput}`);
-
-  // 1. 从自然语言生成JSON配置
-  console.log('\n1. 生成JSON配置...');
-  const config = await generateConfigFromNaturalLanguage(naturalLanguageInput);
-
-  // 2. 保存JSON配置（如果需要）
+  
+  let config;
   let savedConfigPath = null;
-  if (saveConfig) {
-    savedConfigPath = configPath || path.join(__dirname, 'temp-config.json');
-    console.log(`2. 保存配置文件: ${savedConfigPath}`);
-    fs.writeFileSync(savedConfigPath, JSON.stringify(config, null, 2), 'utf-8');
+
+  // 判断输入类型
+  if (useConfig || (input.endsWith('.json') && fs.existsSync(input))) {
+    // 直接使用JSON配置
+    console.log(`📝 输入: JSON配置文件 (${input})`);
+    console.log('\n1. 加载JSON配置...');
+    config = loadConfig(input);
+    savedConfigPath = input;
+  } else {
+    // 从自然语言生成JSON配置
+    console.log(`📝 输入: ${input}`);
+    console.log('\n1. 生成JSON配置...');
+    config = await generateConfigFromNaturalLanguage(input);
+
+    // 2. 保存JSON配置（如果需要）
+    if (saveConfig) {
+      savedConfigPath = configPath || path.join(__dirname, 'temp-config.json');
+      console.log(`2. 保存配置文件: ${savedConfigPath}`);
+      fs.writeFileSync(savedConfigPath, JSON.stringify(config, null, 2), 'utf-8');
+    }
   }
 
   // 3. 渲染PNG图片
   console.log('3. 渲染PNG图片...');
-  const result = await aiRender(naturalLanguageInput, outputPath);
+  const result = await renderFromConfig(config, outputPath);
 
   console.log('\n✅ 技能渲染完成！');
 
   return {
     success: true,
     outputPath: result.outputPath,
-    configPath: savedConfigPath || result.configPath,
+    configPath: savedConfigPath,
     config: config
   };
+}
+
+/**
+ * 从JSON文件加载配置
+ * @param {string} configPath - JSON配置文件路径
+ * @returns {Object} 配置数据
+ */
+function loadConfig(configPath) {
+  try {
+    const configData = fs.readFileSync(configPath, 'utf-8');
+    return JSON.parse(configData);
+  } catch (error) {
+    console.error(`加载配置文件失败: ${error.message}`);
+    throw error;
+  }
+}
+
+/**
+ * 从配置渲染PNG图片
+ * @param {Object} config - 配置对象
+ * @param {string} outputPath - 输出PNG文件路径（可选）
+ * @returns {Object} 渲染结果
+ */
+async function renderFromConfig(config, outputPath) {
+  const { renderInfographic, loadTemplate } = require('./assets/example-render.js');
+  
+  // 加载模板
+  console.log(`  - 加载模板: ${config.template}`);
+  const templatePath = path.join(__dirname, 'assets', 'templates', config.template, 'template.json');
+  const template = loadTemplate(templatePath);
+
+  // 渲染信息图
+  console.log('  - 渲染信息图...');
+  const canvas = await renderInfographic(template, config.content, config.style);
+
+  // 保存PNG
+  const outputFile = outputPath || config.output || 'output.png';
+  const outputPathFull = path.join(__dirname, outputFile);
+
+  console.log(`  - 保存PNG: ${outputFile}`);
+  const buffer = canvas.toBuffer('image/png');
+  fs.writeFileSync(outputPathFull, buffer);
+
+  return { outputPath: outputPathFull };
 }
 
 /**
@@ -94,26 +151,38 @@ if (require.main === module) {
 
   if (args.length === 0) {
     console.log('使用方法:');
-    console.log('  node skill-render.js <自然语言描述> [选项]');
+    console.log('  node skill-render.js <输入> [选项]');
+    console.log('');
+    console.log('输入:');
+    console.log('  自然语言描述        如: "请帮我生成一个关于Python编程语言的信息图"');
+    console.log('  JSON配置文件路径      如: config/python.json');
     console.log('');
     console.log('选项:');
     console.log('  --output <路径>    指定输出PNG文件路径');
     console.log('  --no-save-config   不保存JSON配置文件');
     console.log('  --config <路径>    指定JSON配置文件路径');
+    console.log('  --use-config       直接使用JSON配置文件');
     console.log('');
     console.log('示例:');
+    console.log('  # 使用自然语言');
     console.log('  node skill-render.js "请帮我生成一个关于Python编程语言的信息图"');
     console.log('  node skill-render.js "请帮我生成一个关于Python编程语言的信息图" --output output/python.png');
     console.log('  node skill-render.js "请帮我生成一个关于Python编程语言的信息图" --no-save-config');
+    console.log('  ');
+    console.log('  # 使用JSON配置文件');
+    console.log('  node skill-render.js config/python.json');
+    console.log('  node skill-render.js config/python.json --output output/python.png');
+    console.log('  node skill-render.js config/python.json --use-config');
     process.exit(1);
   }
 
   // 解析参数
-  const naturalLanguageInput = args[0];
+  const input = args[0];
   const options = {
     outputPath: null,
     saveConfig: true,
-    configPath: null
+    configPath: null,
+    useConfig: false
   };
 
   for (let i = 1; i < args.length; i++) {
@@ -125,6 +194,8 @@ if (require.main === module) {
     } else if (args[i] === '--config' && args[i + 1]) {
       options.configPath = args[i + 1];
       i++;
+    } else if (args[i] === '--use-config') {
+      options.useConfig = true;
     }
   }
 
