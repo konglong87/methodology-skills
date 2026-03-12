@@ -1,0 +1,155 @@
+{
+  "renderer": {
+    "name": "Infographic Renderer",
+    "version": "1.0.0",
+    "description": "信息图渲染工具配置"
+  },
+  "supported_formats": [
+    "PNG",
+    "SVG",
+    "PDF"
+  ],
+  "rendering_engines": {
+    "canvas": {
+      "name": "Canvas API",
+      "description": "使用HTML5 Canvas API进行渲染",
+      "supported_formats": ["PNG"],
+      "advantages": [
+        "高性能",
+        "广泛支持",
+        "适合复杂图形"
+      ],
+      "use_cases": [
+        "知识科普信息图",
+        "小红书爆款内容",
+        "数据可视化"
+      ]
+    },
+    "svg": {
+      "name": "SVG Renderer",
+      "description": "生成SVG矢量图形",
+      "supported_formats": ["SVG", "PNG"],
+      "advantages": [
+        "无限缩放",
+        "文件体积小",
+        "可编辑"
+      ],
+      "use_cases": [
+        "技术文档",
+        "流程图",
+        "架构图"
+      ]
+    },
+    "mermaid": {
+      "name": "Mermaid.js",
+      "description": "使用Mermaid.js渲染流程图和架构图",
+      "supported_formats": ["SVG", "PNG"],
+      "advantages": [
+        "专业流程图",
+        "语法简洁",
+        "易于维护"
+      ],
+      "use_cases": [
+        "流程展示",
+        "架构设计",
+        "系统关系图"
+      ]
+    },
+    "plantuml": {
+      "name": "PlantUML",
+      "description": "使用PlantUML渲染UML图表",
+      "supported_formats": ["SVG", "PNG"],
+      "advantages": [
+        "标准UML支持",
+        "丰富的图表类型",
+        "专业规范"
+      ],
+      "use_cases": [
+        "技术文档",
+        "系统设计",
+        "类图、时序图等"
+      ]
+    }
+  },
+  "output_config": {
+    "PNG": {
+      "default_width": 1080,
+      "default_height": 1920,
+      "default_dpi": 300,
+      "supported_dpi": [72, 96, 150, 200, 300],
+      "quality": "high",
+      "compression": "balanced"
+    },
+    "SVG": {
+      "default_width": 1080,
+      "default_height": 1920,
+      "vector": true,
+      "optimize_paths": true
+    },
+    "PDF": {
+      "default_width": 1080,
+      "default_height": 1920,
+      "dpi": 300,
+      "embed_fonts": true
+    }
+  },
+  "template_rendering": {
+    "process": [
+      "load_template",
+      "apply_content",
+      "apply_style",
+      "render_to_format",
+      "optimize_output"
+    ],
+    "steps": {
+      "load_template": {
+        "description": "加载模板配置",
+        "input": "template_id",
+        "output": "template_config"
+      },
+      "apply_content": {
+        "description": "应用内容到模板",
+        "input": ["template_config", "content_data"],
+        "output": "styled_template"
+      },
+      "apply_style": {
+        "description": "应用样式配置",
+        "input": ["styled_template", "style_config"],
+        "output": "ready_to_render"
+      },
+      "render_to_format": {
+        "description": "渲染为目标格式",
+        "input": ["ready_to_render", "output_format"],
+        "output": "rendered_output"
+      },
+      "optimize_output": {
+        "description": "优化输出文件",
+        "input": "rendered_output",
+        "output": "final_output"
+      }
+    }
+  },
+  "batch_rendering": {
+    "supported": true,
+    "max_batch_size": 100,
+    "parallel_rendering": true,
+    "max_parallel": 5,
+    "config": {
+      "unified_style": true,
+      "auto_numbering": true,
+      "naming_pattern": "{template_name}_{index}.{format}"
+    }
+  },
+  "optimization": {
+    "PNG": {
+      "compression_level": "medium",
+      "strip_metadata": false,
+      "color_profile": "sRGB"
+    },
+    "SVG": {
+      "remove_comments": true,
+      "remove_unused_defs": true,
+      "precision": 3
+    }
+  }
+}

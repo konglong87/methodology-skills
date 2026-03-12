@@ -1,0 +1,263 @@
+{
+  "template_id": "xiaohongshu_viral",
+  "template_name": "小红书爆款模板",
+  "template_type": "xiaohongshu",
+  "description": "适合小红书爆款内容、社交媒体分享、知识营销等场景",
+  "layout": {
+    "type": "vertical",
+    "sections": [
+      {
+        "id": "title_area",
+        "type": "title",
+        "height": "15%",
+        "content": {
+          "main_title": {
+            "font_size": 56,
+            "font_weight": "bold",
+            "color": "primary",
+            "alignment": "center",
+            "style": "gradient"
+          },
+          "subtitle": {
+            "font_size": 28,
+            "font_weight": "bold",
+            "color": "secondary",
+            "alignment": "center"
+          }
+        }
+      },
+      {
+        "id": "core_area",
+        "type": "content",
+        "height": "45%",
+        "content": {
+          "items": {
+            "layout": "list",
+            "spacing": 25,
+            "item": {
+              "icon": {
+                "size": 52,
+                "position": "left"
+              },
+              "title": {
+                "font_size": 24,
+                "font_weight": "bold",
+                "color": "primary"
+              },
+              "description": {
+                "font_size": 18,
+                "font_weight": "normal",
+                "color": "text"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "data_area",
+        "type": "data",
+        "height": "20%",
+        "content": {
+          "data_points": {
+            "layout": "grid",
+            "columns": 2,
+            "spacing": 15,
+            "item": {
+              "value": {
+                "font_size": 36,
+                "font_weight": "bold",
+                "color": "primary"
+              },
+              "label": {
+                "font_size": 16,
+                "font_weight": "normal",
+                "color": "text"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "action_area",
+        "type": "action",
+        "height": "15%",
+        "content": {
+          "actions": {
+            "layout": "list",
+            "spacing": 12,
+            "item": {
+              "font_size": 18,
+              "font_weight": "bold",
+              "color": "secondary",
+              "bullet": "check"
+            }
+          }
+        }
+      },
+      {
+        "id": "interaction_area",
+        "type": "interaction",
+        "height": "5%",
+        "content": {
+          "elements": {
+            "qr_code": {
+              "size": 80,
+              "position": "right"
+            },
+            "prompts": {
+              "font_size": 16,
+              "font_weight": "bold",
+              "color": "primary",
+              "items": ["收藏", "点赞", "关注"]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "style": {
+    "styles": [
+      {
+        "name": "minimal",
+        "primary_color": "#333333",
+        "secondary_color": "#666666",
+        "background_color": "#FFFFFF",
+        "text_color": "#333333",
+        "accent_color": "#FF6B6B"
+      },
+      {
+        "name": "macaron",
+        "primary_color": "#FFB5A7",
+        "secondary_color": "#FCD5CE",
+        "background_color": "#FFF9F5",
+        "text_color": "#333333",
+        "accent_color": "#F87060"
+      },
+      {
+        "name": "cyberpunk",
+        "primary_color": "#00F0FF",
+        "secondary_color": "#FF003C",
+        "background_color": "#0B0C10",
+        "text_color": "#C5C6C7",
+        "accent_color": "#45A29E"
+      },
+      {
+        "name": "morandi",
+        "primary_color": "#A8B5B9",
+        "secondary_color": "#C4C0B0",
+        "background_color": "#F5F5F0",
+        "text_color": "#333333",
+        "accent_color": "#8C9494"
+      },
+      {
+        "name": "guochao",
+        "primary_color": "#C8102E",
+        "secondary_color": "#FFD700",
+        "background_color": "#FFF8DC",
+        "text_color": "#333333",
+        "accent_color": "#DC143C"
+      },
+      {
+        "name": "business",
+        "primary_color": "#2C3E50",
+        "secondary_color": "#3498DB",
+        "background_color": "#ECF0F1",
+        "text_color": "#2C3E50",
+        "accent_color": "#E77C3C"
+      },
+      {
+        "name": "handdrawn",
+        "primary_color": "#4A4A4A",
+        "secondary_color": "#8B4513",
+        "background_color": "#FFFAF0",
+        "text_color": "#333333",
+        "accent_color": "#FF6347"
+      },
+      {
+        "name": "flat",
+        "primary_color": "#3498DB",
+        "secondary_color": "#2ECC71",
+        "background_color": "#FFFFFF",
+        "text_color": "#2C3E50",
+        "accent_color": "#E77C3C"
+      }
+    ],
+    "customizable": [
+      "primary_color",
+      "secondary_color",
+      "background_color",
+      "text_color",
+      "accent_color"
+    ]
+  },
+  "output": {
+    "format": "PNG",
+    "width": 1080,
+    "height": 1920,
+    "dpi": 300,
+    "padding": {
+      "top": 80,
+      "bottom": 80,
+      "left": 60,
+      "right": 60
+    }
+  },
+  "example": {
+    "title": "5个高效学习方法",
+    "subtitle": "学霸都在用的学习技巧",
+    "core_points": [
+      {
+        "icon": "📚",
+        "title": "番茄工作法",
+        "description": "25分钟专注+5分钟休息，提高学习效率"
+      },
+      {
+        "icon": "🎯",
+        "title": "目标拆解",
+        "description": "大目标拆解为小任务，更容易完成"
+      },
+      {
+        "icon": "🔄",
+        "title": "间隔重复",
+        "description": "1天、3天、7天、15天复习，巩固记忆"
+      },
+      {
+        "icon": "📝",
+        "title": "费曼学习法",
+        "description": "用简单语言解释复杂概念，检验理解"
+      },
+      {
+        "icon": "⏰",
+        "title": "早起学习",
+        "description": "早晨大脑最清醒，适合攻克难点"
+      }
+    ],
+    "data_points": [
+      {
+        "value": "25%",
+        "label": "效率提升"
+      },
+      {
+        "value": "3倍",
+        "label": "记忆增强"
+      },
+      {
+        "value": "80%",
+        "label": "任务完成率"
+      },
+      {
+        "value": "90%",
+        "label": "知识留存"
+      }
+    ],
+    "actions": [
+      "今天就开始尝试番茄工作法",
+      "制定本周学习计划",
+      "每天早起30分钟学习"
+    ],
+    "interaction": {
+      "qr_code": "your_qr_code_here",
+      "prompts": ["收藏", "点赞", "关注"]
+    }
+  }
+}

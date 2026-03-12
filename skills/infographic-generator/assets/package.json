@@ -1,0 +1,29 @@
+{
+  "name": "infographic-generator",
+  "version": "1.0.0",
+  "description": "信息图生成器 - 将文本自动结构化为精美PNG信息图",
+  "main": "example-render.js",
+  "scripts": {
+    "example": "node example-render.js",
+    "auto-render": "node auto-render.js example-config.json",
+    "render": "node auto-render.js",
+    "test": "node example-render.js",
+    "skill-render": "node ../skill-render.js",
+    "ai-render": "node ai-render.js"
+  },
+  "keywords": [
+    "infographic",
+    "visualization",
+    "canvas",
+    "png",
+    "template"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^2.11.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
