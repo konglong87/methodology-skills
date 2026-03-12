@@ -73,6 +73,14 @@ SWOT分析是一种战略规划工具，通过系统性分析内部优势/劣势
 
 **触发方式**: 自动识别场景 或 用户提到"SWOT"、"优劣势分析"、"战略分析"等关键词
 
+### 🎯 提示词增强器 (Prompt Enhancer)
+
+当用户请求模糊时，系统化澄清需求的框架。识别缺失信息、抵抗压力、避免假设，确保理解需求后再行动。
+
+**适用场景**: 单句请求无上下文、缺少关键维度（谁/什么/为什么）、无成功标准、紧急+模糊、用户期望 AI 自动理解一切
+
+**触发方式**: 自动识别模糊请求 或 用户说"澄清需求"、"明确目标"等关键词
+
 ---
 
 ## 安装
@@ -123,6 +131,11 @@ curl -o ~/.opencode/skills/ddd-tactical-design/SKILL.md \
 mkdir -p ~/.opencode/skills/swot-analysis
 curl -o ~/.opencode/skills/swot-analysis/SKILL.md \
   https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/swot-analysis/SKILL.md
+
+# 全局安装 - 提示词增强器
+mkdir -p ~/.opencode/skills/prompt-enhancer
+curl -o ~/.opencode/skills/prompt-enhancer/SKILL.md \
+  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/prompt-enhancer/SKILL.md
 ```
 
 ### Cursor
