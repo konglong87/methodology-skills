@@ -10,7 +10,7 @@
 
 > 让 AI 掌握方法论，更聪明地思考和执行任务
 
-一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor。
+一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor。
 
 ---
 
@@ -65,6 +65,14 @@ Plan-Do-Check-Act 持续改进循环。适用于迭代优化、质量保障。
 
 **触发方式**: 自动识别场景 或 用户提到"聚合设计"、"实体与值对象"、"领域事件"等关键词
 
+### 🎯 SWOT分析
+
+SWOT分析是一种战略规划工具，通过系统性分析内部优势/劣势、外部机会/威胁，帮助做出更明智的决策。
+
+**适用场景**: 战略规划、技术选型、竞品分析、项目立项、决策支持
+
+**触发方式**: 自动识别场景 或 用户提到"SWOT"、"优劣势分析"、"战略分析"等关键词
+
 ---
 
 ## 安装
@@ -110,6 +118,11 @@ curl -o ~/.opencode/skills/ddd-strategic-design/SKILL.md \
 mkdir -p ~/.opencode/skills/ddd-tactical-design
 curl -o ~/.opencode/skills/ddd-tactical-design/SKILL.md \
   https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/ddd-tactical-design/SKILL.md
+
+# 全局安装 - SWOT分析
+mkdir -p ~/.opencode/skills/swot-analysis
+curl -o ~/.opencode/skills/swot-analysis/SKILL.md \
+  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/swot-analysis/SKILL.md
 ```
 
 ### Cursor

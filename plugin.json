@@ -1,7 +1,7 @@
 {
   "name": "methodology-skills",
   "version": "1.0.1",
-  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、领域驱动设计(DDD)等思维方法论 Skills",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、领域驱动设计(DDD)、SWOT分析等思维方法论 Skills",
   "author": {
     "name": "恐龙创新部",
     "url": "https://github.com/konglong87"
@@ -18,6 +18,10 @@
     "domain-driven-design",
     "bounded-context",
     "aggregate",
+    "swot",
+    "swot-analysis",
+    "strategic-planning",
+    "decision-making",
     "thinking-framework",
     "problem-solving",
     "productivity",
