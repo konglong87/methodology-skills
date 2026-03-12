@@ -1,6 +1,6 @@
 ---
 name: ddd-tactical-design
-description: "Use when implementing domain logic, designing aggregates, entities, value objects, repositories, domain services, or when user mentions 'aggregate design', 'entity vs value object', 'domain event', 'repository pattern', 'domain service', 'data consistency', 'invariant protection'."
+description: "Use when implementing domain logic, designing aggregates, entities, value objects, repositories, domain services, domain model design, ensuring data consistency, or when user mentions 'aggregate design', 'aggregate root', 'entity vs value object', 'domain event', 'repository pattern', 'domain service', 'data consistency', 'invariant protection', 'domain model', 'business rules', 'consistency boundary', 'rich domain model', 'anemic domain model', '领域模型', '领域逻辑', '业务逻辑', '聚合设计', '聚合根', '实体', '值对象', '业务规则', '一致性边界', '充血模型', '贫血模型', '实现领域代码'."
 ---
 
 # Domain-Driven Design: Tactical Design

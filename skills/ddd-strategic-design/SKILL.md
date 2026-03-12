@@ -1,6 +1,6 @@
 ---
 name: ddd-strategic-design
-description: "Use when starting new projects, designing system architecture, identifying bounded contexts, mapping context relationships, or when user mentions 'DDD', 'domain-driven design', 'bounded context', 'context mapping', 'microservices design', 'business modeling', 'system boundaries'."
+description: "Use when starting new projects, designing system architecture, identifying bounded contexts, mapping context relationships, system refactoring, system redesign, or when user mentions 'DDD', 'domain-driven design', 'bounded context', 'context mapping', 'microservices design', 'business modeling', 'system boundaries', 'domain thinking', '领域思维', '领域驱动', '重构项目', '重构系统', '重新设计系统', '优化重构系统'."
 ---
 
 # Domain-Driven Design: Strategic Design
