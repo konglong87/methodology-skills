@@ -9,7 +9,7 @@
     {
       "name": "methodology-skills",
       "description": "方法论工具箱 - 第一性原理、目标导向、PDCA循环、DDD等思维方法论",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "source": "./",
       "author": {
         "name": "恐龙创新部",
