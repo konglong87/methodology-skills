@@ -106,6 +106,34 @@ node dist/scripts/stats.js             # 查看统计信息
 node dist/scripts/sync.js              # 同步索引
 ```
 
+### 🎯 微信公众号文章生成器 (WeChat Article Writer)
+
+自动化微信公众号文章创作工具，使用 AI 内置能力生成高质量文章，并自动生成配套的信息图。
+
+**适用场景**: 创建微信公众号文章、技术教程、行业分析、知识分享
+
+**核心功能**:
+- ✍️ **AI 内容创作** - 使用 AI 工具内置能力自动生成文章内容
+- 📊 **信息图生成** - 自动生成 2 张 PNG 信息图（使用 infographic-generator skill）
+- 🎨 **风格定制** - 通过 EXTEND.md 自定义写作风格、目标受众、文章长度
+- 📁 **结构化输出** - 自动保存到 `wechat-articles/{topic}/` 目录
+
+**触发方式**: `/wechat-article-writer "文章主题"`
+
+**示例**:
+```bash
+/wechat-article-writer "AI工具推荐:提升10倍效率的5个神器"
+```
+
+**工作流程**:
+1. 加载用户偏好（EXTEND.md）
+2. 分析主题并生成大纲
+3. AI 写作完整文章
+4. 自动生成配套信息图
+5. 保存到指定目录
+
+**支持平台**: Claude Code、Cursor、OpenClaw、OpenCode、Antigravity 等所有支持 skills 的 AI 工具
+
 ---
 
 ## 安装
