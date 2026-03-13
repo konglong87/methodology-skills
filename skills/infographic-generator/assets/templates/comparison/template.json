@@ -1,0 +1,215 @@
+{
+  "template_id": "comparison_side_by_side",
+  "template_name": "对比分析模板",
+  "template_type": "comparison",
+  "description": "适合产品对比、技术选型、方案评估等场景，左右对比布局",
+  "layout": {
+    "type": "horizontal",
+    "sections": [
+      {
+        "id": "title_area",
+        "type": "title",
+        "height": "15%",
+        "content": {
+          "main_title": {
+            "font_size": 42,
+            "font_weight": "bold",
+            "color": "primary",
+            "alignment": "center"
+          },
+          "subtitle": {
+            "font_size": 20,
+            "font_weight": "normal",
+            "color": "secondary",
+            "alignment": "center"
+          }
+        }
+      },
+      {
+        "id": "comparison_area",
+        "type": "comparison",
+        "height": "70%",
+        "content": {
+          "layout": "side_by_side",
+          "left_section": {
+            "width": "45%",
+            "background_color": "left_bg",
+            "header": {
+              "title": "left_title",
+              "icon": "left_icon",
+              "color": "left_primary"
+            },
+            "items": {
+              "layout": "list",
+              "spacing": 15,
+              "item": {
+                "label": {
+                  "font_size": 18,
+                  "font_weight": "bold",
+                  "color": "left_primary"
+                },
+                "value": {
+                  "font_size": 16,
+                  "font_weight": "normal",
+                  "color": "text"
+                },
+                "icon": {
+                  "size": 32,
+                  "position": "left"
+                }
+              }
+            }
+          },
+          "center_divider": {
+            "width": "10%",
+            "style": "vs_badge",
+            "text": "VS"
+          },
+          "right_section": {
+            "width": "45%",
+            "background_color": "right_bg",
+            "header": {
+              "title": "right_title",
+              "icon": "right_icon",
+              "color": "right_primary"
+            },
+            "items": {
+              "layout": "list",
+              "spacing": 15,
+              "item": {
+                "label": {
+                  "font_size": 18,
+                  "font_weight": "bold",
+                  "color": "right_primary"
+                },
+                "value": {
+                  "font_size": 16,
+                  "font_weight": "normal",
+                  "color": "text"
+                },
+                "icon": {
+                  "size": 32,
+                  "position": "left"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "conclusion_area",
+        "type": "conclusion",
+        "height": "15%",
+        "content": {
+          "text": {
+            "font_size": 18,
+            "font_weight": "normal",
+            "color": "text",
+            "alignment": "center"
+          },
+          "recommendation": {
+            "font_size": 16,
+            "font_weight": "bold",
+            "color": "primary",
+            "alignment": "center"
+          }
+        }
+      }
+    ]
+  },
+  "style": {
+    "default": {
+      "primary_color": "#333333",
+      "secondary_color": "#666666",
+      "background_color": "#FFFFFF",
+      "text_color": "#333333",
+      "left_primary": "#4DB33D",
+      "left_bg": "#E8F5E9",
+      "right_primary": "#00758F",
+      "right_bg": "#E3F2FD"
+    },
+    "customizable": [
+      "primary_color",
+      "left_primary",
+      "left_bg",
+      "right_primary",
+      "right_bg"
+    ]
+  },
+  "output": {
+    "format": "PNG",
+    "width": 1200,
+    "height": 900,
+    "dpi": 300,
+    "padding": {
+      "top": 40,
+      "bottom": 40,
+      "left": 40,
+      "right": 40
+    }
+  },
+  "example": {
+    "title": "MongoDB vs MySQL",
+    "subtitle": "数据库选型对比分析",
+    "left_title": "MongoDB",
+    "left_icon": "🍃",
+    "left_items": [
+      {
+        "label": "数据模型",
+        "value": "文档型(JSON)",
+        "icon": "📄"
+      },
+      {
+        "label": "Schema",
+        "value": "灵活多变",
+        "icon": "🔧"
+      },
+      {
+        "label": "事务支持",
+        "value": "最终一致性",
+        "icon": "⚡"
+      },
+      {
+        "label": "扩展性",
+        "value": "水平扩展",
+        "icon": "📈"
+      },
+      {
+        "label": "适用场景",
+        "value": "内容管理、日志系统",
+        "icon": "💡"
+      }
+    ],
+    "right_title": "MySQL",
+    "right_icon": "🐬",
+    "right_items": [
+      {
+        "label": "数据模型",
+        "value": "关系型(表)",
+        "icon": "📊"
+      },
+      {
+        "label": "Schema",
+        "value": "固定结构",
+        "icon": "🏗️"
+      },
+      {
+        "label": "事务支持",
+        "value": "完整ACID",
+        "icon": "🔒"
+      },
+      {
+        "label": "扩展性",
+        "value": "垂直扩展",
+        "icon": "📐"
+      },
+      {
+        "label": "适用场景",
+        "value": "电商、金融",
+        "icon": "💼"
+      }
+    ],
+    "conclusion": "没有最好的数据库，只有最适合的数据库",
+    "recommendation": "数据多变选MongoDB | 需要事务选MySQL"
+  }
+}

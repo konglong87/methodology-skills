@@ -1,0 +1,24 @@
+{
+  "name": "infographic-generator-remotion",
+  "version": "1.0.0",
+  "description": "Remotion-based infographic generator",
+  "main": "index.js",
+  "scripts": {
+    "start": "remotion studio",
+    "test": "node test-render.js"
+  },
+  "keywords": ["infographic", "remotion", "react"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@remotion/cli": "^4.0.434",
+    "@remotion/renderer": "^4.0.434",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.434",
+    "typescript": "^5.9.3"
+  }
+}

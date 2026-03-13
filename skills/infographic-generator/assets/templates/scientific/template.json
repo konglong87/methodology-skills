@@ -1,0 +1,155 @@
+{
+  "template_id": "scientific_research",
+  "template_name": "科研图表模板",
+  "template_type": "scientific",
+  "description": "适合学术论文、研究报告、实验数据展示等场景",
+  "layout": {
+    "type": "vertical",
+    "sections": [
+      {
+        "id": "header_area",
+        "type": "header",
+        "height": "15%",
+        "content": {
+          "title": {
+            "font_size": 36,
+            "font_weight": "bold",
+            "color": "primary",
+            "alignment": "left"
+          },
+          "authors": {
+            "font_size": 14,
+            "font_weight": "normal",
+            "color": "text",
+            "alignment": "left"
+          },
+          "affiliation": {
+            "font_size": 12,
+            "font_weight": "normal",
+            "color": "gray",
+            "alignment": "left"
+          }
+        }
+      },
+      {
+        "id": "abstract_area",
+        "type": "abstract",
+        "height": "20%",
+        "content": {
+          "title": {
+            "font_size": 18,
+            "font_weight": "bold",
+            "color": "primary",
+            "alignment": "left"
+          },
+          "text": {
+            "font_size": 14,
+            "font_weight": "normal",
+            "color": "text",
+            "alignment": "justify",
+            "line_height": 1.6
+          }
+        }
+      },
+      {
+        "id": "results_area",
+        "type": "results",
+        "height": "45%",
+        "content": {
+          "layout": "grid",
+          "columns": 2,
+          "spacing": 20,
+          "figure": {
+            "title": {
+              "font_size": 14,
+              "font_weight": "bold",
+              "color": "primary"
+            },
+            "chart_type": "auto",
+            "data_visualization": {
+              "type": "line_or_bar",
+              "show_grid": true,
+              "show_legend": true,
+              "axis_labels": true
+            },
+            "caption": {
+              "font_size": 12,
+              "font_weight": "normal",
+              "color": "gray"
+            }
+          }
+        }
+      },
+      {
+        "id": "conclusion_area",
+        "type": "conclusion",
+        "height": "20%",
+        "content": {
+          "title": {
+            "font_size": 16,
+            "font_weight": "bold",
+            "color": "primary"
+          },
+          "points": {
+            "layout": "numbered_list",
+            "font_size": 14,
+            "color": "text",
+            "spacing": 10
+          }
+        }
+      }
+    ]
+  },
+  "style": {
+    "default": {
+      "primary_color": "#2C3E50",
+      "secondary_color": "#34495E",
+      "accent_color": "#3498DB",
+      "background_color": "#FFFFFF",
+      "text_color": "#333333",
+      "gray_color": "#7F8C8D"
+    },
+    "customizable": [
+      "primary_color",
+      "accent_color"
+    ]
+  },
+  "output": {
+    "format": "PNG",
+    "width": 1200,
+    "height": 1600,
+    "dpi": 300,
+    "padding": {
+      "top": 40,
+      "bottom": 40,
+      "left": 60,
+      "right": 40
+    }
+  },
+  "example": {
+    "title": "MongoDB vs MySQL: A Comprehensive Performance Analysis",
+    "authors": "Zhang San, Li Si, Wang Wu",
+    "affiliation": "Department of Computer Science, Beijing University",
+    "abstract": "This study presents a comprehensive performance comparison between MongoDB and MySQL databases across different workload scenarios. We evaluated read/write performance, scalability, and transaction handling capabilities using industry-standard benchmarks.",
+    "results": [
+      {
+        "title": "Figure 1: Write Performance",
+        "chart_type": "line",
+        "data": "write_ops_over_time",
+        "caption": "Write operations per second over 24-hour period"
+      },
+      {
+        "title": "Figure 2: Query Latency",
+        "chart_type": "bar",
+        "data": "query_latency_comparison",
+        "caption": "Average query latency in milliseconds"
+      }
+    ],
+    "conclusions": [
+      "MongoDB shows 2x higher write throughput for non-transactional workloads",
+      "MySQL outperforms in complex join queries by 8x",
+      "ACID compliance overhead is minimal in MySQL (<5%)",
+      "Horizontal scaling in MongoDB is 3x more efficient"
+    ]
+  }
+}
