@@ -8,6 +8,7 @@ interface TitleSectionProps {
   fontFamily?: string;
   gradient?: string;
   decorativeElements?: string[];
+  isVertical?: boolean;
 }
 
 export const TitleSection: React.FC<TitleSectionProps> = ({
@@ -17,7 +18,8 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
   textColor,
   fontFamily = "Arial, sans-serif",
   gradient,
-  decorativeElements = []
+  decorativeElements = [],
+  isVertical = false
 }) => {
   // 生成装饰元素
   const renderDecorations = () => {
@@ -46,7 +48,7 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
               position: 'absolute',
               top: `${15 + index * 20}%`,
               left: `${10 + index * 10}%`,
-              fontSize: '24px',
+              fontSize: isVertical ? '20px' : '24px',
               opacity: 0.6
             }}>⭐</div>
           );
@@ -58,7 +60,7 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
               position: 'absolute',
               top: `${10 + index * 12}%`,
               right: `${8 + index * 8}%`,
-              fontSize: '32px',
+              fontSize: isVertical ? '26px' : '32px',
               opacity: 0.7
             }}>✨</div>
           );
@@ -91,7 +93,7 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
   return (
     <div
       style={{
-        padding: "80px 100px 40px",
+        padding: isVertical ? "50px 60px 30px" : "80px 100px 40px",
         textAlign: "center",
         position: "relative"
       }}
@@ -100,7 +102,7 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
 
       <h1
         style={{
-          fontSize: "72px",
+          fontSize: isVertical ? "52px" : "72px",
           fontWeight: "bold",
           color: primaryColor,
           margin: 0,
@@ -114,9 +116,9 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
       {subtitle && (
         <h2
           style={{
-            fontSize: "36px",
+            fontSize: isVertical ? "28px" : "36px",
             color: textColor,
-            marginTop: "20px",
+            marginTop: isVertical ? "15px" : "20px",
             fontFamily,
             fontWeight: "normal",
             opacity: 0.9

@@ -6,6 +6,7 @@ interface SummarySectionProps {
   textColor: string;
   borderColor?: string;
   fontFamily?: string;
+  isVertical?: boolean;
 }
 
 export const SummarySection: React.FC<SummarySectionProps> = ({
@@ -13,7 +14,8 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   accentColor,
   textColor,
   borderColor = "#E8E8E8",
-  fontFamily = "Arial, sans-serif"
+  fontFamily = "Arial, sans-serif",
+  isVertical = false
 }) => {
   if (!summary) return null;
 
@@ -23,16 +25,16 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   return (
     <div
       style={{
-        padding: "40px 100px 80px",
+        padding: isVertical ? "20px 60px 40px" : "40px 100px 80px",
         textAlign: "center"
       }}
     >
       <div
         style={{
           backgroundColor: accentColor,
-          padding: "40px 60px",
+          padding: isVertical ? "25px 40px" : "40px 60px",
           borderRadius: "20px",
-          maxWidth: "1600px",
+          maxWidth: isVertical ? "900px" : "1600px",
           margin: "0 auto",
           boxShadow: "0 8px 24px rgba(0, 0, 0, 0.08)",
           border: `2px solid ${borderColor}`
@@ -42,9 +44,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           <p
             key={index}
             style={{
-              fontSize: "32px",
+              fontSize: isVertical ? "24px" : "32px",
               color: textColor,
-              margin: index < summaryPoints.length - 1 ? "0 0 16px 0" : 0,
+              margin: index < summaryPoints.length - 1 ? "0 0 12px 0" : 0,
               fontFamily,
               lineHeight: 1.6,
               fontWeight: index === 0 ? "bold" : "normal"

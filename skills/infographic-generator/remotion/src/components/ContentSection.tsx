@@ -15,6 +15,7 @@ interface ContentSectionProps {
   cardStyle?: string;
   decorativeElements?: string[];
   fontFamily?: string;
+  isVertical?: boolean;
 }
 
 export const ContentSection: React.FC<ContentSectionProps> = ({
@@ -25,12 +26,13 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
   borderColor = "#E8E8E8",
   cardStyle = "flat",
   decorativeElements = [],
-  fontFamily = "Arial, sans-serif"
+  fontFamily = "Arial, sans-serif",
+  isVertical = false
 }) => {
   // Get card styles based on cardStyle type
   const getCardStyles = (index: number) => {
     const baseStyles: React.CSSProperties = {
-      padding: "40px",
+      padding: isVertical ? "30px" : "40px",
       borderRadius: "20px",
       position: "relative",
       overflow: "hidden"
@@ -104,7 +106,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               position: "absolute",
               top: "10px",
               right: "15px",
-              fontSize: "28px",
+              fontSize: isVertical ? "22px" : "28px",
               opacity: 0.7
             }}>❤️</div>
           );
@@ -116,7 +118,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
                 position: "absolute",
                 top: "15px",
                 right: "20px",
-                fontSize: "24px",
+                fontSize: isVertical ? "20px" : "24px",
                 opacity: 0.8
               }}>⭐</div>
             );
@@ -128,7 +130,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               position: "absolute",
               bottom: "-10px",
               right: "-10px",
-              fontSize: "40px",
+              fontSize: isVertical ? "32px" : "40px",
               opacity: 0.15
             }}>☁️</div>
           );
@@ -139,7 +141,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               position: "absolute",
               top: "20px",
               right: "25px",
-              fontSize: "26px",
+              fontSize: isVertical ? "22px" : "26px",
               opacity: 0.9,
               animation: "pulse 2s infinite"
             }}>✨</div>
@@ -178,13 +180,18 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
     return decorations;
   };
 
+  // 竖屏时使用单列，横屏使用双列
+  const gridColumns = isVertical ? "1fr" : "repeat(2, 1fr)";
+  const gap = isVertical ? "40px" : "60px";
+
   return (
     <div
       style={{
-        padding: "40px 100px",
+        padding: isVertical ? "30px 60px" : "40px 100px",
         display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        gap: "60px"
+        gridTemplateColumns: gridColumns,
+        gap: gap,
+        flex: "1" // 让内容区域自动填充剩余空间
       }}
     >
       {items.map((item, index) => (
@@ -194,15 +201,15 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
         >
           {renderDecorations(index)}
 
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: isVertical ? "15px" : "20px" }}>
             {item.icon && (
-              <span style={{ fontSize: "48px", marginRight: "15px" }}>
+              <span style={{ fontSize: isVertical ? "36px" : "48px", marginRight: "15px" }}>
                 {item.icon}
               </span>
             )}
             <h3
               style={{
-                fontSize: "42px",
+                fontSize: isVertical ? "32px" : "42px",
                 fontWeight: "bold",
                 color: primaryColor,
                 margin: 0,
@@ -216,7 +223,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 
           <p
             style={{
-              fontSize: "28px",
+              fontSize: isVertical ? "24px" : "28px",
               color: textColor,
               margin: 0,
               fontFamily,
