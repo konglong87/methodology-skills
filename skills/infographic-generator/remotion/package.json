@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@remotion/bundler": "^4.0.434",
     "@remotion/cli": "^4.0.434",
     "@remotion/renderer": "^4.0.434",
     "@types/react": "^19.2.14",

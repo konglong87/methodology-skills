@@ -13,7 +13,8 @@ export const KnowledgeTemplate: React.FC<{ config: InfographicConfig }> = ({ con
         width: "100%",
         height: "100%",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        background: style.gradient || style.background_color
       }}
     >
       <TitleSection
@@ -22,12 +23,17 @@ export const KnowledgeTemplate: React.FC<{ config: InfographicConfig }> = ({ con
         primaryColor={style.primary_color}
         textColor={style.text_color}
         fontFamily={style.font_family}
+        gradient={style.gradient}
+        decorativeElements={style.decorative_elements || []}
       />
       <ContentSection
         items={content.items}
         primaryColor={style.primary_color}
         secondaryColor={style.secondary_color}
         textColor={style.text_color}
+        borderColor={style.border_color}
+        cardStyle={style.card_style || "flat"}
+        decorativeElements={style.decorative_elements || []}
         fontFamily={style.font_family}
       />
       <SummarySection

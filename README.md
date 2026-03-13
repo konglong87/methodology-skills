@@ -49,6 +49,33 @@ Plan-Do-Check-Act 持续改进循环。适用于迭代优化、质量保障。
 
 **触发方式**: 自动识别场景 或 用户说"用 PDCA 循环"
 
+### 🎯 MVP First (最小可验证产品)
+
+用最小成本验证关键假设，避免过度工程化。适用于新功能开发、产品构思、项目规划。
+
+**适用场景**: 用户请求构建复杂系统（多模块/子系统）、新功能开发、产品构思、项目规划
+
+**核心思维**:
+- **识别假设** - 找出风险最高的假设
+- **分层验证** - Layer 0（假门按钮）→ Layer 1（基础功能）→ Layer 2+（增强功能）
+- **数据驱动** - 定义成功标准，用数据而非直觉决策
+- **应对压力** - 用数据和逻辑说服，而不是说教
+
+**触发方式**: 自动识别（当用户说"做一个XX系统"、"设计XX架构"、"实现XX功能"等涉及多模块系统时）
+
+**典型场景**:
+```
+用户：我想做一个评论系统，支持评论、回复、点赞、举报、审核
+
+AI：[触发 mvp-first skill]
+识别关键假设：用户真的需要评论功能吗？
+建议 MVP 分层：
+  Layer 0: 假门按钮（30分钟）- 验证用户是否想要评论
+  Layer 1: 基础评论（1天）- 如果验证成功
+  Layer 2: 加审核功能 - 发现垃圾评论时再加
+  Layer 3: 加点赞功能 - 观察用户是否想要互动
+```
+
 ### 🎯 DDD 战略设计 (Domain-Driven Design: Strategic Design)
 
 领域驱动设计的战略层面：定义限界上下文、上下文映射、架构决策。适用于系统架构设计、微服务拆分。
@@ -170,6 +197,11 @@ mkdir -p ~/.opencode/skills/pdca-cycle
 curl -o ~/.opencode/skills/pdca-cycle/SKILL.md \
   https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/pdca-cycle/SKILL.md
 
+# 全局安装 - MVP First
+mkdir -p ~/.opencode/skills/mvp-first
+curl -o ~/.opencode/skills/mvp-first/SKILL.md \
+  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/mvp-first/SKILL.md
+
 # 全局安装 - DDD 战略设计
 mkdir -p ~/.opencode/skills/ddd-strategic-design
 curl -o ~/.opencode/skills/ddd-strategic-design/SKILL.md \
@@ -284,6 +316,9 @@ Act:
 
 | 组合 | 适用场景 |
 |------|----------|
+| MVP First + 目标导向 | 新产品快速验证与迭代 |
+| MVP First + PDCA | 产品迭代优化 |
+| 第一性原理 + MVP First | 创新产品设计（打破假设+快速验证） |
 | 第一性原理 + PDCA | 从根本优化现有流程 |
 | 目标导向 + PDCA | 长期项目持续交付 |
 | 第一性原理 + 目标导向 | 创新项目设计 |
@@ -303,6 +338,27 @@ Plan: 引入缓存层、并行下载
 Do: 在 feature 分支试点
 Check: I/O 时间从 10 分钟降至 4 分钟
 Act: 标准化配置，下一轮优化测试并行度
+```
+
+```
+用户：我想做一个推荐系统，用 MVP First + 目标导向
+
+AI：
+[MVP First：识别假设]
+风险最高的假设：用户真的需要推荐吗？
+
+[Layer 0：假门验证]
+在热门内容中插入1条"编辑推荐"，观察点击率
+成本：1小时
+验证：编辑推荐点击率 > 随机内容2倍 → 用户需要推荐
+
+[目标导向：设定目标]
+目标：上线推荐系统，提升用户粘性
+成功标准：推荐内容点击率 > 15%，用户停留时间 +20%
+里程碑：
+  M1: Layer 0 验证（Day 1）✓
+  M2: 简单推荐算法（Day 7）
+  M3: A/B测试上线（Day 14）
 ```
 
 ---

@@ -373,7 +373,51 @@ async function testHTMLRender() {
 }
 
 if (require.main === module) {
-  testHTMLRender();
+  // 从命令行参数读取配置
+  const args = process.argv.slice(2);
+
+  if (args.length >= 2) {
+    // 参数格式：node generate-html.js <template> <json-config> [--output output-path]
+    const template = args[0];
+    const configJSON = args[1];
+    const outputIndex = args.indexOf('--output');
+    const outputPath = outputIndex !== -1 && args[outputIndex + 1]
+      ? args[outputIndex + 1]
+      : 'infographic.png';
+
+    try {
+      // 解析JSON配置
+      const content = JSON.parse(configJSON);
+
+      // 构建完整配置
+      const config = {
+        template: template,
+        style: {
+          background_color: '#f5f5f5',
+          primary_color: '#333333',
+          secondary_color: '#666666',
+          accent_color: '#F5F5F5',
+          text_color: '#333333',
+          font_family: 'Arial, sans-serif'
+        },
+        content: content,
+        output: {
+          width: 1200,
+          height: template === 'process' ? 1600 : 900
+        }
+      };
+
+      console.log('🎨 生成HTML信息图...');
+      renderInfographic(config, outputPath);
+    } catch (error) {
+      console.error('❌ 解析配置失败:', error.message);
+      console.error('请确保第二个参数是有效的JSON字符串');
+      process.exit(1);
+    }
+  } else {
+    // 没有参数时使用测试数据
+    testHTMLRender();
+  }
 }
 
 module.exports = {
@@ -519,33 +563,42 @@ function generateProcessTemplate(style, content, width, height) {
  * 生成对比模板
  */
 function generateComparisonTemplate(style, content, width, height) {
-  if (!content.items || content.items.length < 2) {
-    return generateKnowledgeTemplate(style, content, width, height);
-  }
+  // 支持新的数据结构
+  const leftItems = content.left_items || [];
+  const rightItems = content.right_items || [];
+  const leftTitle = content.left_title || '选项A';
+  const rightTitle = content.right_title || '选项B';
+  const leftIcon = content.left_icon || '';
+  const rightIcon = content.right_icon || '';
+  const leftPrimary = content.left_primary || style.primary_color;
+  const rightPrimary = content.right_primary || style.primary_color;
+  const leftBg = content.left_bg || 'rgba(255, 255, 255, 0.8)';
+  const rightBg = content.right_bg || 'rgba(255, 255, 255, 0.8)';
 
-  const leftItem = content.items[0];
-  const rightItem = content.items[1];
-
-  const leftPointsHTML = leftItem.points ? leftItem.points.map(point => `
+  const leftPointsHTML = leftItems.map(item => `
     <div class="comparison-point">
-      <div class="point-label">${point.label}:</div>
-      <div class="point-value">${point.value}</div>
+      <div class="point-icon">${item.icon || ''}</div>
+      <div class="point-content">
+        <div class="point-label">${item.label}:</div>
+        <div class="point-value">${item.value}</div>
+      </div>
     </div>
-  `).join('') : '';
+  `).join('');
 
-  const rightPointsHTML = rightItem.points ? rightItem.points.map(point => `
+  const rightPointsHTML = rightItems.map(item => `
     <div class="comparison-point">
-      <div class="point-label">${point.label}:</div>
-      <div class="point-value">${point.value}</div>
+      <div class="point-icon">${item.icon || ''}</div>
+      <div class="point-content">
+        <div class="point-label">${item.label}:</div>
+        <div class="point-value">${item.value}</div>
+      </div>
     </div>
-  `).join('') : '';
+  `).join('');
 
-  const summaryHTML = content.summary ? `
-    <div class="comparison-summary">
-      <h3>对比总结</h3>
-      <ul>
-        ${content.summary.map(point => `<li>${point}</li>`).join('')}
-      </ul>
+  const conclusionHTML = content.conclusion ? `
+    <div class="comparison-conclusion">
+      <p class="conclusion-text">${content.conclusion}</p>
+      ${content.recommendation ? `<p class="recommendation-text">${content.recommendation}</p>` : ''}
     </div>
   ` : '';
 
@@ -586,64 +639,63 @@ function generateComparisonTemplate(style, content, width, height) {
 
     .comparison-item h3 {
       font-size: 42px;
-      color: ${style.primary_color};
       margin-bottom: 30px;
       text-align: center;
       padding-bottom: 20px;
-      border-bottom: 3px solid ${style.primary_color};
+      border-bottom: 3px solid;
+    }
+
+    .item-icon {
+      font-size: 48px;
+      margin-right: 15px;
     }
 
     .comparison-point {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       padding: 20px 0;
       border-bottom: 1px solid #eee;
     }
 
+    .point-icon {
+      font-size: 32px;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .point-content {
+      flex: 1;
+    }
+
     .point-label {
-      font-size: 22px;
+      font-size: 20px;
       color: ${style.gray_color};
       font-weight: bold;
+      margin-bottom: 5px;
     }
 
     .point-value {
-      font-size: 24px;
+      font-size: 22px;
       color: ${style.text_color};
     }
 
-    .comparison-summary {
+    .comparison-conclusion {
       background: ${style.secondary_color}22;
       padding: 40px;
       border-radius: 20px;
+      text-align: center;
     }
 
-    .comparison-summary h3 {
-      font-size: 32px;
-      color: ${style.primary_color};
-      margin-bottom: 20px;
-    }
-
-    .comparison-summary ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .comparison-summary li {
-      font-size: 22px;
+    .conclusion-text {
+      font-size: 24px;
       color: ${style.text_color};
-      padding: 15px 0;
-      padding-left: 40px;
-      position: relative;
+      margin-bottom: 15px;
     }
 
-    .comparison-summary li:before {
-      content: '•';
-      position: absolute;
-      left: 0;
+    .recommendation-text {
+      font-size: 20px;
       color: ${style.primary_color};
       font-weight: bold;
-      font-size: 30px;
     }
     `,
     html: `
@@ -652,18 +704,24 @@ function generateComparisonTemplate(style, content, width, height) {
       <p class="comparison-subtitle">${content.subtitle || ''}</p>
 
       <div class="comparison-grid">
-        <div class="comparison-item">
-          <h3>${leftItem.title}</h3>
+        <div class="comparison-item" style="background: ${leftBg};">
+          <h3 style="color: ${leftPrimary};">
+            <span class="item-icon">${leftIcon}</span>
+            ${leftTitle}
+          </h3>
           ${leftPointsHTML}
         </div>
 
-        <div class="comparison-item">
-          <h3>${rightItem.title}</h3>
+        <div class="comparison-item" style="background: ${rightBg};">
+          <h3 style="color: ${rightPrimary};">
+            <span class="item-icon">${rightIcon}</span>
+            ${rightTitle}
+          </h3>
           ${rightPointsHTML}
         </div>
       </div>
 
-      ${summaryHTML}
+      ${conclusionHTML}
     </div>
     `
   };

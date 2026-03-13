@@ -7,6 +7,11 @@ const { aiRender, generateConfigFromNaturalLanguage } = require('./assets/ai-ren
 const fs = require('fs');
 const path = require('path');
 
+// 安全配置
+const MAX_INPUT_LENGTH = 10000; // 最大输入长度
+const MAX_OUTPUT_PATH_LENGTH = 500; // 最大输出路径长度
+const ALLOWED_OUTPUT_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
+
 /**
  * 技能渲染函数
  * @param {string} input - 自然语言描述或JSON配置文件路径
@@ -26,7 +31,10 @@ async function skillRender(input, options = {}) {
   } = options;
 
   console.log('🚀 技能渲染启动...');
-  
+
+  // 输入验证
+  validateInput(input, outputPath, configPath);
+
   let config;
   let savedConfigPath = null;
 
@@ -42,6 +50,9 @@ async function skillRender(input, options = {}) {
     console.log(`📝 输入: ${input}`);
     console.log('\n1. 生成JSON配置...');
     config = await generateConfigFromNaturalLanguage(input);
+
+    // 验证生成的配置
+    validateConfig(config);
 
     // 2. 保存JSON配置（如果需要）
     if (saveConfig) {
@@ -88,34 +99,26 @@ function loadConfig(configPath) {
  */
 async function renderFromConfig(config, outputPath) {
   const outputFile = outputPath || config.output || 'output.png';
-  const outputPathFull = path.join(__dirname, outputFile);
+  const outputPathFull = path.isAbsolute(outputFile) ? outputFile : path.join(__dirname, outputFile);
 
-  // 尝试使用canvas渲染
+  // 优先尝试使用Remotion渲染
   try {
-    console.log(`  - 尝试使用canvas渲染...`);
-    const { renderInfographic, loadTemplate } = require('./assets/example-render.js');
+    console.log(`  - 尝试使用Remotion渲染...`);
+    const { renderWithRemotion } = require('./remotion/render.js');
 
-    // 加载模板
-    console.log(`  - 加载模板: ${config.template}`);
-    const templatePath = path.join(__dirname, 'assets', 'templates', config.template, 'template.json');
-    const template = loadTemplate(templatePath);
+    const result = await renderWithRemotion(config, outputPathFull);
 
-    // 渲染信息图
-    console.log('  - 渲染信息图...');
-    const canvas = await renderInfographic(template, config.content, config.style);
-
-    // 保存PNG
-    console.log(`  - 保存PNG: ${outputFile}`);
-    const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync(outputPathFull, buffer);
-
-    console.log('  ✅ Canvas渲染成功！');
-    return { outputPath: outputPathFull, renderer: 'canvas' };
+    if (result.success) {
+      console.log('  ✅ Remotion渲染成功！');
+      return { outputPath: outputPathFull, renderer: 'remotion' };
+    } else {
+      throw new Error(result.error || 'Remotion渲染失败');
+    }
   } catch (error) {
-    console.log(`  ⚠️  Canvas渲染失败: ${error.message}`);
+    console.log(`  ⚠️  Remotion渲染失败: ${error.message}`);
     console.log(`  - 尝试使用HTML+Puppeteer渲染...`);
 
-    // canvas失败，使用HTML+Puppeteer渲染
+    // Remotion失败，使用HTML+Puppeteer渲染作为降级方案
     try {
       const { renderInfographic } = require('./generate-html');
       const result = await renderInfographic(config, outputPathFull);
@@ -129,7 +132,7 @@ async function renderFromConfig(config, outputPath) {
     } catch (htmlError) {
       console.error('  ❌ HTML+Puppeteer渲染也失败了！');
       console.error(`  - 错误: ${htmlError.message}`);
-      throw new Error(`所有渲染方式都失败了。Canvas错误: ${error.message}, HTML错误: ${htmlError.message}`);
+      throw new Error(`所有渲染方式都失败了。Remotion错误: ${error.message}, HTML错误: ${htmlError.message}`);
     }
   }
 }
@@ -149,7 +152,7 @@ async function batchSkillRender(naturalLanguageInputs, options = {}) {
     try {
       const result = await skillRender(naturalLanguageInputs[i], {
         ...options,
-        outputPath: options.outputPath 
+        outputPath: options.outputPath
           ? options.outputPath.replace(/\.png$/, `-${i + 1}.png`)
           : null,
         configPath: options.configPath
@@ -168,6 +171,82 @@ async function batchSkillRender(naturalLanguageInputs, options = {}) {
 
   console.log(`\n✅ 批量技能渲染完成！成功: ${results.filter(r => r.success).length}/${results.length}`);
   return results;
+}
+
+/**
+ * 验证输入安全性
+ * @param {string} input - 输入内容
+ * @param {string} outputPath - 输出路径
+ * @param {string} configPath - 配置文件路径
+ */
+function validateInput(input, outputPath, configPath) {
+  // 检查输入是否存在
+  if (!input || typeof input !== 'string') {
+    throw new Error('输入不能为空且必须是字符串');
+  }
+
+  // 检查输入长度
+  if (input.length > MAX_INPUT_LENGTH) {
+    throw new Error(`输入长度超过限制 (${input.length} > ${MAX_INPUT_LENGTH})`);
+  }
+
+  // 检查路径遍历攻击
+  if (outputPath) {
+    validatePath(outputPath, '输出路径');
+  }
+
+  if (configPath) {
+    validatePath(configPath, '配置文件路径');
+  }
+}
+
+/**
+ * 验证路径安全性（防止路径遍历攻击）
+ * @param {string} filePath - 文件路径
+ * @param {string} context - 上下文描述
+ */
+function validatePath(filePath, context) {
+  // 检查路径长度
+  if (filePath.length > MAX_OUTPUT_PATH_LENGTH) {
+    throw new Error(`${context}长度超过限制 (${filePath.length} > ${MAX_OUTPUT_PATH_LENGTH})`);
+  }
+
+  // 检查路径遍历攻击
+  const normalizedPath = path.normalize(filePath);
+  if (normalizedPath.includes('..') || path.isAbsolute(filePath)) {
+    throw new Error(`${context}包含非法字符或使用绝对路径: ${filePath}`);
+  }
+
+  // 检查文件扩展名
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext && !ALLOWED_OUTPUT_EXTENSIONS.includes(ext) && ext !== '.json') {
+    throw new Error(`${context}使用不允许的扩展名: ${ext}`);
+  }
+}
+
+/**
+ * 验证配置结构
+ * @param {Object} config - 配置对象
+ */
+function validateConfig(config) {
+  if (!config || typeof config !== 'object') {
+    throw new Error('配置必须是非空对象');
+  }
+
+  // 检查必需字段
+  if (!config.template) {
+    throw new Error('配置缺少必需字段: template');
+  }
+
+  if (!config.content) {
+    throw new Error('配置缺少必需字段: content');
+  }
+
+  // 检查模板名称是否合法
+  const allowedTemplates = ['knowledge', 'comparison', 'process', 'data', 'xiaohongshu', 'scientific'];
+  if (!allowedTemplates.includes(config.template)) {
+    throw new Error(`不支持的模板类型: ${config.template}`);
+  }
 }
 
 // 命令行使用

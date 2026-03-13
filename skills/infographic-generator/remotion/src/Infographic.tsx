@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { KnowledgeTemplate } from "./templates/Knowledge";
 import { XiaohongshuTemplate } from "./templates/Xiaohongshu";
+import { ComparisonTemplate } from "./templates/Comparison";
 
 // 定义类型
 export interface InfographicConfig {
@@ -14,16 +15,7 @@ export interface InfographicConfig {
     text_color: string;
     font_family?: string;
   };
-  content: {
-    title: string;
-    subtitle?: string;
-    items: Array<{
-      title: string;
-      description: string;
-      icon?: string;
-    }>;
-    summary?: string;
-  };
+  content: any; // 支持不同模板的内容结构
   output?: {
     width?: number;
     height?: number;
@@ -45,6 +37,8 @@ export const Infographic: React.FC<InfographicProps> = ({ config }) => {
         return <KnowledgeTemplate config={config} />;
       case 'xiaohongshu':
         return <XiaohongshuTemplate config={config} />;
+      case 'comparison':
+        return <ComparisonTemplate config={config} />;
       default:
         return <KnowledgeTemplate config={config} />; // 默认使用knowledge模板
     }
