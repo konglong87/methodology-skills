@@ -81,6 +81,31 @@ SWOT分析是一种战略规划工具，通过系统性分析内部优势/劣势
 
 **触发方式**: 自动识别模糊请求 或 用户说"澄清需求"、"明确目标"等关键词
 
+### 🎯 Skill Manager (Skills 管理工具)
+
+Skills 管理和渐进式加载系统，帮助管理和发现 Claude Code skills。
+
+**适用场景**: 管理 skills、搜索相关 skills、智能推荐、按分类浏览、索引同步
+
+**核心功能**:
+- 🏷️ **自动分类** - 规则匹配 + LLM 智能分类
+- 🔍 **智能搜索** - 按名称、描述、标签搜索
+- 💡 **智能推荐** - 根据查询或上下文推荐相关 skills
+- 📊 **统计分析** - 查看各分类 skills 数量和标签分布
+- 🔄 **同步管理** - 检测新增/删除的 skills
+
+**触发方式**: 用户说"管理 skills"、"搜索 skills"、"推荐 skills"、"列出 skills"等
+
+**命令**:
+```bash
+node dist/scripts/init.js              # 初始化索引
+node dist/scripts/search.js "DDD"      # 搜索 DDD 相关 skills
+node dist/scripts/recommend.js "思维"  # 推荐思维相关的 skills
+node dist/scripts/list.js --category "方法论"  # 列出方法论分类下的 skills
+node dist/scripts/stats.js             # 查看统计信息
+node dist/scripts/sync.js              # 同步索引
+```
+
 ---
 
 ## 安装
