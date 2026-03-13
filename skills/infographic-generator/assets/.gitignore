@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+assets/node_modules/
+
+# Environment variables (contains API keys)
+.env
+.env.local
+
+# Backup folder (test files and temp files)
+backup/
+
+# Temporary files
+*.log
+*.tmp
+
+# Build outputs (if you build anything)
+dist/
+build/
+out/
+
+# Generated infographics (users generate their own)
+infographic/

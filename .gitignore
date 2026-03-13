@@ -24,6 +24,7 @@ __pycache__/
 
 # Environment
 .env
+*.env
 .env.local
 
 # Project specific
@@ -32,3 +33,7 @@ CLAUDE.md
 AGENTS.md
 docs/plans/
 docs/
+
+konglong-logo-animation
+wechat-articles
+*/backup/*

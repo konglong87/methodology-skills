@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+dist/
+
+# Generated index file
+index.json
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local

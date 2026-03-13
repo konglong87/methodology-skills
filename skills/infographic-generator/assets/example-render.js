@@ -97,7 +97,7 @@ function renderSummaryArea(ctx, template, content, style, width) {
   const { top, left, right, bottom } = template.output.padding;
   const startY = top + 250 + Math.ceil(content.items.length / 2) * 180 + 40;
 
-  ctx.font = `bold ${contentArea.content.items.item.title.font_size}px Arial`;
+  ctx.font = `bold ${summaryArea.content.points.item.font_size}px Arial`;
   ctx.fillStyle = style.primary_color;
   ctx.textAlign = 'left';
   ctx.fillText('总结要点：', left, startY);
@@ -192,5 +192,4 @@ if (require.main === module) {
 module.exports = {
   renderInfographic,
   loadTemplate
-};
 };

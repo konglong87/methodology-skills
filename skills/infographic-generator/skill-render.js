@@ -87,26 +87,51 @@ function loadConfig(configPath) {
  * @returns {Object} 渲染结果
  */
 async function renderFromConfig(config, outputPath) {
-  const { renderInfographic, loadTemplate } = require('./assets/example-render.js');
-  
-  // 加载模板
-  console.log(`  - 加载模板: ${config.template}`);
-  const templatePath = path.join(__dirname, 'assets', 'templates', config.template, 'template.json');
-  const template = loadTemplate(templatePath);
-
-  // 渲染信息图
-  console.log('  - 渲染信息图...');
-  const canvas = await renderInfographic(template, config.content, config.style);
-
-  // 保存PNG
   const outputFile = outputPath || config.output || 'output.png';
   const outputPathFull = path.join(__dirname, outputFile);
 
-  console.log(`  - 保存PNG: ${outputFile}`);
-  const buffer = canvas.toBuffer('image/png');
-  fs.writeFileSync(outputPathFull, buffer);
+  // 尝试使用canvas渲染
+  try {
+    console.log(`  - 尝试使用canvas渲染...`);
+    const { renderInfographic, loadTemplate } = require('./assets/example-render.js');
 
-  return { outputPath: outputPathFull };
+    // 加载模板
+    console.log(`  - 加载模板: ${config.template}`);
+    const templatePath = path.join(__dirname, 'assets', 'templates', config.template, 'template.json');
+    const template = loadTemplate(templatePath);
+
+    // 渲染信息图
+    console.log('  - 渲染信息图...');
+    const canvas = await renderInfographic(template, config.content, config.style);
+
+    // 保存PNG
+    console.log(`  - 保存PNG: ${outputFile}`);
+    const buffer = canvas.toBuffer('image/png');
+    fs.writeFileSync(outputPathFull, buffer);
+
+    console.log('  ✅ Canvas渲染成功！');
+    return { outputPath: outputPathFull, renderer: 'canvas' };
+  } catch (error) {
+    console.log(`  ⚠️  Canvas渲染失败: ${error.message}`);
+    console.log(`  - 尝试使用HTML+Puppeteer渲染...`);
+
+    // canvas失败，使用HTML+Puppeteer渲染
+    try {
+      const { renderInfographic } = require('./generate-html');
+      const result = await renderInfographic(config, outputPathFull);
+
+      if (result.success) {
+        console.log('  ✅ HTML+Puppeteer渲染成功！');
+        return { outputPath: outputPathFull, renderer: 'html-puppeteer' };
+      } else {
+        throw new Error('HTML渲染失败');
+      }
+    } catch (htmlError) {
+      console.error('  ❌ HTML+Puppeteer渲染也失败了！');
+      console.error(`  - 错误: ${htmlError.message}`);
+      throw new Error(`所有渲染方式都失败了。Canvas错误: ${error.message}, HTML错误: ${htmlError.message}`);
+    }
+  }
 }
 
 /**
@@ -199,7 +224,7 @@ if (require.main === module) {
     }
   }
 
-  skillRender(naturalLanguageInput, options).catch(error => {
+  skillRender(input, options).catch(error => {
     console.error('\n❌ 渲染失败:', error.message);
     process.exit(1);
   });

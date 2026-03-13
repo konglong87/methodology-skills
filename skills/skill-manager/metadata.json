@@ -1,0 +1,58 @@
+{
+  "categories": [
+    "方法论",
+    "内容创作",
+    "开发工具",
+    "数据处理",
+    "自动化",
+    "多媒体",
+    "其他"
+  ],
+  "rules": [
+    {
+      "keywords": ["DDD", "domain-driven", "领域驱动", "bounded-context", "aggregate"],
+      "category": "方法论",
+      "tags": ["DDD", "架构"]
+    },
+    {
+      "keywords": ["image", "图片", "图像", "graphic", "illustration", "配图"],
+      "category": "内容创作",
+      "tags": ["图片"]
+    },
+    {
+      "keywords": ["test", "调试", "debug", "tdd", "测试"],
+      "category": "开发工具",
+      "tags": ["测试"]
+    },
+    {
+      "keywords": ["translate", "翻译", "本地化"],
+      "category": "内容创作",
+      "tags": ["翻译", "语言"]
+    },
+    {
+      "keywords": ["markdown", "html", "format", "格式化"],
+      "category": "内容创作",
+      "tags": ["格式转换"]
+    },
+    {
+      "keywords": ["wechat", "weibo", "xhs", "小红书", "微博", "公众号"],
+      "category": "自动化",
+      "tags": ["社交媒体", "发布"]
+    },
+    {
+      "keywords": ["video", "remotion", "动画", "视频"],
+      "category": "多媒体",
+      "tags": ["视频", "动画"]
+    },
+    {
+      "keywords": ["brainstorming", "first-principles", "pdca", "swot", "方法论", "思维"],
+      "category": "方法论",
+      "tags": ["思维框架"]
+    },
+    {
+      "keywords": ["mysql", "database", "query", "数据库"],
+      "category": "数据处理",
+      "tags": ["数据库"]
+    }
+  ]
+}
