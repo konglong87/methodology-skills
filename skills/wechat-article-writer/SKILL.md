@@ -57,14 +57,21 @@ Automated WeChat Official Account article creation skill that generates high-qua
 /wechat-article-writer "AI工具推荐:提升10倍效率的5个神器" --word-count 3000
 ```
 
+**Disable web search:**
+
+```
+/wechat-article-writer "AI工具推荐:提升10倍效率的5个神器" --no-search
+```
+
 The AI tool will automatically:
 1. Load preferences from EXTEND.md (if configured)
 2. Analyze the topic and present a plan for confirmation
-3. Generate outline and article content (within word count limit)
-4. Review and refine the article for quality
-5. **Generate 2 PNG infographic images** (auto-generated using infographic-generator skill)
-6. Save all outputs to the appropriate directory structure
-7. Provide a summary with next steps
+3. **Search the web** for latest information (if supported and enabled)
+4. Generate outline and article content (within word count limit)
+5. Review and refine the article for quality
+6. **Generate 2 PNG infographic images** (auto-generated using infographic-generator skill)
+7. Save all outputs to the appropriate directory structure
+8. Provide a summary with next steps
 
 **Result**: A complete, publish-ready article package with text + images!
 
@@ -87,6 +94,7 @@ When user invokes `/wechat-article-writer`, the AI tool should:
 
 - [ ] **Step 0: Load Preferences** - Read `skills/wechat-article-writer/EXTEND.md` if exists, apply default preferences
 - [ ] **Step 1: Content Analysis** - Analyze topic, determine article type, target audience, and key points
+- [ ] **Step 1.5: Web Research (Optional)** - If AI tool supports web search, search for latest information on the topic
 - [ ] **Step 2: Smart Confirm** - Present analysis results to user for confirmation before generation
 
 ### Phase 2: Content Generation (Using AI Tool's Built-in Capabilities)
@@ -117,6 +125,7 @@ default_voice: professional
 target_audience: "大众读者"
 infographic_style: notion
 word_count_limit: 5000
+enable_web_search: true
 need_title_variants: 3
 need_summary: true
 ---
@@ -135,6 +144,83 @@ Analyze the user's topic and determine:
    - Overview-Analysis-Conclusion (for reviews)
 4. **Key Points**: 3-5 main points to cover
 
+### Step 1.5: Web Research (Optional)
+
+**Intelligent capability detection - Automatically detect and use web search if available:**
+
+Execute web search to gather latest information:
+
+1. **Detect web search capability** (specific detection methods):
+
+   **For Claude Code:**
+   - Check if `WebSearch` tool is available in the current environment
+   - If available → Tool supports web search
+   - Implementation: `if (typeof WebSearch !== 'undefined') { /* has capability */ }`
+
+   **For Cursor/OpenCode/OpenClaw:**
+   - These tools typically have built-in web search capabilities
+   - Assume web search is available unless tool explicitly indicates otherwise
+   - Proceed with web search attempt
+
+   **For other AI tools:**
+   - Check tool documentation or capabilities list
+   - If uncertain, attempt a lightweight test search (e.g., search for "test")
+   - If test succeeds → Tool supports web search
+   - If test fails or tool reports error → No web search capability
+
+2. **Execute search** (if capability detected AND `enable_web_search` is true):
+
+   **When to search:**
+   - ✅ Tool has web search capability (from step 1)
+   - ✅ `enable_web_search` is true (default) or user hasn't disabled it
+   - ✅ User hasn't used `--no-search` flag
+
+   **How to search:**
+   - Generate 2-3 relevant search queries based on topic
+   - Execute searches using the detected web search method:
+     - Claude Code: Use `WebSearch` tool with queries
+     - Cursor/OpenCode/OpenClaw: Use their built-in web search features
+   - Collect latest information, data, statistics, and examples
+
+3. **Handle results:**
+   - **Success**: Organize findings into research summary
+     - Key findings and insights
+     - Recent developments or trends
+     - Relevant statistics or data
+     - Notable examples or case studies
+     - Source URLs for reference
+     - Save to `wechat-articles/{topic-slug}/research.md`
+
+   - **Failure/No capability**: Skip gracefully
+     - Continue to Step 2 as normal
+     - Use existing knowledge base
+     - No error messages to user - seamless fallback
+
+**Implementation example for Claude Code:**
+```javascript
+// Pseudo-code for capability detection
+if (enable_web_search && !no_search_flag) {
+  try {
+    // Check if WebSearch tool exists
+    if (typeof WebSearch !== 'undefined') {
+      // Tool supports web search
+      const results = await WebSearch({ query: searchQueries });
+      // Process and save results
+      saveResearch(results);
+    } else {
+      // Tool doesn't support web search
+      // Skip gracefully
+    }
+  } catch (error) {
+    // Search failed, continue without research
+  }
+}
+```
+
+**User control:**
+- Command line: `/wechat-article-writer "topic" --no-search`
+- Configuration: Set `enable_web_search: false` in EXTEND.md
+
 ### Step 2: Smart Confirm
 
 Present analysis to user:
@@ -147,6 +233,10 @@ Present analysis to user:
   框架: {framework}
   受众: {audience}
   字数限制: {word_count_limit}字
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 联网搜索
+  状态: {已启用/已禁用/不支持}
+  结果: {已获取X条最新信息/跳过}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 推荐方案
   风格: {style}
@@ -176,6 +266,7 @@ Write the full article following:
 - The outline structure
 - User's voice preferences (professional/casual/friendly)
 - **Word count limit**: Stay within the specified word count limit (default 5000 words)
+- **Research integration**: If web research was conducted, incorporate relevant findings into the article
 - WeChat formatting best practices:
   - Use emoji in section headers (📌 💡 🎯 📊 ✅)
   - Keep paragraphs short (2-4 sentences)
@@ -187,6 +278,12 @@ Write the full article following:
 - If approaching limit, prioritize essential content
 - Ensure conclusion section is included even if abbreviated
 - Note: Word count refers to Chinese characters, not English words
+
+**Using research materials** (if Step 1.5 was executed):
+- Integrate latest data and statistics from research
+- Reference recent developments or trends discovered
+- Cite specific examples or case studies found
+- Ensure information is accurate and up-to-date
 
 Save to: `wechat-articles/{topic-slug}/article.md`
 
@@ -328,6 +425,7 @@ Create complete directory structure with all generated content:
 wechat-articles/{topic-slug}/
 ├── source.md          # User's original input
 ├── analysis.md        # Content analysis report
+├── research.md        # Web research findings (if web search was enabled)
 ├── outline.md         # Article outline
 ├── article.md         # Final article (refined)
 ├── infographic/       # Infographic outputs
@@ -417,6 +515,7 @@ wechat-articles/{topic-slug}/
 **Key Deliverables**:
 - ✅ **article.md**: Complete article ready for publishing
 - ✅ **PNG images**: 2 high-quality infographics (auto-generated)
+- ✅ **research.md**: Latest information and data (if web search enabled)
 - ✅ **meta.json**: SEO metadata for publishing
 
 ## Preferences Configuration

@@ -144,25 +144,32 @@ node dist/scripts/sync.js              # 同步索引
 - 📊 **信息图生成** - 自动生成 2 张 PNG 信息图（使用 infographic-generator skill）
 - 🎨 **风格定制** - 通过 EXTEND.md 自定义写作风格、目标受众、文章长度
 - 🖼️ **图片风格指定** - 支持在主题中指定信息图风格（科技风、可爱风、手绘风等8种风格）
+- 🔍 **联网搜索** - 自动搜索最新信息，确保内容时效性（支持 Claude Code、Cursor、OpenCode 等）
 - 📏 **字数控制** - 支持自定义字数限制，默认 5000 字，可灵活配置
 - 📁 **结构化输出** - 自动保存到 `wechat-articles/{topic}/` 目录
 
 **触发方式**:
 ```bash
-# 默认使用（5000字）
+# 默认使用（启用联网搜索，5000字）
 /wechat-article-writer "文章主题"
 
 # 自定义字数
 /wechat-article-writer "文章主题" --word-count 3000
+
+# 禁用联网搜索
+/wechat-article-writer "文章主题" --no-search
 ```
 
 **示例**:
 ```bash
-# 使用默认字数限制
+# 使用默认字数限制（自动联网搜索最新信息）
 /wechat-article-writer "AI工具推荐:提升10倍效率的5个神器"
 
 # 指定 3000 字
 /wechat-article-writer "AI工具推荐:提升10倍效率的5个神器" --word-count 3000
+
+# 禁用联网搜索（使用 AI 内置知识库）
+/wechat-article-writer "Python基础教程" --no-search
 
 # 指定信息图风格（科技风）
 /wechat-article-writer "AI工具推荐:提升10倍效率的5个神器，风格 科技风" --word-count 3000
@@ -187,17 +194,29 @@ node dist/scripts/sync.js              # 同步索引
 
 > 💡 **提示**: 如果不指定风格，系统会根据内容自动选择最合适的风格
 
-**配置默认字数** (通过 EXTEND.md):
+**配置默认设置** (通过 EXTEND.md):
 ```yaml
-word_count_limit: 3000  # 设置默认字数限制
+word_count_limit: 3000      # 设置默认字数限制
+enable_web_search: true     # 启用联网搜索（默认启用）
 ```
+
+**联网搜索功能**:
+所有支持 skills 的 AI 工具都能使用此功能,系统会自动检测工具是否支持联网:
+- ✅ **Claude Code** - 使用 WebSearch 工具自动搜索最新信息
+- ✅ **Cursor** - 使用内置联网能力
+- ✅ **OpenCode** - 使用内置联网能力
+- ✅ **OpenClaw** - 使用内置联网能力
+- ✅ **其他工具** - 自动检测联网能力,支持则启用,不支持则优雅跳过
+
+**智能适配**: 系统会自动检测当前 AI 工具是否具备联网能力,有则启用搜索,无则跳过,确保所有工具都能正常工作。
 
 **工作流程**:
 1. 加载用户偏好（EXTEND.md）
 2. 分析主题并生成大纲
-3. AI 写作完整文章（遵循字数限制）
-4. 自动生成配套信息图
-5. 保存到指定目录
+3. **联网搜索** - 搜索最新相关信息（如果工具支持且未禁用）
+4. AI 写作完整文章（融合搜索结果，遵循字数限制）
+5. 自动生成配套信息图
+6. 保存到指定目录
 
 **支持平台**: Claude Code、Cursor、OpenClaw、OpenCode、Antigravity 等所有支持 skills 的 AI 工具
 
