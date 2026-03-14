@@ -38,4 +38,5 @@ konglong-logo-animation
 wechat-articles
 */backup/*
 *.png
+.jpeg
 *-lock.json
