@@ -169,7 +169,7 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
       ${heightStyle}
       position: relative;
       overflow: visible;
-      padding-bottom: 80px;
+      padding-bottom: 120px;
     }
 
 ${htmlContent.css}
@@ -551,7 +551,7 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
 
     // 自动检测内容高度，并添加缓冲区确保不被截断
     const actualHeight = height === 'auto'
-      ? Math.round(await page.evaluate(() => {
+      ? Math.round(await page.evaluate((viewportWidth) => {
           const container = document.querySelector('.container');
           if (!container) {
             return document.body.scrollHeight;
@@ -570,8 +570,10 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
           });
 
           // 添加底部padding和缓冲区
-          return Math.max(maxBottom + 160, 800); // 最小800px高度
-        }))
+          // 横屏模式需要更大的缓冲区避免底部截断
+          const buffer = viewportWidth > 1080 ? 200 : 160;
+          return Math.max(maxBottom + buffer, 800); // 最小800px高度
+        }, width))
       : height;
 
     console.log(`📐 检测到内容高度: ${actualHeight}px`);
