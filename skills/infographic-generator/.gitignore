@@ -17,6 +17,7 @@ temp-*.html
 temp-*.png
 
 # Test outputs
+test-output/
 test-*.png
 test-*.html
 test-*.js

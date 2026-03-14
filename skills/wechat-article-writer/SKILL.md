@@ -51,10 +51,16 @@ Automated WeChat Official Account article creation skill that generates high-qua
 /wechat-article-writer "AI工具推荐:提升10倍效率的5个神器"
 ```
 
+**With custom word count:**
+
+```
+/wechat-article-writer "AI工具推荐:提升10倍效率的5个神器" --word-count 3000
+```
+
 The AI tool will automatically:
 1. Load preferences from EXTEND.md (if configured)
 2. Analyze the topic and present a plan for confirmation
-3. Generate outline and article content
+3. Generate outline and article content (within word count limit)
 4. Review and refine the article for quality
 5. **Generate 2 PNG infographic images** (auto-generated using infographic-generator skill)
 6. Save all outputs to the appropriate directory structure
@@ -110,6 +116,7 @@ default_style: knowledge
 default_voice: professional
 target_audience: "大众读者"
 infographic_style: notion
+word_count_limit: 5000
 need_title_variants: 3
 need_summary: true
 ---
@@ -139,6 +146,7 @@ Present analysis to user:
   类型: {type} | 风格: {style}
   框架: {framework}
   受众: {audience}
+  字数限制: {word_count_limit}字
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 推荐方案
   风格: {style}
@@ -167,11 +175,18 @@ Save to: `wechat-articles/{topic-slug}/outline.md`
 Write the full article following:
 - The outline structure
 - User's voice preferences (professional/casual/friendly)
+- **Word count limit**: Stay within the specified word count limit (default 5000 words)
 - WeChat formatting best practices:
   - Use emoji in section headers (📌 💡 🎯 📊 ✅)
   - Keep paragraphs short (2-4 sentences)
   - Use **bold** for emphasis
   - Include practical examples
+
+**Word count management**:
+- Monitor word count during generation
+- If approaching limit, prioritize essential content
+- Ensure conclusion section is included even if abbreviated
+- Note: Word count refers to Chinese characters, not English words
 
 Save to: `wechat-articles/{topic-slug}/article.md`
 
@@ -414,7 +429,7 @@ Create `skills/wechat-article-writer/EXTEND.md` to customize default preferences
 ### Content Style
 - **Language**: Chinese (Simplified)
 - **Tone**: Professional yet accessible
-- **Length**: 1500-2000 words
+- **Word count limit**: 5000 (customizable, default 5000)
 - **Structure**: Problem → Solution → Examples → Conclusion
 
 ### Format Preferences
