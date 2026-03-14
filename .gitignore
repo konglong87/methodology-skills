@@ -42,3 +42,5 @@ wechat-articles
 .jpeg
 .jpeg
 *-lock.json
+test-*
+test*
