@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.3.1-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -143,21 +143,115 @@ node dist/scripts/sync.js              # 同步索引
 - ✍️ **AI 内容创作** - 使用 AI 工具内置能力自动生成文章内容
 - 📊 **信息图生成** - 自动生成 2 张 PNG 信息图（使用 infographic-generator skill）
 - 🎨 **风格定制** - 通过 EXTEND.md 自定义写作风格、目标受众、文章长度
+- 🖼️ **图片风格指定** - 支持在主题中指定信息图风格（科技风、可爱风、手绘风等8种风格）
+- 📏 **字数控制** - 支持自定义字数限制，默认 5000 字，可灵活配置
 - 📁 **结构化输出** - 自动保存到 `wechat-articles/{topic}/` 目录
 
-**触发方式**: `/wechat-article-writer "文章主题"`
+**触发方式**:
+```bash
+# 默认使用（5000字）
+/wechat-article-writer "文章主题"
+
+# 自定义字数
+/wechat-article-writer "文章主题" --word-count 3000
+```
 
 **示例**:
 ```bash
+# 使用默认字数限制
 /wechat-article-writer "AI工具推荐:提升10倍效率的5个神器"
+
+# 指定 3000 字
+/wechat-article-writer "AI工具推荐:提升10倍效率的5个神器" --word-count 3000
+
+# 指定信息图风格（科技风）
+/wechat-article-writer "AI工具推荐:提升10倍效率的5个神器，风格 科技风" --word-count 3000
+
+# 指定信息图风格（手绘风）
+/wechat-article-writer "Python入门教程，风格 手绘风" --word-count 4000
+
+# 指定信息图风格（简约风）
+/wechat-article-writer "项目管理方法论，风格 简约风"
+```
+
+**支持的图片风格**:
+可在主题末尾添加 `风格 XXX` 来指定信息图风格：
+- 科技风 - 适合AI、编程、技术内容
+- 可爱风 - 适合生活、美食、宠物内容
+- 手绘风 - 适合教程、学习内容
+- 简约风 - 适合商务、职场内容
+- 教学风 - 适合教程、指南内容
+- 泥塑风 - 适合创意、艺术内容
+- 漫画风 - 适合动漫、游戏内容
+- Bento风 - 适合模块化、架构内容
+
+> 💡 **提示**: 如果不指定风格，系统会根据内容自动选择最合适的风格
+
+**配置默认字数** (通过 EXTEND.md):
+```yaml
+word_count_limit: 3000  # 设置默认字数限制
 ```
 
 **工作流程**:
 1. 加载用户偏好（EXTEND.md）
 2. 分析主题并生成大纲
-3. AI 写作完整文章
+3. AI 写作完整文章（遵循字数限制）
 4. 自动生成配套信息图
 5. 保存到指定目录
+
+**支持平台**: Claude Code、Cursor、OpenClaw、OpenCode、Antigravity 等所有支持 skills 的 AI 工具
+
+### 🎯 信息图生成器 (Infographic Generator)
+
+智能信息图生成工具，支持自然语言描述自动生成专业信息图，配备动态风格选择系统。
+
+**适用场景**: 创建知识科普、数据可视化、流程说明、对比分析等信息图
+
+**核心功能**:
+- 🎨 **动态风格选择** - 三层优先级：用户指定 > LLM智能选择 > 可爱风格兜底
+- 📐 **智能布局推荐** - 根据内容自动推荐横屏/竖屏布局
+- 🖼️ **8种视觉风格** - 科技风、可爱风、手绘风、简约风、教学风、笔记风、漫画风、Bento风
+- 🌐 **多语言支持** - 支持中英文风格指定
+
+**触发方式**: `/infographic-generator "描述内容"` 或直接描述信息图需求
+
+**风格指定方式**:
+```
+# 方式1：明确指定风格（最高优先级）
+"生成Python信息图，使用手绘风格"
+"创建数据分析图表，简约风"
+
+# 方式2：LLM智能选择
+"生成AI工具推荐信息图"  → 自动选择科技风
+"制作美食教程信息图"    → 自动选择教学风
+
+# 方式3：可爱风格兜底
+"生成一个信息图"        → 无法识别时使用可爱风
+```
+
+**支持的8种风格**:
+| 风格 | 适用场景 |
+|------|----------|
+| 科技风 (tech) | AI、编程、数据分析、科技产品 |
+| 可爱风 (cute) | 生活、美食、宠物、日常分享 |
+| 手绘风 (notebook) | 学习笔记、复习、知识总结 |
+| 简约风 (minimal) | 商务、职场、管理、专业报告 |
+| 教学风 (tutorial) | 教程、指南、培训、入门教学 |
+| 泥塑风 (clay) | 创意、艺术、设计、手工制作 |
+| 漫画风 (comics) | 动漫、游戏、二次元、娱乐 |
+| Bento风 (bento) | 模块化、架构、系统设计 |
+
+**示例**:
+```bash
+# 用户指定风格
+"生成Python编程语言的信息图，使用科技风，包含语法简洁、应用广泛、生态丰富3个特点"
+
+# LLM智能选择
+"生成AI工具推荐信息图，包含ChatGPT、Midjourney、Notion AI三个工具"
+
+# 美食内容（自动选择教学风）
+"生成美食制作教程信息图，包含准备食材、烹饪步骤、装盘技巧3个要点"
+```
 
 **支持平台**: Claude Code、Cursor、OpenClaw、OpenCode、Antigravity 等所有支持 skills 的 AI 工具
 
