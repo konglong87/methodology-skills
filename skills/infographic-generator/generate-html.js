@@ -7,14 +7,68 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * 预设风格配置
+ */
+const PRESET_STYLES = {
+  'tech': { // 科技风格
+    background_color: '#0A1929',
+    primary_color: '#00E5FF',
+    secondary_color: '#0288D1',
+    accent_color: '#B2EBF2',
+    text_color: '#E0F7FA',
+    font_family: 'Arial, sans-serif'
+  },
+  'cute': { // 可爱风格
+    background_color: '#FFF9C4',
+    primary_color: '#FF6B9D',
+    secondary_color: '#FFB3D9',
+    accent_color: '#FFE5EC',
+    text_color: '#5D4037',
+    font_family: 'Arial Rounded MT Bold, Arial, sans-serif'
+  },
+  'clay': { // 泥塑风格
+    background_color: '#E8DCC4',
+    primary_color: '#D4A574',
+    secondary_color: '#C19A6B',
+    accent_color: '#F5E6D3',
+    text_color: '#5D4E37',
+    font_family: 'Georgia, serif'
+  },
+  'handdrawn': { // 手绘风格
+    background_color: '#FFF8E7',
+    primary_color: '#FF6B35',
+    secondary_color: '#F7931E',
+    accent_color: '#FFE5B4',
+    text_color: '#2C1810',
+    font_family: 'Comic Sans MS, cursive, sans-serif'
+  }
+};
+
+/**
+ * 获取样式配置（支持预设风格名称）
+ */
+function getStyleConfig(style) {
+  if (typeof style === 'string' && PRESET_STYLES[style]) {
+    return PRESET_STYLES[style];
+  }
+  // 确保返回完整的样式配置，合并默认值
+  const defaultStyle = PRESET_STYLES['tech'];
+  return style ? { ...defaultStyle, ...style } : defaultStyle;
+}
+
+/**
  * 生成HTML信息图
  * @param {Object} config - 信息图配置
  * @param {string} outputPath - 输出HTML文件路径
  */
 function generateHTMLInfographic(config, outputPath = 'infographic.html') {
-  const { template, style, content } = config;
+  const { template, content } = config;
   const width = config.output?.width || 1920;
-  const height = config.output?.height || 1080;
+  // 移除固定高度，改为自适应
+  const height = config.output?.height || 'auto';
+
+  // 处理样式（支持预设风格名称）
+  const style = getStyleConfig(config.style);
 
   // 根据模板选择布局
   let htmlContent;
@@ -35,6 +89,8 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
     htmlContent = generateKnowledgeTemplate(style, content, width, height);
   }
 
+  const heightStyle = height === 'auto' ? 'height: auto;' : `height: ${height}px;`;
+
   const fullHTML = `
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -53,14 +109,15 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
       font-family: ${style.font_family || 'Arial, sans-serif'};
       background-color: ${style.background_color};
       color: ${style.text_color};
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     .container {
       width: ${width}px;
-      height: ${height}px;
+      ${heightStyle}
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      padding-bottom: 80px;
     }
 
 ${htmlContent.css}
@@ -270,49 +327,94 @@ function generateXiaohongshuTemplate(style, content, width, height) {
 }
 
 /**
- * 使用Puppeteer截图
+ * 使用Puppeteer截图（自动检测完整高度）
  */
-async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 1080) {
+async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') {
   const puppeteer = require('puppeteer');
 
   console.log('📸 使用Puppeteer截图...');
 
-  const browser = await puppeteer.launch({
-    headless: 'new'
-  });
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: 'new'
+    });
 
-  const page = await browser.newPage();
-  await page.setViewport({ width, height });
+    const page = await browser.newPage();
 
-  const fileUrl = `file://${htmlPath}`;
-  await page.goto(fileUrl, { waitUntil: 'networkidle0' });
+    // 设置视口宽度，高度设为足够大以容纳内容
+    await page.setViewport({ width, height: 5000 });
 
-  await page.screenshot({
-    path: pngPath,
-    fullPage: false
-  });
+    const fileUrl = `file://${htmlPath}`;
+    await page.goto(fileUrl, { waitUntil: 'networkidle0' });
 
-  await browser.close();
+    // 自动检测内容高度，并添加缓冲区确保不被截断
+    const actualHeight = height === 'auto'
+      ? Math.round(await page.evaluate(() => {
+          const container = document.querySelector('.container');
+          if (!container) {
+            return document.body.scrollHeight;
+          }
 
-  console.log(`✅ 截图完成: ${pngPath}`);
+          // 获取容器的实际内容高度（不包括padding和margin）
+          const children = Array.from(container.children);
+          let maxBottom = 0;
+
+          children.forEach(child => {
+            const rect = child.getBoundingClientRect();
+            const bottom = rect.bottom + window.scrollY;
+            if (bottom > maxBottom) {
+              maxBottom = bottom;
+            }
+          });
+
+          // 添加底部padding和缓冲区
+          return Math.max(maxBottom + 160, 800); // 最小800px高度
+        }))
+      : height;
+
+    console.log(`📐 检测到内容高度: ${actualHeight}px`);
+
+    // 重新设置正确的视口高度
+    await page.setViewport({ width, height: actualHeight });
+
+    await page.screenshot({
+      path: pngPath,
+      fullPage: false
+    });
+
+    console.log(`✅ 截图完成: ${pngPath}`);
+    return { width, height: actualHeight };
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
 }
 
 /**
  * 完整流程：生成HTML并截图
  */
 async function renderInfographic(config, outputPath = 'output.png') {
-  const htmlPath = outputPath.replace('.png', '.html');
+  const htmlPath = path.resolve(outputPath.replace('.png', '.html'));
+  const absoluteOutputPath = path.resolve(outputPath);
 
   console.log('🎨 生成HTML信息图...');
   generateHTMLInfographic(config, htmlPath);
 
   console.log('📸 截图中...');
-  await screenshotHTML(htmlPath, outputPath, config.output?.width || 1920, config.output?.height || 1080);
+  const dimensions = await screenshotHTML(
+    htmlPath,
+    absoluteOutputPath,
+    config.output?.width || 1920,
+    config.output?.height || 'auto'
+  );
 
   return {
     success: true,
-    outputPath,
-    htmlPath
+    outputPath: absoluteOutputPath,
+    htmlPath,
+    dimensions
   };
 }
 
@@ -377,43 +479,46 @@ if (require.main === module) {
   const args = process.argv.slice(2);
 
   if (args.length >= 2) {
-    // 参数格式：node generate-html.js <template> <json-config> [--output output-path]
-    const template = args[0];
-    const configJSON = args[1];
-    const outputIndex = args.indexOf('--output');
-    const outputPath = outputIndex !== -1 && args[outputIndex + 1]
-      ? args[outputIndex + 1]
-      : 'infographic.png';
+    // 参数格式：node generate-html.js <template> <json-config> [--output output-path] [--style style-name]
+    (async () => {
+      const template = args[0];
+      const configJSON = args[1];
+      const outputIndex = args.indexOf('--output');
+      const styleIndex = args.indexOf('--style');
 
-    try {
-      // 解析JSON配置
-      const content = JSON.parse(configJSON);
+      const outputPath = outputIndex !== -1 && args[outputIndex + 1]
+        ? args[outputIndex + 1]
+        : 'infographic.png';
 
-      // 构建完整配置
-      const config = {
-        template: template,
-        style: {
-          background_color: '#f5f5f5',
-          primary_color: '#333333',
-          secondary_color: '#666666',
-          accent_color: '#F5F5F5',
-          text_color: '#333333',
-          font_family: 'Arial, sans-serif'
-        },
-        content: content,
-        output: {
-          width: 1200,
-          height: template === 'process' ? 1600 : 900
-        }
-      };
+      // 支持预设风格名称，默认使用科技风格
+      const styleName = styleIndex !== -1 && args[styleIndex + 1]
+        ? args[styleIndex + 1]
+        : 'tech';
 
-      console.log('🎨 生成HTML信息图...');
-      renderInfographic(config, outputPath);
-    } catch (error) {
-      console.error('❌ 解析配置失败:', error.message);
-      console.error('请确保第二个参数是有效的JSON字符串');
-      process.exit(1);
-    }
+      try {
+        // 解析JSON配置
+        const content = JSON.parse(configJSON);
+
+        // 构建完整配置（使用预设风格）
+        const config = {
+          template: template,
+          style: styleName, // 支持预设风格名称
+          content: content,
+          output: {
+            width: 1200,
+            height: 'auto' // 自适应高度
+          }
+        };
+
+        console.log(`🎨 使用风格: ${styleName}`);
+        console.log('🎨 生成HTML信息图...');
+        await renderInfographic(config, outputPath);
+      } catch (error) {
+        console.error('❌ 解析配置失败:', error.message);
+        console.error('请确保第二个参数是有效的JSON字符串');
+        process.exit(1);
+      }
+    })();
   } else {
     // 没有参数时使用测试数据
     testHTMLRender();
