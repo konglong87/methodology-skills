@@ -16,9 +16,10 @@ export interface InfographicConfig {
     font_family?: string;
   };
   content: any; // 支持不同模板的内容结构
-  output?: {
+  output_config?: {
     width?: number;
     height?: number;
+    orientation?: 'horizontal' | 'vertical';
   };
 }
 
@@ -27,8 +28,8 @@ export interface InfographicProps {
 }
 
 export const Infographic: React.FC<InfographicProps> = ({ config }) => {
-  const width = config.output?.width || 1920;
-  const height = config.output?.height || 1080;
+  const width = config.output_config?.width || 1920;
+  const height = config.output_config?.height || 1080;
 
   // 根据模板类型渲染不同的模板
   const renderTemplate = () => {

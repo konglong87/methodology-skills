@@ -2,7 +2,10 @@ import React from "react";
 import { InfographicConfig } from "../Infographic";
 
 export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ config }) => {
-  const { content, style } = config;
+  const { content, style, output_config } = config;
+
+  // 检测是否为竖屏
+  const isVertical = output_config?.orientation === 'vertical';
 
   return (
     <div
@@ -13,27 +16,27 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
         flexDirection: "column",
         backgroundColor: style.background_color || "#FFFFFF",
         fontFamily: style.font_family || "Arial, sans-serif",
-        padding: "40px"
+        padding: isVertical ? "30px" : "40px"
       }}
     >
       {/* 标题区域 */}
       <div
         style={{
-          height: "15%",
+          height: isVertical ? "10%" : "15%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          marginBottom: "20px"
+          marginBottom: isVertical ? "15px" : "20px"
         }}
       >
         <h1
           style={{
-            fontSize: "42px",
+            fontSize: isVertical ? "36px" : "42px",
             fontWeight: "bold",
             color: style.primary_color || "#333333",
             margin: 0,
-            marginBottom: "10px"
+            marginBottom: isVertical ? "8px" : "10px"
           }}
         >
           {content.title}
@@ -41,7 +44,7 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
         {content.subtitle && (
           <h2
             style={{
-              fontSize: "20px",
+              fontSize: isVertical ? "18px" : "20px",
               fontWeight: "normal",
               color: style.secondary_color || "#666666",
               margin: 0
@@ -55,20 +58,22 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
       {/* 对比区域 */}
       <div
         style={{
-          height: "70%",
+          height: isVertical ? "80%" : "70%",
           display: "flex",
+          flexDirection: isVertical ? "column" : "row",
           justifyContent: "space-between",
           alignItems: "stretch",
-          marginBottom: "20px"
+          marginBottom: isVertical ? "15px" : "20px",
+          gap: isVertical ? "15px" : "0"
         }}
       >
         {/* 左侧 */}
         <div
           style={{
-            width: "45%",
+            width: isVertical ? "100%" : "45%",
             backgroundColor: content.left_bg || "#E8F5E9",
             borderRadius: "15px",
-            padding: "25px",
+            padding: isVertical ? "20px" : "25px",
             display: "flex",
             flexDirection: "column"
           }}
@@ -78,17 +83,17 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
             style={{
               display: "flex",
               alignItems: "center",
-              marginBottom: "20px",
-              paddingBottom: "15px",
+              marginBottom: isVertical ? "15px" : "20px",
+              paddingBottom: isVertical ? "12px" : "15px",
               borderBottom: `2px solid ${content.left_primary || "#4DB33D"}`
             }}
           >
-            <span style={{ fontSize: "40px", marginRight: "10px" }}>
+            <span style={{ fontSize: isVertical ? "32px" : "40px", marginRight: "10px" }}>
               {content.left_icon}
             </span>
             <h3
               style={{
-                fontSize: "28px",
+                fontSize: isVertical ? "24px" : "28px",
                 fontWeight: "bold",
                 color: content.left_primary || "#4DB33D",
                 margin: 0
@@ -104,18 +109,18 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
               <div
                 key={index}
                 style={{
-                  marginBottom: "15px",
+                  marginBottom: isVertical ? "12px" : "15px",
                   display: "flex",
                   alignItems: "flex-start"
                 }}
               >
-                <span style={{ fontSize: "32px", marginRight: "10px" }}>
+                <span style={{ fontSize: isVertical ? "28px" : "32px", marginRight: "10px" }}>
                   {item.icon}
                 </span>
                 <div>
                   <div
                     style={{
-                      fontSize: "18px",
+                      fontSize: isVertical ? "16px" : "18px",
                       fontWeight: "bold",
                       color: content.left_primary || "#4DB33D",
                       marginBottom: "5px"
@@ -125,7 +130,7 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
                   </div>
                   <div
                     style={{
-                      fontSize: "16px",
+                      fontSize: isVertical ? "14px" : "16px",
                       color: style.text_color || "#333333"
                     }}
                   >
@@ -140,7 +145,7 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
         {/* VS分隔 */}
         <div
           style={{
-            width: "10%",
+            width: isVertical ? "100%" : "10%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center"
@@ -148,12 +153,12 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
         >
           <div
             style={{
-              width: "60px",
-              height: "60px",
+              width: isVertical ? "50px" : "60px",
+              height: isVertical ? "50px" : "60px",
               borderRadius: "50%",
               backgroundColor: style.primary_color || "#333333",
               color: "#FFFFFF",
-              fontSize: "24px",
+              fontSize: isVertical ? "20px" : "24px",
               fontWeight: "bold",
               display: "flex",
               alignItems: "center",
@@ -167,10 +172,10 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
         {/* 右侧 */}
         <div
           style={{
-            width: "45%",
+            width: isVertical ? "100%" : "45%",
             backgroundColor: content.right_bg || "#E3F2FD",
             borderRadius: "15px",
-            padding: "25px",
+            padding: isVertical ? "20px" : "25px",
             display: "flex",
             flexDirection: "column"
           }}
@@ -180,17 +185,17 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
             style={{
               display: "flex",
               alignItems: "center",
-              marginBottom: "20px",
-              paddingBottom: "15px",
+              marginBottom: isVertical ? "15px" : "20px",
+              paddingBottom: isVertical ? "12px" : "15px",
               borderBottom: `2px solid ${content.right_primary || "#00758F"}`
             }}
           >
-            <span style={{ fontSize: "40px", marginRight: "10px" }}>
+            <span style={{ fontSize: isVertical ? "32px" : "40px", marginRight: "10px" }}>
               {content.right_icon}
             </span>
             <h3
               style={{
-                fontSize: "28px",
+                fontSize: isVertical ? "24px" : "28px",
                 fontWeight: "bold",
                 color: content.right_primary || "#00758F",
                 margin: 0
@@ -206,18 +211,18 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
               <div
                 key={index}
                 style={{
-                  marginBottom: "15px",
+                  marginBottom: isVertical ? "12px" : "15px",
                   display: "flex",
                   alignItems: "flex-start"
                 }}
               >
-                <span style={{ fontSize: "32px", marginRight: "10px" }}>
+                <span style={{ fontSize: isVertical ? "28px" : "32px", marginRight: "10px" }}>
                   {item.icon}
                 </span>
                 <div>
                   <div
                     style={{
-                      fontSize: "18px",
+                      fontSize: isVertical ? "16px" : "18px",
                       fontWeight: "bold",
                       color: content.right_primary || "#00758F",
                       marginBottom: "5px"
@@ -227,7 +232,7 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
                   </div>
                   <div
                     style={{
-                      fontSize: "16px",
+                      fontSize: isVertical ? "14px" : "16px",
                       color: style.text_color || "#333333"
                     }}
                   >
@@ -243,23 +248,23 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
       {/* 结论区域 */}
       <div
         style={{
-          height: "15%",
+          height: isVertical ? "10%" : "15%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: style.accent_color || "#F5F5F5",
           borderRadius: "10px",
-          padding: "15px"
+          padding: isVertical ? "12px" : "15px"
         }}
       >
         <p
           style={{
-            fontSize: "18px",
+            fontSize: isVertical ? "16px" : "18px",
             fontWeight: "normal",
             color: style.text_color || "#333333",
             margin: 0,
-            marginBottom: "10px",
+            marginBottom: isVertical ? "8px" : "10px",
             textAlign: "center"
           }}
         >
@@ -267,7 +272,7 @@ export const ComparisonTemplate: React.FC<{ config: InfographicConfig }> = ({ co
         </p>
         <p
           style={{
-            fontSize: "16px",
+            fontSize: isVertical ? "14px" : "16px",
             fontWeight: "bold",
             color: style.primary_color || "#333333",
             margin: 0,
