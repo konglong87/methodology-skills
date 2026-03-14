@@ -41,6 +41,38 @@ const PRESET_STYLES = {
     accent_color: '#FFE5B4',
     text_color: '#2C1810',
     font_family: 'Comic Sans MS, cursive, sans-serif'
+  },
+
+  // 新增：小红书高级风格预设
+  'xhs-pink-elegant': { // 小红书粉紫优雅风格
+    colorScheme: 'pink-purple',
+    cardStyle: 'elegant',
+    iconStyle: 'gradient-circle',
+    font_family: 'Arial, sans-serif'
+  },
+  'xhs-blue-modern': { // 小红书蓝绿现代风格
+    colorScheme: 'blue-cyan',
+    cardStyle: 'modern',
+    iconStyle: 'gradient-square',
+    font_family: 'Arial, sans-serif'
+  },
+  'xhs-orange-glass': { // 小红书橙黄玻璃态风格
+    colorScheme: 'orange-yellow',
+    cardStyle: 'glass',
+    iconStyle: 'solid-bg',
+    font_family: 'Arial, sans-serif'
+  },
+  'xhs-green-minimal': { // 小红书绿色简约风格
+    colorScheme: 'green-nature',
+    cardStyle: 'minimal',
+    iconStyle: 'outline',
+    font_family: 'Arial, sans-serif'
+  },
+  'xhs-purple-elegant': { // 小红书紫色优雅风格
+    colorScheme: 'purple-elegant',
+    cardStyle: 'elegant',
+    iconStyle: 'gradient-circle',
+    font_family: 'Arial, sans-serif'
   }
 };
 
@@ -54,6 +86,21 @@ function getStyleConfig(style) {
   // 确保返回完整的样式配置，合并默认值
   const defaultStyle = PRESET_STYLES['tech'];
   return style ? { ...defaultStyle, ...style } : defaultStyle;
+}
+
+/**
+ * 判断是否为小红书风格预设
+ * @param {string|object} style - 风格配置
+ * @returns {boolean}
+ */
+function isXiaohongshuStyle(style) {
+  if (typeof style === 'string') {
+    return style.startsWith('xhs-') || style === 'cute';
+  }
+  if (typeof style === 'object') {
+    return !!(style.colorScheme || style.color_scheme || style.cardStyle || style.card_style || style.iconStyle || style.icon_style);
+  }
+  return false;
 }
 
 /**
@@ -73,6 +120,9 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
   // 根据模板选择布局
   let htmlContent;
 
+  // 判断是否为小红书模板且使用新样式系统
+  const useNewXiaohongshuStyle = template === 'xiaohongshu' && isXiaohongshuStyle(config.style);
+
   if (template === 'knowledge') {
     htmlContent = generateKnowledgeTemplate(style, content, width, height);
   } else if (template === 'xiaohongshu') {
@@ -91,6 +141,11 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
 
   const heightStyle = height === 'auto' ? 'height: auto;' : `height: ${height}px;`;
 
+  // 对于小红书新样式，body 背景已在模板中定义
+  const bodyStyle = useNewXiaohongshuStyle
+    ? 'margin: 0; padding: 0;'
+    : `font-family: ${style.font_family || 'Arial, sans-serif'}; background-color: ${style.background_color}; color: ${style.text_color}; overflow-x: hidden;`;
+
   const fullHTML = `
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -106,10 +161,7 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
     }
 
     body {
-      font-family: ${style.font_family || 'Arial, sans-serif'};
-      background-color: ${style.background_color};
-      color: ${style.text_color};
-      overflow-x: hidden;
+      ${bodyStyle}
     }
 
     .container {
@@ -241,86 +293,235 @@ function generateKnowledgeTemplate(style, content, width, height) {
 }
 
 /**
- * 生成小红书模板
+ * 生成小红书模板（优化版）
  */
 function generateXiaohongshuTemplate(style, content, width, height) {
+  // 导入样式系统
+  const {
+    getXiaohongshuStyle,
+    generateDecorationCSS,
+    generateIconCSS,
+    generateGradientTextCSS
+  } = require('./xiaohongshu-styles.js');
+
+  // 解析样式配置（支持旧格式和新格式）
+  let colorScheme = 'pink-purple';
+  let cardStyle = 'elegant';
+  let iconStyle = 'gradient-circle';
+
+  if (typeof style === 'string') {
+    // 旧格式：预设风格名称，尝试映射到新格式
+    const legacyMapping = {
+      'cute': { colorScheme: 'pink-purple', cardStyle: 'elegant', iconStyle: 'gradient-circle' },
+      'tech': { colorScheme: 'blue-cyan', cardStyle: 'modern', iconStyle: 'gradient-square' },
+      'clay': { colorScheme: 'orange-yellow', cardStyle: 'elegant', iconStyle: 'solid-bg' },
+      'handdrawn': { colorScheme: 'green-nature', cardStyle: 'minimal', iconStyle: 'outline' }
+    };
+    const mapping = legacyMapping[style] || legacyMapping['cute'];
+    colorScheme = mapping.colorScheme;
+    cardStyle = mapping.cardStyle;
+    iconStyle = mapping.iconStyle;
+  } else if (typeof style === 'object') {
+    // 新格式：对象配置
+    colorScheme = style.colorScheme || style.color_scheme || 'pink-purple';
+    cardStyle = style.cardStyle || style.card_style || 'elegant';
+    iconStyle = style.iconStyle || style.icon_style || 'gradient-circle';
+  }
+
+  // 获取完整样式配置
+  const fullStyle = getXiaohongshuStyle(colorScheme, cardStyle, iconStyle);
+  const { colors, cards, icons } = fullStyle;
+
+  // 生成内容卡片 HTML
   const itemsHTML = content.items.map((item, index) => `
-    <div class="xiaohongshu-item">
-      <h3>${item.title}</h3>
-      <p>${item.description}</p>
+    <div class="content-card" style="
+      border-radius: ${cards.border_radius};
+      box-shadow: ${cards.shadow};
+      padding: ${cards.padding};
+      background: ${cards.background};
+      ${cards.border ? `border: ${cards.border};` : ''}
+      ${cards.backdrop_filter ? `backdrop-filter: ${cards.backdrop_filter};` : ''}
+    ">
+      <div class="card-icon icon-container">
+        <span class="icon">${item.icon || '📋'}</span>
+      </div>
+      <div class="card-content">
+        <h3 class="card-title">${item.title}</h3>
+        <p class="card-desc">${item.description}</p>
+      </div>
     </div>
   `).join('');
 
-  const summaryHTML = content.summary ? `
-    <div class="xiaohongshu-summary">
-      <p>${content.summary}</p>
+  // 数据展示区（可选）
+  const dataHTML = content.data_points ? `
+    <div class="data-section" style="
+      border-radius: ${cards.border_radius};
+      box-shadow: ${cards.shadow};
+      background: ${cards.background};
+    ">
+      ${content.data_points.map(point => `
+        <div class="data-item">
+          <div class="data-value gradient-text">${point.value}</div>
+          <div class="data-label">${point.label}</div>
+        </div>
+      `).join('')}
     </div>
   ` : '';
 
+  // 互动区（可选）
+  const interactionHTML = content.interaction ? `
+    <div class="interaction-area">
+      <p class="interaction-text">${content.interaction}</p>
+    </div>
+  ` : '';
+
+  // 生成装饰元素 HTML
+  const decorationsHTML = `
+    <div class="decoration-circle-1"></div>
+    <div class="decoration-circle-2"></div>
+    <div class="decoration-circle-3"></div>
+  `;
+
   return {
     css: `
-    .xiaohongshu-container {
-      padding: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
+    /* 小红书容器 - 渐变背景 */
+    .xiaohongshu-viral-container {
+      background: ${colors.gradient_bg};
+      min-height: 100%;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .xiaohongshu-title {
-      font-size: 96px;
-      font-weight: bold;
-      color: ${style.primary_color};
+    /* 装饰元素 */
+    ${generateDecorationCSS(colors)}
+
+    /* 标题区域 */
+    .title-section {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 50px;
+      position: relative;
+      z-index: 1;
     }
 
-    .xiaohongshu-items {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      margin-bottom: 60px;
-    }
-
-    .xiaohongshu-item {
-      background-color: ${style.accent_color};
-      padding: 50px 60px;
-      border-radius: 30px;
-      border-left: 12px solid ${style.primary_color};
-    }
-
-    .xiaohongshu-item h3 {
-      font-size: 48px;
+    .main-title {
+      font-size: 56px;
       font-weight: bold;
-      color: ${style.primary_color};
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
     }
 
-    .xiaohongshu-item p {
-      font-size: 32px;
-      line-height: 1.5;
+    .subtitle {
+      font-size: 28px;
+      color: ${colors.text_secondary};
+      font-weight: normal;
     }
 
-    .xiaohongshu-summary {
-      background-color: ${style.secondary_color};
-      padding: 50px;
-      border-radius: 20px;
+    /* 渐变文字 */
+    ${generateGradientTextCSS(colors)}
+
+    /* 内容卡片容器 */
+    .content-cards {
+      display: grid;
+      gap: 30px;
+      margin-bottom: 50px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 内容卡片 */
+    .content-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    /* 图标容器 */
+    ${generateIconCSS(icons, colors)}
+
+    /* 卡片内容 */
+    .card-content {
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: ${colors.text_color};
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      font-size: 18px;
+      color: ${colors.text_secondary};
+      line-height: 1.6;
+    }
+
+    /* 数据展示区 */
+    .data-section {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      padding: 40px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .data-item {
       text-align: center;
     }
 
-    .xiaohongshu-summary p {
+    .data-value {
       font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .data-label {
+      font-size: 16px;
+      color: ${colors.text_secondary};
+    }
+
+    /* 互动区 */
+    .interaction-area {
+      text-align: center;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .interaction-text {
+      font-size: 20px;
+      color: ${colors.primary_color};
+      font-weight: bold;
     }
     `,
     html: `
-    <div class="xiaohongshu-container">
-      <h1 class="xiaohongshu-title">${content.title}</h1>
+    <div class="xiaohongshu-viral-container">
+      <!-- 装饰元素 -->
+      ${decorationsHTML}
 
-      <div class="xiaohongshu-items">
+      <!-- 标题 -->
+      <div class="title-section">
+        <h1 class="main-title gradient-text">${content.title}</h1>
+        ${content.subtitle ? `<p class="subtitle">${content.subtitle}</p>` : ''}
+      </div>
+
+      <!-- 内容卡片 -->
+      <div class="content-cards">
         ${itemsHTML}
       </div>
 
-      ${summaryHTML}
+      <!-- 数据展示 -->
+      ${dataHTML}
+
+      <!-- 互动区 -->
+      ${interactionHTML}
     </div>
     `
   };
