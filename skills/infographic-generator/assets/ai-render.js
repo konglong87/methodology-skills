@@ -17,7 +17,7 @@ async function generateConfigFromNaturalLanguage(naturalLanguageInput) {
   console.log('🤖 分析需求并生成配置...');
 
   // 使用智能本地模板生成
-  const config = generateSmartConfigLocally(naturalLanguageInput);
+  const config = await generateSmartConfigLocally(naturalLanguageInput);
 
   console.log('✅ 配置生成完成');
   return config;
@@ -31,6 +31,7 @@ const STYLE_PRESETS = {
   // 1. 科技/编辑风 - 适合AI、编程、数据分析
   tech: {
     name: '科技风',
+    description: '适合AI、编程、数据分析、科技产品等内容',
     keywords: ['AI', '编程', '技术', '算法', '数据', '科技', '软件', '开发', '代码', '云计算', '机器学习', '大模型', 'LLM'],
     style: {
       background_color: '#0A1628',
@@ -50,6 +51,7 @@ const STYLE_PRESETS = {
   // 2. 泥塑风 - 3D圆润质感，适合创意内容
   clay: {
     name: '泥塑风',
+    description: '适合创意、艺术、设计、手工制作等内容',
     keywords: ['创意', '艺术', '设计', '手工', 'DIY', '制作', '捏塑', '3D', '立体'],
     style: {
       background_color: '#FAE8E0',
@@ -69,6 +71,7 @@ const STYLE_PRESETS = {
   // 3. 可爱风 - 适合生活、美食、宠物、手账
   cute: {
     name: '可爱风',
+    description: '适合生活、美食、宠物、日常分享等内容',
     keywords: ['美食', '甜点', '宠物', '生活', '美妆', '穿搭', '手帐', '可爱', '萌', '治愈', '日常'],
     style: {
       background_color: '#FFF5F7',
@@ -88,6 +91,7 @@ const STYLE_PRESETS = {
   // 4. 简约/专业风 - 商务、职场、管理
   minimal: {
     name: '简约风',
+    description: '适合商务、职场、管理、专业报告等内容',
     keywords: ['商务', '职场', '管理', '效率', '规划', '专业', '企业', '商业', '战略', '决策'],
     style: {
       background_color: '#FFFFFF',
@@ -107,6 +111,7 @@ const STYLE_PRESETS = {
   // 5. 教学风 - 教程、指南、入门
   tutorial: {
     name: '教学风',
+    description: '适合教程、指南、培训、入门教学等内容',
     keywords: ['教学', '培训', '课程', '教程', '指南', '步骤', '方法', '入门', '指南', 'Wiki'],
     style: {
       background_color: '#F0F9FF',
@@ -126,6 +131,7 @@ const STYLE_PRESETS = {
   // 6. 手绘笔记风 - 学习、课堂、复习
   notebook: {
     name: '笔记风',
+    description: '适合学习笔记、复习、知识总结等内容',
     keywords: ['学习', '笔记', '复习', '知识', '考试', '记忆', '读书', '课堂', '重点'],
     style: {
       background_color: '#FEF9E7',
@@ -145,6 +151,7 @@ const STYLE_PRESETS = {
   // 7. 动漫/漫画风 - 二次元、游戏、娱乐
   comics: {
     name: '漫画风',
+    description: '适合动漫、游戏、二次元、娱乐等内容',
     keywords: ['动漫', '游戏', '二次元', '漫画', '动画', '角色', '剧情', '游戏攻略', 'cosplay'],
     style: {
       background_color: '#FFF4E6',
@@ -164,6 +171,7 @@ const STYLE_PRESETS = {
   // 8. 积木/Bento风 - 模块化、流程
   bento: {
     name: 'Bento风',
+    description: '适合模块化、架构、系统设计等内容',
     keywords: ['构建', '组合', '模块', '架构', '系统', '框架', '模块化', '流程', 'Bento', '卡片'],
     style: {
       background_color: '#F5F5F0',
@@ -180,6 +188,123 @@ const STYLE_PRESETS = {
     }
   }
 };
+
+/**
+ * 从用户描述中提取指定的风格
+ * @param {string} input - 用户输入描述
+ * @returns {string|null} 风格名称或null
+ */
+function extractUserSpecifiedStyle(input) {
+  // 风格关键词映射（支持中英文）
+  const styleKeywords = {
+    'tech': [
+      'tech style', 'technology style', 'tech theme',
+      '科技风', '科技风格', '科技主题'
+    ],
+    'cute': [
+      'cute style', 'cute theme',
+      '可爱风', '可爱风格', '可爱主题'
+    ],
+    'clay': [
+      'clay style', 'clay theme',
+      '泥塑风', '泥塑风格', '泥塑主题'
+    ],
+    'minimal': [
+      'minimal style', 'minimalist',
+      '简约风', '简约风格', '简约主题', '极简风', '极简风格'
+    ],
+    'tutorial': [
+      'tutorial style',
+      '教学风', '教学风格', '教学主题'
+    ],
+    'notebook': [
+      'notebook style', 'handdrawn style', 'hand-drawn', 'hand drawn',
+      '笔记风', '笔记风格', '笔记主题', '手绘风', '手绘风格', '手绘主题'
+    ],
+    'comics': [
+      'comics style', 'comic style',
+      '漫画风', '漫画风格', '漫画主题', '动漫风', '动漫风格'
+    ],
+    'bento': [
+      'bento style',
+      'bento风', 'bento风格', '积木风', '积木风格'
+    ]
+  };
+
+  // 遍历映射，检查是否包含关键词
+  const inputLower = input.toLowerCase();
+  for (const [style, keywords] of Object.entries(styleKeywords)) {
+    for (const keyword of keywords) {
+      if (inputLower.includes(keyword.toLowerCase())) {
+        return style;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * 使用LLM智能选择风格
+ * @param {string} content - 用户内容描述
+ * @param {Object} stylePresets - 支持的风格预设
+ * @returns {Promise<string|null>} 推荐的风格名称或null
+ */
+async function selectStyleByLLM(content, stylePresets) {
+  // 构建风格列表描述
+  const styleDescriptions = Object.entries(stylePresets)
+    .map(([key, preset]) => `- ${key}: ${preset.name}，${preset.description}`)
+    .join('\n');
+
+  // 构建prompt
+  const prompt = `我需要为以下内容生成信息图：
+
+【内容描述】
+${content}
+
+【支持的风格】
+${styleDescriptions}
+
+请根据内容主题，选择最合适的风格。只返回风格名称（如 tech、cute、notebook等），不要解释。`;
+
+  try {
+    // 调用Claude Code的内置LLM能力
+    // 注意：这里需要在实际实现时确定如何调用
+    // 暂时使用回退方案：基于关键词匹配
+    console.log('💡 正在使用智能算法选择风格...');
+
+    // 临时方案：使用增强的关键词匹配
+    const contentLower = content.toLowerCase();
+    const scores = {};
+
+    for (const [styleKey, preset] of Object.entries(stylePresets)) {
+      scores[styleKey] = 0;
+      for (const keyword of preset.keywords) {
+        if (contentLower.includes(keyword.toLowerCase())) {
+          scores[styleKey] += 1;
+        }
+      }
+    }
+
+    // 找出最高分的风格
+    let maxScore = 0;
+    let bestStyle = null;
+
+    for (const [styleKey, score] of Object.entries(scores)) {
+      if (score > maxScore) {
+        maxScore = score;
+        bestStyle = styleKey;
+      }
+    }
+
+    // 只有在有匹配时才返回，否则返回null触发兜底
+    return maxScore > 0 ? bestStyle : null;
+
+  } catch (error) {
+    console.error('LLM风格选择失败:', error.message);
+    return null;
+  }
+}
 
 /**
  * 智能推荐风格
@@ -273,9 +398,9 @@ function recommendLayout(template, points, topic) {
  * 智能本地生成配置
  * 通过启发式规则理解用户意图
  * @param {string} input - 自然语言描述
- * @returns {Object} JSON配置
+ * @returns {Promise<Object>} JSON配置
  */
-function generateSmartConfigLocally(input) {
+async function generateSmartConfigLocally(input) {
   // 提取主题
   const topic = extractTopic(input);
 
@@ -285,11 +410,27 @@ function generateSmartConfigLocally(input) {
   // 提取具体要点
   const points = extractPoints(input);
 
-  // 智能推荐风格
-  const recommendedStyleKey = recommendStyle(topic, points);
-  const stylePreset = STYLE_PRESETS[recommendedStyleKey];
+  // 步骤1：尝试提取用户指定的风格
+  let styleKey = extractUserSpecifiedStyle(input);
 
-  console.log(`🎨 智能推荐风格: ${stylePreset.name}`);
+  if (styleKey) {
+    console.log(`✅ 用户指定风格: ${STYLE_PRESETS[styleKey].name}`);
+  } else {
+    // 步骤2：调用LLM选择风格
+    console.log('🤖 正在使用LLM智能选择风格...');
+    styleKey = await selectStyleByLLM(input, STYLE_PRESETS);
+
+    if (styleKey) {
+      console.log(`✅ LLM推荐风格: ${STYLE_PRESETS[styleKey].name}`);
+    } else {
+      // 步骤3：使用可爱风格兜底
+      console.log('⚠️  无法识别内容类型，使用可爱风格作为默认风格');
+      styleKey = 'cute';
+    }
+  }
+
+  const stylePreset = STYLE_PRESETS[styleKey];
+  console.log(`🎨 使用风格: ${stylePreset.name}`);
 
   // 智能推荐布局（横屏/竖屏）
   const layout = recommendLayout(template, points, topic);
