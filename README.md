@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.4.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.5.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -143,6 +143,11 @@ node dist/scripts/sync.js              # 同步索引
 **核心功能**:
 - ✍️ **AI 内容创作** - 使用 AI 工具内置能力自动生成文章内容
 - 📊 **信息图生成** - 自动生成 2 张 PNG 信息图（使用 infographic-generator skill）
+- 📝 **多版本输出** - 自动生成 4 个文章版本，完美兼容微信公众号
+  - 完整版（Markdown，5000字）- 适合博客、知识库
+  - 精简版（Markdown，1000字）- 适合快速阅读
+  - 精简版纯文本（1000字）- ✅ **微信专用**，无Markdown格式
+  - 完整版纯文本（5000字）- ✅ **微信专用**，无Markdown格式
 - 🎨 **风格定制** - 通过 EXTEND.md 自定义写作风格、目标受众、文章长度
 - 🖼️ **图片风格指定** - 支持在主题中指定信息图风格（科技风、可爱风、手绘风等8种风格）
 - 🔍 **联网搜索** - 自动搜索最新信息，确保内容时效性（支持 Claude Code、Cursor、OpenCode 等）
@@ -215,8 +220,13 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 2. 分析主题并生成大纲
 3. **联网搜索** - 使用 Exa AI（优先）或其他联网工具搜索最新信息
 4. AI 写作完整文章（融合搜索结果，遵循字数限制）
-5. 自动生成配套信息图
-6. 保存到指定目录
+5. **生成多版本文章** - 自动生成 4 个版本：
+   - article.md（完整版 Markdown）
+   - article-1000.md（精简版 Markdown）
+   - article-plain.txt（完整版纯文本，微信专用）
+   - article-1000-plain.txt（精简版纯文本，微信专用）
+6. 自动生成配套信息图
+7. 保存到指定目录
 
 **联网搜索优先级**：
 1. **Exa AI MCP** (最佳) - 高质量 AI 驱动搜索

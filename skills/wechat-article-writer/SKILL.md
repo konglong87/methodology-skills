@@ -100,7 +100,11 @@ When user invokes `/wechat-article-writer`, the AI tool should:
 ### Phase 2: Content Generation (Using AI Tool's Built-in Capabilities)
 
 - [ ] **Step 3: Generate Outline** - Use AI tool to create structured outline with sections and key content points
-- [ ] **Step 4: Generate Article** - Use AI tool to write full article content following outline and preferences
+- [ ] **Step 4: Generate Article (Full Version - Markdown)** - Use AI tool to write full article content following outline and preferences
+- [ ] **Step 4.5: Generate Article Variants** - Generate 3 additional versions for WeChat compatibility:
+  - 1000-word condensed version (Markdown)
+  - 1000-word condensed version (Plain text, no Markdown)
+  - Full-length plain text version (no Markdown)
 - [ ] **Step 5: Review & Refine** - Review article for accuracy, topic relevance, and quality; refine if needed
 - [ ] **Step 6: Generate Infographic Descriptions** - Use AI tool to create visual content descriptions
 - [ ] **Step 7: Generate PNG Images** - Use infographic-generator skill to generate actual PNG images
@@ -315,6 +319,124 @@ Write the full article following:
 
 Save to: `wechat-articles/{topic-slug}/article.md`
 
+### Step 4.5: Generate Article Variants (WeChat Compatibility)
+
+**Why**: WeChat Official Account articles do not support Markdown formatting. Generate multiple versions for different use cases.
+
+**Generate 3 additional versions**:
+
+#### 1. 1000-Word Condensed Version (Markdown)
+
+**Purpose**: Quick-read version for users who want the key insights without reading the full article.
+
+**Process**:
+- Extract the most important 3-4 points from the full article
+- Maintain the core message and value proposition
+- Keep Markdown formatting for blog/platform publication
+- Word count: ~1000 Chinese characters (±10%)
+
+**Content guidelines**:
+- Focus on the most impactful insights
+- Remove detailed examples and explanations
+- Keep section headers and structure
+- Maintain readability and flow
+
+Save to: `wechat-articles/{topic-slug}/article-1000.md`
+
+#### 2. 1000-Word Condensed Version (Plain Text)
+
+**Purpose**: Direct copy-paste to WeChat editor without formatting issues.
+
+**Process**:
+- Use the same content as the 1000-word Markdown version
+- **Remove all Markdown formatting**:
+  - Remove `#` headers → Use plain text with line breaks
+  - Remove `**bold**` → Just plain text
+  - Remove `*italic*` → Just plain text
+  - Remove `-` list markers → Use plain text
+  - Remove `[text](url)` links → Just keep text
+  - Remove code blocks → Use plain text
+- Keep emojis in section headers (微信支持emoji)
+- Word count: ~1000 Chinese characters (±10%)
+
+**Format example**:
+```
+标题：文章标题
+
+引言段落...
+
+📌 核心要点一
+内容描述...
+
+📌 核心要点二
+内容描述...
+
+📌 核心要点三
+内容描述...
+
+总结...
+```
+
+Save to: `wechat-articles/{topic-slug}/article-1000-plain.txt`
+
+#### 3. Full-Length Plain Text Version
+
+**Purpose**: Complete article content without Markdown, ready for WeChat publication.
+
+**Process**:
+- Use the full article content from Step 4
+- **Remove all Markdown formatting**:
+  - Remove `#` headers → Use plain text with line breaks
+  - Remove `**bold**` → Just plain text
+  - Remove `*italic*` → Just plain text
+  - Remove `-` list markers → Use plain text
+  - Remove `[text](url)` links → Just keep text or add as plain text reference
+  - Remove code blocks → Use plain text
+  - Remove `> ` blockquotes → Just plain text
+- Keep emojis in section headers (微信支持emoji)
+- Maintain all content and examples
+- Word count: Same as full Markdown version
+
+**Format example**:
+```
+标题：文章标题
+
+副标题或引言...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 第一部分标题
+
+内容段落...
+
+💡 核心观点
+详细说明...
+
+📊 数据支持
+具体数据...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 第二部分标题
+
+内容段落...
+
+（以此类推）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+总结
+
+总结内容...
+```
+
+Save to: `wechat-articles/{topic-slug}/article-plain.txt`
+
+**Quality Check**:
+- [ ] All three versions generated
+- [ ] Markdown properly removed from plain text versions
+- [ ] Word counts match targets (1000±100 for condensed, full length for complete)
+- [ ] Emojis preserved in headers
+- [ ] Content remains coherent without Markdown formatting
+- [ ] Ready for direct copy-paste to WeChat editor
+
 ### Step 5: Review & Refine
 
 **Critical quality control step** - Review the generated article for:
@@ -451,23 +573,26 @@ Create complete directory structure with all generated content:
 
 ```
 wechat-articles/{topic-slug}/
-├── source.md          # User's original input
-├── analysis.md        # Content analysis report
-├── research.md        # Web research findings (if web search was enabled)
-├── outline.md         # Article outline
-├── article.md         # Final article (refined)
-├── infographic/       # Infographic outputs
-│   ├── 01-*.png       # Generated PNG image 1
-│   ├── 02-*.png       # Generated PNG image 2
-│   └── prompts/       # Description files (backup)
+├── source.md                  # User's original input
+├── analysis.md                # Content analysis report
+├── research.md                # Web research findings (if web search was enabled)
+├── outline.md                 # Article outline
+├── article.md                 # Full article (Markdown, 5000 words)
+├── article-1000.md            # Condensed version (Markdown, 1000 words)
+├── article-1000-plain.txt     # Condensed version (Plain text, 1000 words)
+├── article-plain.txt          # Full version (Plain text, no Markdown)
+├── infographic/               # Infographic outputs
+│   ├── 01-*.png               # Generated PNG image 1
+│   ├── 02-*.png               # Generated PNG image 2
+│   └── prompts/               # Description files (backup)
 │       ├── 01-*.md
 │       └── 02-*.md
-└── meta.json          # Metadata (tags, SEO info)
+└── meta.json                  # Metadata (tags, SEO info)
 ```
 
 **Save process**:
 1. Create output directory
-2. Save all generated content
+2. Save all generated content (including 3 article variants)
 3. Organize infographic assets
 4. Generate metadata file with article stats
 
@@ -484,19 +609,26 @@ Style: {style}
 Voice: {voice}
 
 Output:
-  📄 article.md           (article content)
+  📄 article.md               (Full version, Markdown, 5000 words)
+  📄 article-1000.md          (Condensed, Markdown, 1000 words)
+  📄 article-1000-plain.txt   (Condensed, Plain text, 1000 words)
+  📄 article-plain.txt        (Full version, Plain text, no Markdown)
   🖼️ infographic/
-     ├─ 01-*.png         (PNG image 1)
-     └─ 02-*.png         (PNG image 2)
-  📋 meta.json           (metadata)
+     ├─ 01-*.png             (PNG image 1)
+     └─ 02-*.png             (PNG image 2)
+  📋 meta.json               (metadata)
 
 Files:
   ✓ {path}/article.md
+  ✓ {path}/article-1000.md
+  ✓ {path}/article-1000-plain.txt
+  ✓ {path}/article-plain.txt
   ✓ {path}/infographic/01-*.png
   ✓ {path}/infographic/02-*.png
 
 Next Steps:
-  → Review article.md
+  → For WeChat: Use article-plain.txt or article-1000-plain.txt
+  → For Blog: Use article.md or article-1000.md
   → Preview infographic images
   → Run /baoyu-post-to-wechat to publish
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -530,7 +662,10 @@ wechat-articles/{topic-slug}/
 ├── source.md                  # Original user input
 ├── analysis.md                # Content analysis report
 ├── outline.md                 # Article outline structure
-├── article.md                 # Final article content (Markdown, refined)
+├── article.md                 # Full article (Markdown, 5000 words)
+├── article-1000.md            # Condensed version (Markdown, 1000 words)
+├── article-1000-plain.txt     # Condensed version (Plain text, 1000 words)
+├── article-plain.txt          # Full version (Plain text, no Markdown)
 ├── infographic/               # Generated infographics
 │   ├── 01-*.png               # PNG image 1 (auto-generated)
 │   ├── 02-*.png               # PNG image 2 (auto-generated)
@@ -541,10 +676,19 @@ wechat-articles/{topic-slug}/
 ```
 
 **Key Deliverables**:
-- ✅ **article.md**: Complete article ready for publishing
+- ✅ **article.md**: Complete article (Markdown, 5000 words)
+- ✅ **article-1000.md**: Condensed version (Markdown, 1000 words)
+- ✅ **article-1000-plain.txt**: Condensed version for WeChat (Plain text, 1000 words)
+- ✅ **article-plain.txt**: Full version for WeChat (Plain text, no Markdown)
 - ✅ **PNG images**: 2 high-quality infographics (auto-generated)
 - ✅ **research.md**: Latest information and data (if web search enabled)
 - ✅ **meta.json**: SEO metadata for publishing
+
+**WeChat Publishing Guide**:
+- **For WeChat Official Account**: Use `article-plain.txt` or `article-1000-plain.txt`
+- **Why**: These files have no Markdown formatting, ready for direct copy-paste
+- **Note**: Emojis in headers are preserved (WeChat supports emojis)
+- **For other platforms** (blog, knowledge base): Use Markdown versions (article.md, article-1000.md)
 
 ## Preferences Configuration
 

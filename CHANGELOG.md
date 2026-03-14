@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-15
+
+### ✨ Added
+
+#### 微信公众号文章多版本输出
+- **多版本生成**: 自动生成 4 个文章版本，完美兼容微信公众号
+  - `article.md` - 完整版（Markdown，5000字）
+  - `article-1000.md` - 精简版（Markdown，1000字）
+  - `article-plain.txt` - 完整版纯文本（微信专用）
+  - `article-1000-plain.txt` - 精简版纯文本（微信专用）
+- **Markdown 自动移除**: 纯文本版本自动移除所有 Markdown 格式
+  - 移除标题标记 `#` → 纯文本
+  - 移除粗体 `**text**` → 纯文本
+  - 移除列表标记 `-` → 纯文本
+  - 移除链接 `[text](url)` → 只保留文字
+  - 保留 emoji 表情（微信支持）
+- **直接复制粘贴**: 纯文本版本可直接复制到微信公众号编辑器，无需调整格式
+
+### 🔧 Changed
+
+- **wechat-article-writer SKILL.md**: 新增 Step 4.5（Generate Article Variants）
+- **README.md**: 更新核心功能说明，添加多版本输出文档
+- **版本号**: 从 1.4.1 升级到 1.5.0
+
+### 📚 Documentation
+
+- 添加 Step 4.5 详细说明，包括 3 个文章变体的生成流程
+- 更新输出目录结构，展示所有 4 个文章版本
+- 添加微信发布指南，说明如何使用纯文本版本
+
+### 🎯 Benefits
+
+- **微信完美兼容**: 解决 Markdown 在微信公众号不显示的问题
+- **多种字数选择**: 5000字完整版 + 1000字精简版，满足不同场景
+- **开箱即用**: 无需手动转换格式，直接复制粘贴
+- **保留原有功能**: Markdown 版本依然可用于博客、知识库等平台
+
 ## [1.4.1] - 2026-03-14
 
 ### 📝 Documentation
