@@ -146,40 +146,47 @@ Analyze the user's topic and determine:
 
 ### Step 1.5: Web Research (Optional)
 
-**Intelligent capability detection - Automatically detect and use web search if available:**
+**Intelligent web research with priority-based search selection:**
 
-Execute web search to gather latest information:
+Execute web search to gather latest information using the best available method:
 
-1. **Detect web search capability** (specific detection methods):
+1. **Web Search Priority** (automatically select the best available method):
 
-   **For Claude Code:**
-   - Check if `WebSearch` tool is available in the current environment
-   - If available → Tool supports web search
-   - Implementation: `if (typeof WebSearch !== 'undefined') { /* has capability */ }`
+   **Priority 1: Exa AI MCP (Recommended - Best Quality)**
+   - Check if Exa AI MCP server is configured: `claude mcp list | grep exa`
+   - If available → Use `mcp__exa__web_search_exa` tool
+   - Advantages:
+     - 🎯 High-precision AI-powered search
+     - 🚀 Real-time information retrieval
+     - 📊 Clean, structured results
+     - 💡 Semantic understanding of queries
+   - Implementation: `await mcp__exa__web_search_exa({ query: searchQuery, numResults: 8 })`
 
-   **For Cursor/OpenCode/OpenClaw:**
-   - These tools typically have built-in web search capabilities
-   - Assume web search is available unless tool explicitly indicates otherwise
-   - Proceed with web search attempt
+   **Priority 2: Claude Code WebSearch Tool**
+   - Check if `WebSearch` tool is available in the environment
+   - If available → Use built-in WebSearch tool
+   - Implementation: `await WebSearch({ query: searchQuery })`
 
-   **For other AI tools:**
-   - Check tool documentation or capabilities list
-   - If uncertain, attempt a lightweight test search (e.g., search for "test")
-   - If test succeeds → Tool supports web search
-   - If test fails or tool reports error → No web search capability
+   **Priority 3: Cursor/OpenCode/OpenClaw Built-in Capabilities**
+   - These tools have integrated web search features
+   - Use their native search capabilities
+
+   **Priority 4: Graceful Fallback**
+   - If no web search capability detected → Use AI knowledge base
+   - No errors, seamless experience
 
 2. **Execute search** (if capability detected AND `enable_web_search` is true):
 
    **When to search:**
-   - ✅ Tool has web search capability (from step 1)
+   - ✅ Web search capability available (from priority check)
    - ✅ `enable_web_search` is true (default) or user hasn't disabled it
    - ✅ User hasn't used `--no-search` flag
 
    **How to search:**
    - Generate 2-3 relevant search queries based on topic
-   - Execute searches using the detected web search method:
-     - Claude Code: Use `WebSearch` tool with queries
-     - Cursor/OpenCode/OpenClaw: Use their built-in web search features
+   - Execute searches using the highest priority available method:
+     - Exa AI: `mcp__exa__web_search_exa({ query: query, numResults: 8 })`
+     - WebSearch: `WebSearch({ query: query })`
    - Collect latest information, data, statistics, and examples
 
 3. **Handle results:**
@@ -196,20 +203,32 @@ Execute web search to gather latest information:
      - Use existing knowledge base
      - No error messages to user - seamless fallback
 
-**Implementation example for Claude Code:**
+**Implementation example for Claude Code with Exa AI:**
 ```javascript
-// Pseudo-code for capability detection
+// Pseudo-code for intelligent search selection
 if (enable_web_search && !no_search_flag) {
   try {
-    // Check if WebSearch tool exists
-    if (typeof WebSearch !== 'undefined') {
-      // Tool supports web search
-      const results = await WebSearch({ query: searchQueries });
-      // Process and save results
+    // Priority 1: Try Exa AI MCP (best quality)
+    if (hasExaAIMCP()) {
+      const results = await mcp__exa__web_search_exa({
+        query: searchQueries,
+        numResults: 8
+      });
       saveResearch(results);
-    } else {
-      // Tool doesn't support web search
-      // Skip gracefully
+    }
+    // Priority 2: Fall back to WebSearch tool
+    else if (typeof WebSearch !== 'undefined') {
+      const results = await WebSearch({ query: searchQueries });
+      saveResearch(results);
+    }
+    // Priority 3: Use built-in capabilities (Cursor/OpenCode)
+    else if (hasBuiltInSearch()) {
+      const results = await builtInSearch(searchQueries);
+      saveResearch(results);
+    }
+    // Priority 4: Graceful fallback
+    else {
+      // Continue without web research
     }
   } catch (error) {
     // Search failed, continue without research
@@ -220,6 +239,15 @@ if (enable_web_search && !no_search_flag) {
 **User control:**
 - Command line: `/wechat-article-writer "topic" --no-search`
 - Configuration: Set `enable_web_search: false` in EXTEND.md
+
+**Exa AI Setup (Recommended for best quality):**
+```bash
+# Configure Exa AI MCP server
+claude mcp add exa-search "https://api.exa.ai/mcp?key=YOUR_EXA_API_KEY" -t http
+
+# Get your API key at https://exa.ai
+# Free tier available with generous usage limits
+```
 
 ### Step 2: Smart Confirm
 

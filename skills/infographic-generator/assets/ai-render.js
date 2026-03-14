@@ -460,14 +460,81 @@ async function generateSmartConfigLocally(input) {
 }
 
 /**
+ * 解析 Markdown 格式的要点
+ * 支持 ## 标题 + 列表结构
+ */
+function parseMarkdownPoints(input) {
+  const points = [];
+
+  // 尝试提取标题作为主题
+  const titleMatch = input.match(/^#\s+(.+)$/m);
+  if (titleMatch) {
+    const title = titleMatch[1];
+    console.log(`📋 从Markdown提取标题: ${title}`);
+  }
+
+  // 尝试提取 ## 标题作为要点
+  const sectionMatches = input.matchAll(/^##\s+(.+)$/gm);
+  let sections = [];
+  for (const match of sectionMatches) {
+    sections.push(match[1]);
+  }
+
+  // 如果找到 ## 标题，使用它们作为要点
+  if (sections.length > 0 && sections.length <= 6) {
+    sections.forEach(section => {
+      points.push({
+        icon: getIconForTopic(section),
+        title: section,
+        description: `${section}的核心内容和关键要点`
+      });
+    });
+    return points;
+  }
+
+  // 尝试提取 **加粗文本** 作为要点
+  const boldMatches = input.matchAll(/\*\*(.+?)\*\*/g);
+  let boldItems = [];
+  for (const match of boldMatches) {
+    const text = match[1];
+    // 过滤掉太短或太长的文本
+    if (text.length >= 2 && text.length <= 20 && !text.includes(':')) {
+      boldItems.push(text);
+    }
+  }
+
+  if (boldItems.length >= 2 && boldItems.length <= 6) {
+    // 去重
+    const uniqueItems = [...new Set(boldItems)];
+    uniqueItems.forEach(item => {
+      points.push({
+        icon: getIconForTopic(item),
+        title: item,
+        description: `${item}的重要方面和实践指导`
+      });
+    });
+    return points;
+  }
+
+  return points;
+}
+
+/**
  * 提取具体要点
  * 支持多种格式：
+ * - Markdown 标题和列表结构
  * - "包含3个特点：A、B、C"
  * - "包含A、B、C三个特点"
  * - "关于X，包含A,B,C"
  */
 function extractPoints(input) {
   const points = [];
+
+  // 优先尝试解析 Markdown 结构
+  const mdPoints = parseMarkdownPoints(input);
+  if (mdPoints.length > 0) {
+    return mdPoints;
+  }
 
   // 尝试匹配 "包含N个XXX：要点1、要点2、要点3"
   const pattern1 = /包含\s*(\d+)\s*个[^：:]*[：:]\s*([^，。！？]+)/;
@@ -609,8 +676,12 @@ function generateConfigLocally(input) {
  * 提取主题
  */
 function extractTopic(input) {
+  // 优先尝试提取 Markdown 一级标题 (# 标题)
+  let matches = input.match(/^#\s+(.+)$/m);
+  if (matches) return matches[1].trim();
+
   // 尝试匹配 "关于XXX的"
-  let matches = input.match(/关于(.+?)的/);
+  matches = input.match(/关于(.+?)的/);
   if (matches) return matches[1];
 
   // 尝试匹配 "生成XXX信息图"

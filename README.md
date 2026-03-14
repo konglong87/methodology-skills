@@ -1,11 +1,12 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.3.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.4.1-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
   <img src="https://img.shields.io/badge/Cursor-✓-cyan.svg" alt="Cursor">
+  <img src="https://img.shields.io/badge/Exa%20AI%20Search-✓-brightgreen.svg" alt="Exa AI Search">
 </p>
 
 > 让 AI 掌握方法论，更聪明地思考和执行任务
@@ -201,22 +202,49 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 ```
 
 **联网搜索功能**:
-所有支持 skills 的 AI 工具都能使用此功能,系统会自动检测工具是否支持联网:
-- ✅ **Claude Code** - 使用 WebSearch 工具自动搜索最新信息
-- ✅ **Cursor** - 使用内置联网能力
-- ✅ **OpenCode** - 使用内置联网能力
-- ✅ **OpenClaw** - 使用内置联网能力
-- ✅ **其他工具** - 自动检测联网能力,支持则启用,不支持则优雅跳过
+支持多种联网搜索方式,系统会自动检测并选择最优方案:
+- ✅ **Exa AI Search** (推荐) - 使用 Exa AI MCP server 进行高质量联网搜索，获取最新、最准确的信息
+- ✅ **Claude Code WebSearch** - Claude Code 内置的 WebSearch 工具
+- ✅ **Cursor/OpenCode/OpenClaw** - 使用各工具内置联网能力
+- ✅ **智能降级** - 如无可用的联网工具，优雅跳过，使用 AI 内置知识库
 
-**智能适配**: 系统会自动检测当前 AI 工具是否具备联网能力,有则启用搜索,无则跳过,确保所有工具都能正常工作。
+**智能适配**: 系统按优先级选择搜索方式：Exa AI (最佳质量) → 工具内置能力 → 跳过搜索，确保所有环境都能正常工作。
 
 **工作流程**:
 1. 加载用户偏好（EXTEND.md）
 2. 分析主题并生成大纲
-3. **联网搜索** - 搜索最新相关信息（如果工具支持且未禁用）
+3. **联网搜索** - 使用 Exa AI（优先）或其他联网工具搜索最新信息
 4. AI 写作完整文章（融合搜索结果，遵循字数限制）
 5. 自动生成配套信息图
 6. 保存到指定目录
+
+**联网搜索优先级**：
+1. **Exa AI MCP** (最佳) - 高质量 AI 驱动搜索
+2. **Claude Code WebSearch** - 内置搜索工具
+3. **其他工具内置能力** - Cursor/OpenCode 等
+4. **优雅降级** - 无联网能力时使用 AI 知识库
+
+**示例输出**:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ WeChat Article Complete!
+
+主题: 2026年3月LLM大爆发：三大巨头对决，百万上下文成标配
+风格: 专业前沿洞察
+
+输出:
+  📄 article.md           (5000字完整文章)
+  🖼️ infographic/
+     ├─ 01-model-comparison-matrix.png  (LLM对比矩阵)
+     └─ 02-release-timeline.png         (发布时间线)
+  📋 meta.json           (元数据和SEO信息)
+
+下一步:
+  → 审阅 article.md
+  → 预览信息图 PNG 文件
+  → 运行 /baoyu-post-to-wechat 发布到微信公众号
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
 **支持平台**: Claude Code、Cursor、OpenClaw、OpenCode、Antigravity 等所有支持 skills 的 AI 工具
 
@@ -278,6 +306,19 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 
 ## 安装
 
+### 快速开始（推荐）
+
+```bash
+# 1. 安装插件
+claude plugin marketplace add konglong87/methodology-skills
+claude plugin install methodology-skills@methodology-skills
+
+# 2. 配置 Exa AI 搜索（推荐，获取最佳联网搜索体验）
+claude mcp add exa-search "https://api.exa.ai/mcp?key=YOUR_EXA_API_KEY" -t http
+
+# 获取 Exa AI API Key: https://exa.ai
+```
+
 ### Claude Code / Cline
 
 ```bash
@@ -291,6 +332,32 @@ git clone https://github.com/konglong87/methodology-skills.git ~/.claude/plugins
 # 验证安装
 claude plugin list
 ```
+
+### 配置 Exa AI 联网搜索（推荐）
+
+Exa AI 提供高质量的 AI 驱动搜索引擎，能够获取最新、最准确的信息，显著提升文章质量。
+
+```bash
+# 1. 获取 Exa AI API Key
+# 访问 https://exa.ai 注册账号并获取免费 API Key
+
+# 2. 添加 Exa AI MCP Server 到 Claude Code
+claude mcp add exa-search "https://api.exa.ai/mcp?key=YOUR_EXA_API_KEY" -t http
+
+# 3. 验证配置
+claude mcp list
+```
+
+**Exa AI 优势**：
+- 🎯 **高精度搜索** - AI 驱动的语义搜索，更准确的结果
+- 🚀 **实时更新** - 获取最新信息，确保内容时效性
+- 📊 **结构化结果** - 返回清洁、可用的文本内容
+- 💡 **免费额度** - 提供免费使用额度，足够日常使用
+
+**不配置 Exa AI 的替代方案**：
+- Claude Code 会使用内置 WebSearch 工具
+- Cursor/OpenCode 使用各自的联网能力
+- 功能依然可用，只是搜索质量略低于 Exa AI
 
 ### OpenCode
 

@@ -41,3 +41,6 @@ out/
 # Generated infographics (users generate their own)
 infographic/
 output/
+
+# Important: Allow docs directory (contains important documentation)
+!docs/

@@ -45,6 +45,23 @@ async function skillRender(input, options = {}) {
     console.log('\n1. 加载JSON配置...');
     config = loadConfig(input);
     savedConfigPath = input;
+  } else if (input.endsWith('.md') && fs.existsSync(input)) {
+    // 从 Markdown 文件读取内容
+    console.log(`📝 输入: Markdown文件 (${input})`);
+    console.log('\n1. 读取Markdown文件内容...');
+    const mdContent = fs.readFileSync(input, 'utf-8');
+    console.log(`2. 生成JSON配置...`);
+    config = await generateConfigFromNaturalLanguage(mdContent);
+
+    // 验证生成的配置
+    validateConfig(config);
+
+    // 保存JSON配置（如果需要）
+    if (saveConfig) {
+      savedConfigPath = configPath || path.join(__dirname, 'temp-config.json');
+      console.log(`3. 保存配置文件: ${savedConfigPath}`);
+      fs.writeFileSync(savedConfigPath, JSON.stringify(config, null, 2), 'utf-8');
+    }
   } else {
     // 从自然语言生成JSON配置
     console.log(`📝 输入: ${input}`);
