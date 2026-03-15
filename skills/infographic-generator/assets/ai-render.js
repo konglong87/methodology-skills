@@ -441,8 +441,8 @@ async function generateSmartConfigLocally(input) {
     template: template || 'knowledge',
     output: `${topic}-infographic.png`,
     content: {
-      title: topic,
-      subtitle: `${topic}的核心要点`,
+      title: generateSmartTitle(input, points),
+      subtitle: generateSmartSubtitle(input, points),
       meta_info: `创建于${new Date().toLocaleDateString('zh-CN')} | 主题：${topic}`,
       items: points.length > 0 ? points : generateDefaultItems(topic),
       summary: generateSummary(topic, points)
@@ -630,6 +630,81 @@ function getIconForTopic(topic) {
   }
 
   return '📌';
+}
+
+/**
+ * 智能生成标题
+ * 从输入中提取合适的标题
+ */
+function generateSmartTitle(input, points) {
+  // 尝试从输入中提取主题标题
+  const topic = extractTopic(input);
+
+  // 如果主题不是"信息图"，直接使用
+  if (topic !== '信息图') {
+    return topic;
+  }
+
+  // 如果提取到要点，从第一个要点推断标题
+  if (points.length > 0) {
+    const firstPointTitle = points[0].title;
+    // 如果第一个要点标题包含主题信息，使用它
+    if (firstPointTitle.length > 2 && firstPointTitle.length < 20) {
+      return firstPointTitle;
+    }
+  }
+
+  // 尝试从输入中提取"XXX成长路径"或"XXX方法论"等
+  const pattern1 = input.match(/(.+?)成长路径/);
+  if (pattern1) return pattern1[1] + '成长路径';
+
+  const pattern2 = input.match(/(.+?)方法论/);
+  if (pattern2) return pattern2[1] + '方法论';
+
+  // 最后的fallback
+  return '信息图';
+}
+
+/**
+ * 智能生成副标题
+ * 根据内容生成合适的副标题
+ */
+function generateSmartSubtitle(input, points) {
+  const inputLower = input.toLowerCase();
+
+  // 检测成长路径类型
+  if (inputLower.includes('成长路径') || inputLower.includes('成长')) {
+    if (points.length > 0) {
+      const stageCount = points.filter(p => p.title.includes('阶段') || p.title.includes('Month')).length;
+      if (stageCount > 0) {
+        return `从新手到专家的${stageCount}步进阶路线`;
+      }
+      return '轻松掌握AI成长密码';
+    }
+  }
+
+  // 检测方法论类型
+  if (inputLower.includes('方法论') || inputLower.includes('方法')) {
+    if (points.length > 0) {
+      const methodCount = points.filter(p => p.title.includes('方法') || p.title.includes('法')).length;
+      if (methodCount > 0) {
+        return `${methodCount}个核心方法让你效率提升10倍`;
+      }
+      return '掌握这些方法，事半功倍';
+    }
+  }
+
+  // 检测技巧类型
+  if (inputLower.includes('技巧') || inputLower.includes('技能')) {
+    return `掌握${points.length}个关键技巧`;
+  }
+
+  // 默认副标题
+  if (points.length > 0) {
+    return `包含${points.length}个核心要点的实用指南`;
+  }
+
+  return '一目了然，轻松掌握';
 }
 
 /**

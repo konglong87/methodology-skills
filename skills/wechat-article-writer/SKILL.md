@@ -156,28 +156,31 @@ Execute web search to gather latest information using the best available method:
 
 1. **Web Search Priority** (automatically select the best available method):
 
-   **Priority 1: Exa AI MCP (Recommended - Best Quality)**
-   - Check if Exa AI MCP server is configured: `claude mcp list | grep exa`
-   - If available → Use `mcp__exa__web_search_exa` tool
-   - Advantages:
-     - 🎯 High-precision AI-powered search
-     - 🚀 Real-time information retrieval
-     - 📊 Clean, structured results
-     - 💡 Semantic understanding of queries
-   - Implementation: `await mcp__exa__web_search_exa({ query: searchQuery, numResults: 8 })`
+   **Priority 1: Exa AI MCP (强制优先 - 最佳质量)**
+   - 检查Exa AI MCP服务器配置: `claude mcp list | grep exa`
+   - 如果可用 → **强制使用** `mcp__exa__web_search_exa` 工具
+   - 优势：
+     - 🎯 高精度AI驱动的搜索引擎
+     - 🚀 实时信息检索，质量最高
+     - 📊 清晰的结构化结果
+     - 💡 强大的语义理解能力
+   - 实现：`await mcp__exa__web_search_exa({ query: searchQuery, numResults: 8 })`
+   - ⚠️ **重要规则**：即使其他搜索工具可用，只要检测到Exa AI，必须优先使用
 
    **Priority 2: Claude Code WebSearch Tool**
-   - Check if `WebSearch` tool is available in the environment
-   - If available → Use built-in WebSearch tool
-   - Implementation: `await WebSearch({ query: searchQuery })`
+   - 检查 `WebSearch` 工具在环境中是否可用
+   - 如果可用**且**Exa AI不可用 → 使用内置WebSearch工具
+   - 实现：`await WebSearch({ query: searchQuery })`
+   - 注意：**仅在Exa AI不可用时**使用此选项
 
    **Priority 3: Cursor/OpenCode/OpenClaw Built-in Capabilities**
-   - These tools have integrated web search features
-   - Use their native search capabilities
+   - 这些工具集成了网络搜索功能
+   - 使用其原生搜索能力
+   - 在上述工具都不可用时使用
 
    **Priority 4: Graceful Fallback**
-   - If no web search capability detected → Use AI knowledge base
-   - No errors, seamless experience
+   - 如果没有检测到网络搜索能力 → 使用AI知识库
+   - 无错误，无缝体验
 
 2. **Execute search** (if capability detected AND `enable_web_search` is true):
 

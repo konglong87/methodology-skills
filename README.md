@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.5.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.6.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -150,7 +150,10 @@ node dist/scripts/sync.js              # 同步索引
   - 完整版纯文本（5000字）- ✅ **微信专用**，无Markdown格式
 - 🎨 **风格定制** - 通过 EXTEND.md 自定义写作风格、目标受众、文章长度
 - 🖼️ **图片风格指定** - 支持在主题中指定信息图风格（科技风、可爱风、手绘风等8种风格）
-- 🔍 **联网搜索** - 自动搜索最新信息，确保内容时效性（支持 Claude Code、Cursor、OpenCode 等）
+- 🔍 **Exa AI 联网搜索** - 强制优先使用 Exa AI 进行高质量搜索，确保内容时效性和准确性
+  - 自动检测 Exa AI MCP 服务器
+  - 强制优先级策略，确保最佳搜索结果
+  - 详细搜索结果记录到 research.md
 - 📏 **字数控制** - 支持自定义字数限制，默认 5000 字，可灵活配置
 - 📁 **结构化输出** - 自动保存到 `wechat-articles/{topic}/` 目录
 
@@ -208,12 +211,12 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 
 **联网搜索功能**:
 支持多种联网搜索方式,系统会自动检测并选择最优方案:
-- ✅ **Exa AI Search** (推荐) - 使用 Exa AI MCP server 进行高质量联网搜索，获取最新、最准确的信息
-- ✅ **Claude Code WebSearch** - Claude Code 内置的 WebSearch 工具
+- ✅ **Exa AI Search** (强制优先) - 使用 Exa AI MCP server 进行最高质量联网搜索，获取最新、最准确的信息
+- ✅ **Claude Code WebSearch** - Claude Code 内置的 WebSearch 工具（仅在Exa AI不可用时使用）
 - ✅ **Cursor/OpenCode/OpenClaw** - 使用各工具内置联网能力
 - ✅ **智能降级** - 如无可用的联网工具，优雅跳过，使用 AI 内置知识库
 
-**智能适配**: 系统按优先级选择搜索方式：Exa AI (最佳质量) → 工具内置能力 → 跳过搜索，确保所有环境都能正常工作。
+**智能适配**: 系统按严格优先级选择搜索方式：**Exa AI (最高质量，强制优先)** → WebSearch → 工具内置能力 → 跳过搜索，确保所有环境都能正常工作。
 
 **工作流程**:
 1. 加载用户偏好（EXTEND.md）
@@ -229,8 +232,8 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 7. 保存到指定目录
 
 **联网搜索优先级**：
-1. **Exa AI MCP** (最佳) - 高质量 AI 驱动搜索
-2. **Claude Code WebSearch** - 内置搜索工具
+1. **Exa AI MCP** (强制优先，最佳质量) - 高质量 AI 驱动搜索，任何时候都优先使用
+2. **Claude Code WebSearch** - 内置搜索工具（仅在Exa AI不可用时使用）
 3. **其他工具内置能力** - Cursor/OpenCode 等
 4. **优雅降级** - 无联网能力时使用 AI 知识库
 
@@ -266,7 +269,11 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 
 **核心功能**:
 - 🎨 **动态风格选择** - 三层优先级：用户指定 > LLM智能选择 > 可爱风格兜底
-- 📐 **智能布局推荐** - 根据内容自动推荐横屏/竖屏布局
+- 🏷️ **智能标题生成** - 自动提取有意义的标题和副标题，告别默认模板
+- 📐 **横竖双版输出** - 默认同时生成横版(1920x1080)和竖版(1080x1920)两个版本
+  - 横版：适合桌面、演示、博客
+  - 竖版：适合手机、小红书、社交媒体
+- ⚡ **一键生成** - 无需中途确认，全程自动化输出
 - 🖼️ **8种视觉风格** - 科技风、可爱风、手绘风、简约风、教学风、笔记风、漫画风、Bento风
 - 🌐 **多语言支持** - 支持中英文风格指定
 

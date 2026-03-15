@@ -3,6 +3,7 @@
  * - 打包Remotion项目
  * - 渲染单帧PNG
  * - 支持动态config传入
+ * - 支持横版(1920x1080)和竖版(1080x1920)输出
  */
 
 const { bundle } = require('@remotion/bundler');
@@ -50,13 +51,26 @@ async function renderWithRemotion(config, outputPath) {
     // 从config中获取目标尺寸（如果没有则使用默认值）
     const targetWidth = config.output_config?.width || 1920;
     const targetHeight = config.output_config?.height || 1080;
+    const orientation = config.output_config?.orientation || 'horizontal';
 
-    console.log(`[Remotion] 目标尺寸: ${targetWidth}x${targetHeight}`);
+    console.log(`[Remotion] 目标尺寸: ${targetWidth}x${targetHeight} (${orientation})`);
+
+    // 根据尺寸选择正确的composition
+    let compositionId = 'Infographic'; // 默认
+    if (targetHeight > targetWidth) {
+      // 竖版 - 使用Portrait composition
+      compositionId = 'Infographic-Portrait';
+      console.log('[Remotion] 使用竖版Composition');
+    } else {
+      // 横版 - 使用Landscape composition
+      compositionId = 'Infographic-Landscape';
+      console.log('[Remotion] 使用横版Composition');
+    }
 
     // 选择composition并传入config作为inputProps
     const composition = await selectComposition({
       serveUrl: bundled,
-      id: 'Infographic',
+      id: compositionId,
       inputProps: {
         config: config
       }
@@ -65,6 +79,7 @@ async function renderWithRemotion(config, outputPath) {
     console.log('[Remotion] Composition已选择，开始渲染PNG...');
 
     // 渲染单帧PNG（使用renderStill而不是renderMedia）
+    // 注意：不再需要手动传递width/height，因为composition已经定义了正确的尺寸
     await renderStill({
       composition,
       serveUrl: bundled,
@@ -74,10 +89,7 @@ async function renderWithRemotion(config, outputPath) {
         config: config
       },
       imageFormat: 'png',
-      overwrite: true,
-      // 覆盖composition的尺寸，支持动态宽高
-      width: targetWidth,
-      height: targetHeight
+      overwrite: true
     });
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -160,9 +172,7 @@ async function testRender() {
 }
 
 // 导出渲染函数
-module.exports = {
-  renderWithRemotion
-};
+module.exports = { renderWithRemotion };
 
 // 如果直接运行此文件，执行测试
 if (require.main === module) {

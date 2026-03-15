@@ -79,15 +79,35 @@ async function skillRender(input, options = {}) {
     }
   }
 
-  // 3. 渲染PNG图片
-  console.log('3. 渲染PNG图片...');
-  const result = await renderFromConfig(config, outputPath);
+  // 3. 渲染PNG图片（默认生成横版和竖版）
+  console.log('3. 渲染PNG图片（横版和竖版）...');
+
+  // 确定基础输出路径
+  const baseOutputPath = outputPath || path.join(__dirname, 'output-infographic.png');
+  const baseFileName = path.basename(baseOutputPath, '.png');
+  const outputDir = path.dirname(baseOutputPath);
+
+  // 生成横版版本
+  const horizontalConfig = JSON.parse(JSON.stringify(config));
+  horizontalConfig.output_config = { width: 1920, height: 1080, orientation: 'horizontal' };
+
+  const horizontalPath = path.join(outputDir, `${baseFileName}-landscape.png`);
+  const horizontalResult = await renderFromConfig(horizontalConfig, horizontalPath);
+  console.log(`  ✅ 横版渲染成功！文件: ${horizontalPath}`);
+
+  // 生成竖版版本
+  const verticalConfig = JSON.parse(JSON.stringify(config));
+  verticalConfig.output_config = { width: 1080, height: 1920, orientation: 'vertical' };
+
+  const verticalPath = path.join(outputDir, `${baseFileName}-portrait.png`);
+  const verticalResult = await renderFromConfig(verticalConfig, verticalPath);
+  console.log(`  ✅ 竖版渲染成功！文件: ${verticalPath}`);
 
   console.log('\n✅ 技能渲染完成！');
 
   return {
     success: true,
-    outputPath: result.outputPath,
+    outputPath: horizontalResult.outputPath,
     configPath: savedConfigPath,
     config: config
   };

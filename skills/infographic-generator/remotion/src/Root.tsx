@@ -29,16 +29,43 @@ const defaultConfig: InfographicConfig = {
 
 export const RemotionRoot = () => {
   return (
-    <Composition
-      id="Infographic"
-      component={Infographic}
-      durationInFrames={1}
-      fps={1}  // PNG只需1帧，fps=1更合理
-      width={1920}
-      height={1080}
-      defaultProps={{
-        config: defaultConfig
-      }}
-    />
+    <>
+      {/* 横版composition (1920x1080) */}
+      <Composition
+        id="Infographic-Landscape"
+        component={Infographic}
+        durationInFrames={1}
+        fps={1}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          config: { ...defaultConfig, output: { width: 1920, height: 1080 } }
+        }}
+      />
+      {/* 竖版composition (1080x1920) */}
+      <Composition
+        id="Infographic-Portrait"
+        component={Infographic}
+        durationInFrames={1}
+        fps={1}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          config: { ...defaultConfig, output: { width: 1080, height: 1920 } }
+        }}
+      />
+      {/* 默认composition (用于兼容) */}
+      <Composition
+        id="Infographic"
+        component={Infographic}
+        durationInFrames={1}
+        fps={1}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          config: defaultConfig
+        }}
+      />
+    </>
   );
 };
