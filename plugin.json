@@ -1,7 +1,7 @@
 {
   "name": "methodology-skills",
-  "version": "1.6.0",
-  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、Skills管理、微信公众号文章生成器、信息图生成器等11个Skills",
+  "version": "1.7.2",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、Skills管理、微信公众号文章生成器、信息图生成器、算命系统等12个Skills",
   "author": {
     "name": "恐龙创新部",
     "url": "https://github.com/konglong87"
@@ -82,6 +82,20 @@
     "agentic-ai",
     "exa-search",
     "remotion",
-    "动态风格选择"
+    "动态风格选择",
+    "fortune-teller",
+    "算命",
+    "八字算命",
+    "紫微斗数",
+    "命理分析",
+    "生辰八字",
+    "盲派命理",
+    "南北派",
+    "四柱八字",
+    "命盘",
+    "命宫",
+    "五行分析",
+    "大运流年",
+    "用神喜忌"
   ]
 }
