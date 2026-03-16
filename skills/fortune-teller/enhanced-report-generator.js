@@ -40,9 +40,9 @@ class EnhancedReportGenerator {
       const layer1Result = this.validationEngine.validateQiyunTime(
         userInput.birthDate,
         userInput.gender,
-        baziData.年柱.天干,
-        baziData.年柱.地支,
-        baziData.节气信息
+        baziData.yearGan,
+        baziData.yearZhi,
+        undefined // 节气信息暂不可用
       );
 
       // 3. 生成增强分析数据
@@ -80,34 +80,20 @@ class EnhancedReportGenerator {
    */
   generateEnhancedData(baziData) {
     try {
-      // 十二长生
-      const shierChangsheng = this.baziCalculator.calculateShierChangsheng
-        ? this.baziCalculator.calculateShierChangsheng(
-            baziData.日主,
-            baziData.四柱
-          )
+      // 十二长生（针对第一步大运）
+      const firstDayun = baziData.dayun && baziData.dayun.length > 0
+        ? baziData.dayun[0].ganzhi
         : null;
 
-      // 五行旺相休囚死
-      const wuxingWangXiang = this.baziCalculator.calculateWuxingWangXiang
-        ? this.baziCalculator.calculateWuxingWangXiang(
-            baziData.日主,
-            baziData.出生月份
-          )
+      const shierChangsheng = firstDayun && this.baziCalculator.calculateShierChangsheng
+        ? this.baziCalculator.calculateShierChangsheng(baziData.dayMaster, firstDayun)
         : null;
 
-      // 大运分析
-      const dayunAnalysis = baziData.大运
-        ? baziData.大运.map(dayun => {
-            return this.baziCalculator.analyzeDayunShengke
-              ? this.baziCalculator.analyzeDayunShengke(
-                  dayun,
-                  baziData.四柱,
-                  baziData.日主
-                )
-              : dayun;
-          })
-        : [];
+      // 五行旺相休囚死（暂不实现，方法不存在）
+      const wuxingWangXiang = null;
+
+      // 大运分析（暂不实现，方法不存在）
+      const dayunAnalysis = baziData.dayun || [];
 
       return {
         shierChangsheng,
@@ -141,12 +127,19 @@ class EnhancedReportGenerator {
         layer3Prompt: this.loadPrompt('validation-layer3')
       },
       baziData: {
-        四柱: baziData.四柱,
-        五行: baziData.五行,
-        十神: baziData.十神,
-        大运: baziData.大运,
-        起运时间: baziData.起运时间,
-        日主: baziData.日主
+        四柱: {
+          年柱: { 天干: baziData.yearGan, 地支: baziData.yearZhi, 完整: baziData.year },
+          月柱: { 天干: baziData.monthGan, 地支: baziData.monthZhi, 完整: baziData.month },
+          日柱: { 天干: baziData.dayGan, 地支: baziData.dayZhi, 完整: baziData.day },
+          时柱: { 天干: baziData.hourGan, 地支: baziData.hourZhi, 完整: baziData.hour }
+        },
+        五行: baziData.wuxingDistribution,
+        日主: baziData.dayMaster,
+        日主五行: baziData.dayMasterWuxing,
+        日主阴阳: baziData.dayMasterYinyang,
+        大运: baziData.dayun,
+        纳音: baziData.nayin,
+        起运时间: layer1Result.qiyunAge // 使用验证结果中的起运年龄
       },
       enhancedData: enhancedData,
       analysisPrompts: {
@@ -167,21 +160,39 @@ class EnhancedReportGenerator {
     markdown += `## 一、命盘概览\n\n`;
     markdown += `### 四柱八字\n`;
 
-    if (baziData.四柱) {
-      markdown += `- 年柱：${baziData.四柱.年柱?.天干 || '?'}${baziData.四柱.年柱?.地支 || '?'}\n`;
-      markdown += `- 月柱：${baziData.四柱.月柱?.天干 || '?'}${baziData.四柱.月柱?.地支 || '?'}\n`;
-      markdown += `- 日柱：${baziData.四柱.日柱?.天干 || '?'}${baziData.四柱.日柱?.地支 || '?'}\n`;
-      markdown += `- 时柱：${baziData.四柱.时柱?.天干 || '?'}${baziData.四柱.时柱?.地支 || '?'}\n\n`;
-    }
+    // 使用实际的数据结构
+    markdown += `- 年柱：${baziData.yearGan || '?'}${baziData.yearZhi || '?'}\n`;
+    markdown += `- 月柱：${baziData.monthGan || '?'}${baziData.monthZhi || '?'}\n`;
+    markdown += `- 日柱：${baziData.dayGan || '?'}${baziData.dayZhi || '?'}\n`;
+    markdown += `- 时柱：${baziData.hourGan || '?'}${baziData.hourZhi || '?'}\n\n`;
+
+    markdown += `### 日主信息\n`;
+    markdown += `- 日主：${baziData.dayMaster || '?'}\n`;
+    markdown += `- 五行：${baziData.dayMasterWuxing || '?'}\n`;
+    markdown += `- 阴阳：${baziData.dayMasterYinyang || '?'}\n\n`;
 
     markdown += `## 二、五行分析\n\n`;
-    markdown += `[待AI工具分析...]\n\n`;
+    if (baziData.wuxingDistribution) {
+      markdown += `### 五行分布\n`;
+      const wuxing = baziData.wuxingDistribution;
+      markdown += `- 木：${wuxing.木 || 0}个\n`;
+      markdown += `- 火：${wuxing.火 || 0}个\n`;
+      markdown += `- 土：${wuxing.土 || 0}个\n`;
+      markdown += `- 金：${wuxing.金 || 0}个\n`;
+      markdown += `- 水：${wuxing.水 || 0}个\n\n`;
+    }
+
+    markdown += `[待AI工具进行五行旺衰分析...]\n\n`;
 
     markdown += `## 三、大运分析\n\n`;
-    if (enhancedData.dayunAnalysis && enhancedData.dayunAnalysis.length > 0) {
-      enhancedData.dayunAnalysis.forEach((dayun, index) => {
-        markdown += `### 第${index + 1}步大运：${dayun.天干 || '?'}${dayun.地支 || '?'}\n\n`;
-        markdown += `[待AI工具分析...]\n\n`;
+    if (baziData.dayun && baziData.dayun.length > 0) {
+      baziData.dayun.forEach((dayun, index) => {
+        markdown += `### 第${index + 1}步大运：${dayun.ganzhi || '?'}\n`;
+        markdown += `- 年龄：${dayun.startAge}-${dayun.endAge}岁\n`;
+        if (enhancedData.shierChangsheng && index === 0) {
+          markdown += `- 十二长生：${enhancedData.shierChangsheng.state || '?'}（${enhancedData.shierChangsheng.meaning || '?'}）\n`;
+        }
+        markdown += `\n[待AI工具分析...]\n\n`;
       });
     } else {
       markdown += `[待AI工具分析...]\n\n`;
@@ -192,6 +203,14 @@ class EnhancedReportGenerator {
 
     markdown += `## 五、人生指引\n\n`;
     markdown += `[待AI工具分析...]\n\n`;
+
+    markdown += `## 六、纳音五行\n\n`;
+    if (baziData.nayin) {
+      markdown += `- 年柱纳音：${baziData.nayin.year || '?'}\n`;
+      markdown += `- 月柱纳音：${baziData.nayin.month || '?'}\n`;
+      markdown += `- 日柱纳音：${baziData.nayin.day || '?'}\n`;
+      markdown += `- 时柱纳音：${baziData.nayin.hour || '?'}\n\n`;
+    }
 
     return markdown;
   }
@@ -216,7 +235,40 @@ class EnhancedReportGenerator {
     prompt += `- 出生地：${userInput.location}\n\n`;
 
     prompt += `## 命盘数据\n`;
-    prompt += `\`\`\`json\n${JSON.stringify(baziData, null, 2)}\n\`\`\`\n\n`;
+    prompt += `### 四柱八字\n`;
+    prompt += `- 年柱：${baziData.yearGan || '?'}${baziData.yearZhi || '?'}\n`;
+    prompt += `- 月柱：${baziData.monthGan || '?'}${baziData.monthZhi || '?'}\n`;
+    prompt += `- 日柱：${baziData.dayGan || '?'}${baziData.dayZhi || '?'}\n`;
+    prompt += `- 时柱：${baziData.hourGan || '?'}${baziData.hourZhi || '?'}\n\n`;
+
+    prompt += `### 日主信息\n`;
+    prompt += `- 日主：${baziData.dayMaster || '?'}\n`;
+    prompt += `- 五行：${baziData.dayMasterWuxing || '?'}\n`;
+    prompt += `- 阴阳：${baziData.dayMasterYinyang || '?'}\n\n`;
+
+    prompt += `### 五行分布\n`;
+    if (baziData.wuxingDistribution) {
+      const wuxing = baziData.wuxingDistribution;
+      prompt += `- 木：${wuxing.木 || 0}个\n`;
+      prompt += `- 火：${wuxing.火 || 0}个\n`;
+      prompt += `- 土：${wuxing.土 || 0}个\n`;
+      prompt += `- 金：${wuxing.金 || 0}个\n`;
+      prompt += `- 水：${wuxing.水 || 0}个\n\n`;
+    }
+
+    prompt += `### 大运\n`;
+    if (baziData.dayun && baziData.dayun.length > 0) {
+      baziData.dayun.slice(0, 5).forEach((dayun, index) => {
+        prompt += `- 第${index + 1}步：${dayun.ganzhi}（${dayun.startAge}-${dayun.endAge}岁）\n`;
+      });
+      prompt += `\n`;
+    }
+
+    if (enhancedData.shierChangsheng) {
+      prompt += `### 第一步大运十二长生\n`;
+      prompt += `- 状态：${enhancedData.shierChangsheng.state}\n`;
+      prompt += `- 含义：${enhancedData.shierChangsheng.meaning}\n\n`;
+    }
 
     prompt += `## 分析要求\n\n`;
     prompt += `### 1. 详细命理分析\n`;
