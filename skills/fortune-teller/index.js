@@ -75,58 +75,70 @@ class FortuneTeller {
   }
 
   /**
-   * 验证必填输入字段
+   * 验证并处理必填输入字段（使用默认值）
    * @param {Object} input - 用户输入
-   * @returns {Object} - { valid: boolean, missingFields: string[] }
+   * @returns {Object} - { valid: boolean, processedInput: Object, missingFields: string[] }
    */
-  validateInput(input) {
+  validateAndProcessInput(input) {
     const missingFields = [];
 
-    // 检查姓名
+    // 检查姓名（必填）
     if (!input.name || input.name.trim() === '') {
-      missingFields.push('姓名');
+      missingFields.push('姓名（必填）');
     }
 
-    // 检查性别
+    // 检查性别（必填）
     if (!input.gender || (input.gender !== '男' && input.gender !== '女')) {
-      missingFields.push('性别');
+      missingFields.push('性别（必填，必须是"男"或"女"）');
     }
 
-    // 检查出生日期
+    // 检查出生日期（必填）
     if (!input.birthDate) {
-      missingFields.push('出生日期');
+      missingFields.push('出生日期（必填）');
     } else {
       if (!input.birthDate.year || input.birthDate.year < 1900 || input.birthDate.year > 2030) {
-        missingFields.push('出生年份');
+        missingFields.push('出生年份（必填，1900-2030）');
       }
       if (!input.birthDate.month || input.birthDate.month < 1 || input.birthDate.month > 12) {
-        missingFields.push('出生月份');
+        missingFields.push('出生月份（必填，1-12）');
       }
       if (!input.birthDate.day || input.birthDate.day < 1 || input.birthDate.day > 31) {
-        missingFields.push('出生日期');
+        missingFields.push('出生日期（必填，1-31）');
       }
     }
 
-    // 检查出生时辰（必填）
-    if (input.birthTime === undefined || input.birthTime === null) {
-      missingFields.push('出生时辰');
-    } else if (input.birthTime < 0 || input.birthTime > 23) {
-      missingFields.push('出生时辰（格式错误，应为0-23）');
+    // 如果缺少必填字段，直接返回错误
+    if (missingFields.length > 0) {
+      return {
+        valid: false,
+        processedInput: null,
+        missingFields
+      };
     }
 
-    // 检查出生地（如果没有提供，提醒用户）
-    if (!input.location || input.location.trim() === '') {
-      missingFields.push('出生地（用于真太阳时计算）');
-    }
-
-    // 检查历法类型
-    if (!input.calendarType || (input.calendarType !== 'lunar' && input.calendarType !== 'solar')) {
-      missingFields.push('历法类型（农历lunar/阳历solar）');
-    }
+    // 处理非必填字段的默认值
+    const processedInput = {
+      name: input.name,
+      gender: input.gender,
+      birthDate: input.birthDate,
+      // 出生时辰：未提供时使用默认值12点（中午），用于八字时柱推算
+      birthTime: input.birthTime !== undefined && input.birthTime !== null
+        ? Math.max(0, Math.min(23, parseInt(input.birthTime, 10)))
+        : 12, // 默认12点（中午）
+      // 出生地：未提供时使用默认值北京，用于真太阳时计算
+      location: (input.location && input.location.trim() !== '')
+        ? input.location.trim()
+        : '北京', // 默认北京
+      // 历法类型：未提供时使用默认值阳历
+      calendarType: (input.calendarType === 'lunar' || input.calendarType === 'solar')
+        ? input.calendarType
+        : 'solar' // 默认阳历
+    };
 
     return {
-      valid: missingFields.length === 0,
-      missingFields
+      valid: true,
+      processedInput,
+      missingFields: []
     };
   }
 
@@ -165,59 +177,61 @@ class FortuneTeller {
   /**
    * 主入口：算命分析
    * @param {Object} input - 用户输入
-   * @param {string} input.name - 姓名
-   * @param {string} input.gender - 性别（男/女）
-   * @param {Object} input.birthDate - 出生日期
-   * @param {number} input.birthDate.year - 年
-   * @param {number} input.birthDate.month - 月
-   * @param {number} input.birthDate.day - 日
-   * @param {number} input.birthTime - 出生时辰（小时，0-23）
-   * @param {string} input.location - 出生地
-   * @param {string} input.calendarType - 历法类型（lunar/solar）
+   * @param {string} input.name - 姓名（必填）
+   * @param {string} input.gender - 性别（必填，男/女）
+   * @param {Object} input.birthDate - 出生日期（必填）
+   * @param {number} input.birthDate.year - 年（必填）
+   * @param {number} input.birthDate.month - 月（必填）
+   * @param {number} input.birthDate.day - 日（必填）
+   * @param {number} input.birthTime - 出生时辰（小时，0-23，可选，默认12）
+   * @param {string} input.location - 出生地（可选，默认北京）
+   * @param {string} input.calendarType - 历法类型（lunar/solar，可选，默认solar）
    */
   async analyze(input) {
     console.log('=== FortuneTeller 算命系统启动 ===');
     console.log('输入信息：', JSON.stringify(input, null, 2));
 
-    // Step 0: 验证必填字段
-    const validation = this.validateInput(input);
+    // Step 0: 验证并处理输入（使用默认值）
+    const validation = this.validateAndProcessInput(input);
     if (!validation.valid) {
       const errorMsg = this.getMissingFieldsMessage(validation.missingFields);
       console.error(errorMsg);
       return {
         success: false,
-        error: 'INPUT_INCOMPLETE',
+        error: 'REQUIRED_FIELDS_MISSING',
         missingFields: validation.missingFields,
         message: errorMsg
       };
     }
 
+    const processedInput = validation.processedInput;
+
     try {
       // Step 1: 输入处理（日期转换+验证2遍+真太阳时）
       console.log('\n[1/5] 处理输入...');
-      const processedInput = await this.processInput(input);
+      const finalInput = await this.processInput(processedInput);
 
       // Step 2: 排盘计算
       console.log('[2/5] 排盘计算...');
-      const panpai = this.calculatePanpai(processedInput, input.gender);
+      const panpai = this.calculatePanpai(finalInput, processedInput.gender);
 
       // Step 3: LLM分析准备
       console.log('[3/5] 准备LLM分析...');
-      const analysisInput = this.prepareAnalysisInput(processedInput, panpai);
+      const analysisInput = this.prepareAnalysisInput(finalInput, panpai);
 
       // Step 4: LLM分析（5轮验证）
       console.log('[4/5] 执行5轮验证分析...');
-      const analysis = await this.runAnalysis(panpai, analysisInput, processedInput);
+      const analysis = await this.runAnalysis(panpai, analysisInput, finalInput);
 
       // Step 5: 生成报告
       console.log('[5/5] 生成报告...');
-      const report = this.generateReport(input.name, processedInput, panpai, analysis);
+      const report = this.generateReport(input.name, finalInput, panpai, analysis);
 
       console.log('\n=== 算命分析完成 ===');
 
       return {
         success: true,
-        input: processedInput,
+        input: finalInput,
         panpai,
         analysis,
         report
@@ -420,7 +434,7 @@ class FortuneTeller {
     // 查找对应的时代背景
     for (const [key, data] of Object.entries(this.eraData)) {
       const [start, end] = key.split('-').map(Number);
-      const year = parseInt(birthYear);
+      const year = parseInt(birthYear, 10);
       if (year >= start && year <= end) {
         era = data;
         era.period = key;
@@ -447,9 +461,11 @@ class FortuneTeller {
 - 姓名：${name}
 - 性别：${processedInput.gender}
 - 出生日期：${processedInput.solarDate.year}年${processedInput.solarDate.month}月${processedInput.solarDate.day}日
-- 出生地：${processedInput.location || '未提供'}
+- 出生地：${processedInput.location || '北京'}
 - 真太阳时：${processedInput.trueSolarTime.hour}时${processedInput.trueSolarTime.minute}分
 - 时代背景：${eraAnalysis.name}
+- 分析师：算命skills-made by 孔龙
+- 生成时间：${new Date().toLocaleString('zh-CN')}
 
 ## 二、八字命理
 
@@ -551,29 +567,39 @@ Claude 会：
 
 ---
 *本报告由FortuneTeller算命系统自动生成*
+
+## 报告信息
+
+- **报告生成时间：** ${new Date().toLocaleString('zh-CN')}
+- **分析师：** 算命skills-made by 孔龙
+- **排盘引擎：** FortuneTeller v1.1.0
+- **报告版本：** 1.1.0
+
+---
 `;
   }
 
   /**
    * 简化入口：直接返回排盘结果（不含LLM分析）
+   * 非必填字段使用默认值，无需用户授权
    */
   calculate(input) {
-    // 同步版本，先验证必填字段
-    const validation = this.validateInput(input);
+    // 同步版本，验证并处理输入（使用默认值）
+    const validation = this.validateAndProcessInput(input);
     if (!validation.valid) {
       const errorMsg = this.getMissingFieldsMessage(validation.missingFields);
       console.error(errorMsg);
       return {
         success: false,
-        error: 'INPUT_INCOMPLETE',
+        error: 'REQUIRED_FIELDS_MISSING',
         missingFields: validation.missingFields,
         message: errorMsg
       };
     }
 
-    // 验证通过，进行排盘计算
-    const processedInput = this.processInputSync(input);
-    const panpai = this.calculatePanpai(processedInput, input.gender);
+    // 验证通过，使用处理后的输入进行排盘计算
+    const processedInput = this.processInputSync(validation.processedInput);
+    const panpai = this.calculatePanpai(processedInput, validation.processedInput.gender);
     return {
       success: true,
       input: processedInput,

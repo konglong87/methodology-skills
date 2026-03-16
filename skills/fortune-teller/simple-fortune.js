@@ -64,7 +64,10 @@ class SimpleFortuneCLI {
 
     } catch (error) {
       console.error('❌ 执行出错：', error.message);
-      console.error(error.stack);
+      // 生产环境不输出完整堆栈，避免泄露敏感信息
+      if (process.env.NODE_ENV === 'development') {
+        console.error(error.stack);
+      }
       process.exit(1);
     }
   }
@@ -77,8 +80,21 @@ class SimpleFortuneCLI {
 
     const parts = input.trim().split(/\s+/);
 
-    // 解析姓名
+    // 解析姓名（第一个词）
     const name = parts[0] || '用户';
+
+    // 安全验证：禁止路径遍历字符，防止恶意文件路径
+    if (name.includes('..') || name.includes('/') || name.includes('\\') || name.includes('\0')) {
+      console.error('⚠️ 错误：姓名包含非法字符');
+      console.error('   不允许包含：.. / \\ 或空字符');
+      process.exit(1);
+    }
+
+    // 验证姓名长度（防止过长的文件名）
+    if (name.length > 50) {
+      console.error('⚠️ 错误：姓名过长（最多50个字符）');
+      process.exit(1);
+    }
 
     // 解析性别
     const gender = parts[1];
@@ -91,8 +107,8 @@ class SimpleFortuneCLI {
     // 解析日期（简化处理）
     let birthDate = { year: 0, month: 0, day: 0 };
     let calendarType = 'solar';
-    let birthTime = 12;
-    let location = '北京';
+    let birthTime = 12; // 默认中午12点
+    let location = '北京'; // 默认出生地
 
     // 寻找年月日
     const yearMatch = parts.join(' ').match(/(\d{4})年/);
@@ -101,16 +117,32 @@ class SimpleFortuneCLI {
       this.showUsage();
       process.exit(1);
     }
-    birthDate.year = parseInt(yearMatch[1]);
+    birthDate.year = parseInt(yearMatch[1], 10);
 
     const monthMatch = parts.join(' ').match(/(\d{1,2})月/);
-    if (monthMatch) {
-      birthDate.month = parseInt(monthMatch[1]);
+    if (!monthMatch) {
+      console.error('⚠️ 错误：缺少月份，格式应为：X月');
+      this.showUsage();
+      process.exit(1);
     }
+    birthDate.month = parseInt(monthMatch[1], 10);
 
     const dayMatch = parts.join(' ').match(/(\d{1,2})日/);
-    if (dayMatch) {
-      birthDate.day = parseInt(dayMatch[1]);
+    if (!dayMatch) {
+      console.error('⚠️ 错误：缺少日期，格式应为：X日');
+      this.showUsage();
+      process.exit(1);
+    }
+    birthDate.day = parseInt(dayMatch[1], 10);
+
+    // 验证日期有效性
+    if (birthDate.month < 1 || birthDate.month > 12) {
+      console.error('⚠️ 错误：月份必须在1-12之间');
+      process.exit(1);
+    }
+    if (birthDate.day < 1 || birthDate.day > 31) {
+      console.error('⚠️ 错误：日期必须在1-31之间');
+      process.exit(1);
     }
 
     // 判断是否是农历
@@ -145,18 +177,43 @@ class SimpleFortuneCLI {
     };
   }
 
+  /**
+   * 解析出生时辰
+   * @param {string} timeStr - 时辰字符串，如"下午3点"、"上午10点"等
+   * @returns {number} 0-23的小时数，解析失败返回默认值12
+   */
   parseBirthTime(timeStr) {
+    // 参数验证：timeStr为null、undefined或非字符串时返回默认值
+    if (!timeStr || typeof timeStr !== 'string') {
+      return 12; // 默认中午12点
+    }
+
+    // 清理字符串，移除"上午"、"下午"等修饰词
     let timeStrClean = timeStr.replace(/[上午下午早上晚上]/g, '');
     if (timeStrClean.includes('凌晨')) {
-      // 凌晨0-6点
+      // 凌晨0-6点，保持原值
       timeStrClean = timeStrClean.replace('凌晨', '');
     }
-    if (timeStr.includes('下午') || timeStr.includes('晚上')) {
-      const time = parseInt(timeStrClean.replace(/[^0-9]/g, ''));
-      return time + 12;
+
+    // 提取数字部分
+    const numStr = timeStrClean.replace(/[^0-9]/g, '');
+    if (!numStr) {
+      return 12; // 无法提取数字，返回默认值
     }
-    const time = parseInt(timeStrClean.replace(/[^0-9]/g, ''));
-    return isNaN(time) || time < 0 || time > 23 ? 12 : time;
+
+    let time = parseInt(numStr, 10); // 明确指定radix为10
+
+    // 处理下午或晚上的时间，需要+12转换成24小时制
+    if (timeStr.includes('下午') || timeStr.includes('晚上')) {
+      time += 12;
+    }
+
+    // 验证时间范围（0-23）
+    if (isNaN(time) || time < 0 || time > 23) {
+      return 12; // 超出范围，返回默认值
+    }
+
+    return time;
   }
 
   showUsage() {
