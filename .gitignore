@@ -32,7 +32,12 @@ __pycache__/
 CLAUDE.md
 AGENTS.md
 docs/plans/
+*/plans/*
+*/output/*
+*.backup
+*examples*
 docs/
+*design.md
 
 konglong-logo-animation
 wechat-articles
