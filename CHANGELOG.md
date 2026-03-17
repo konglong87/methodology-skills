@@ -5,6 +5,66 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-03-17
+
+### ✨ Added
+
+#### FortuneTeller 算命系统 v2.3.0 - 一键生成版
+
+**自动生成PNG信息图**:
+- 自动调用 infographic-generator skill 生成命盘可视化
+- 横版PNG（1920x1080）：适合博客、报告
+- 竖版PNG（1080x1920）：适合手机分享、小红书
+- 一键生成，无需用户中途干预
+
+**中文数字日期解析**:
+- 支持农历中文数字日期输入
+- 支持格式：`农历十月初六`、`正月初一`、`腊月廿三` 等
+- 自动转换为标准数字格式进行计算
+
+**完全自动化流程**:
+- 用户只需一句话输入（如："张三 男 2002年农历十月初六 凌晨4点 河北"）
+- 自动生成所有文件：JSON数据 + Markdown框架 + AI提示词 + PNG信息图
+- 全程无需用户干预
+
+**文件输出优化**:
+- 所有输出文件统一保存在 `output/` 目录
+- 文件命名规范：
+  - `[姓名]_命盘数据.json` - JSON命盘数据
+  - `[姓名]_分析框架.md` - Markdown分析框架
+  - `[姓名]_命盘信息图_横版.png` - 横版PNG
+  - `[姓名]_命盘信息图_竖版.png` - 竖版PNG
+
+**兼容性保证**:
+- 不修改 infographic-generator skill 的任何接口
+- 采用"先生成后复制"策略，确保微信文章等其他功能不受影响
+- infographic-generator 在默认位置生成，然后复制到 fortune-teller 的 output 目录
+
+### 🔧 Changed
+
+**版本号更新**:
+- methodology-skills: v1.8.0 → v1.9.0
+- fortune-teller: v2.2.0 → v2.3.0
+
+**文档更新**:
+- README.md: 版本徽章更新到 v1.9.0
+- CHANGELOG.md: 添加 v1.9.0 详细更新记录
+- SKILL.md: 更新版本说明到 v2.3.0
+
+### 🎯 Benefits
+
+- **用户体验提升**: 一键生成文字+图片，无需分步操作
+- **输入灵活性**: 支持中文数字日期，更符合农历习惯
+- **输出完整性**: 自动生成多种格式，满足不同场景需求
+- **兼容性保障**: 不影响其他 skills 的正常使用
+
+### 📝 Technical Details
+
+- 更新 `simple-fortune.js` 的 `generateInfographic()` 方法，实现自动PNG生成
+- 更新 `simple-fortune.js` 的 `parseInput()` 方法，支持中文数字日期解析
+- 添加中文数字映射表（月份：正/一/二/.../腊，日期：初一/初二/.../三十）
+- 使用文件复制策略，确保输出目录统一
+
 ## [1.8.0] - 2026-03-16
 
 ### ✨ Added

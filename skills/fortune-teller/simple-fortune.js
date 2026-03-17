@@ -3,11 +3,13 @@
 /**
  * FortuneTeller 命令行界面 - 增强版
  * 使用增强版报告生成器，提供完整的命盘数据和AI分析提示词
+ * 自动生成PNG信息图（横版+竖版）
  */
 
 const EnhancedReportGenerator = require('./enhanced-report-generator');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 class SimpleFortuneCLI {
   constructor() {
@@ -69,6 +71,20 @@ class SimpleFortuneCLI {
       console.log(`📄 Markdown框架：${mdPath}\n`);
       console.log('≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈\n');
 
+      // 自动生成PNG信息图
+      console.log('🎨 开始生成命盘信息图...\n');
+      try {
+        const pngPaths = await this.generateInfographic(result.json, baseFileName, outputDir);
+        console.log('\n✅ 信息图生成成功！');
+        console.log(`🖼️  横版PNG：${pngPaths.landscape}`);
+        console.log(`🖼️  竖版PNG：${pngPaths.portrait}\n`);
+      } catch (pngError) {
+        console.warn('⚠️  信息图生成失败，但文字报告已生成');
+        console.warn(`   错误：${pngError.message}\n`);
+      }
+
+      console.log('≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈\n');
+
       console.log('🤖 AI分析提示词：\n');
       console.log(result.prompt);
       console.log('\n≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈\n');
@@ -124,17 +140,57 @@ class SimpleFortuneCLI {
       }
     }
 
-    // 2. 提取年份（XXXX年）
+    // 2. 提取年份（XXXX年或中文年份）
     const yearMatch = inputStr.match(/(\d{4})年/);
     const year = yearMatch ? parseInt(yearMatch[1], 10) : null;
 
-    // 3. 提取月份（X月）
-    const monthMatch = inputStr.match(/(\d{1,2})月/);
-    const month = monthMatch ? parseInt(monthMatch[1], 10) : null;
+    // 3. 提取月份（X月 或 中文月份）
+    let month = null;
 
-    // 4. 提取日期（X日）
-    const dayMatch = inputStr.match(/(\d{1,2})日/);
-    const day = dayMatch ? parseInt(dayMatch[1], 10) : null;
+    // 先尝试匹配阿拉伯数字月份
+    const monthMatch = inputStr.match(/(\d{1,2})月/);
+    if (monthMatch) {
+      month = parseInt(monthMatch[1], 10);
+    } else {
+      // 尝试匹配中文数字月份
+      const chineseMonthMap = {
+        '正': 1, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
+        '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '冬': 11, '腊': 12
+      };
+
+      for (const [chinese, num] of Object.entries(chineseMonthMap)) {
+        if (inputStr.includes(chinese + '月')) {
+          month = num;
+          break;
+        }
+      }
+    }
+
+    // 4. 提取日期（X日 或 中文日期）
+    let day = null;
+
+    // 先尝试匹配阿拉伯数字日期
+    const dayMatch = inputStr.match(/(\d{1,2})[日号]/);
+    if (dayMatch) {
+      day = parseInt(dayMatch[1], 10);
+    } else {
+      // 尝试匹配中文数字日期
+      const chineseDayMap = {
+        '初一': 1, '初二': 2, '初三': 3, '初四': 4, '初五': 5,
+        '初六': 6, '初七': 7, '初八': 8, '初九': 9, '初十': 10,
+        '十一': 11, '十二': 12, '十三': 13, '十四': 14, '十五': 15,
+        '十六': 16, '十七': 17, '十八': 18, '十九': 19, '二十': 20,
+        '廿一': 21, '廿二': 22, '廿三': 23, '廿四': 24, '廿五': 25,
+        '廿六': 26, '廿七': 27, '廿八': 28, '廿九': 29, '三十': 30
+      };
+
+      for (const [chinese, num] of Object.entries(chineseDayMap)) {
+        if (inputStr.includes(chinese)) {
+          day = num;
+          break;
+        }
+      }
+    }
 
     // 5. 提取时辰（X点、上午X点、下午X点等）
     let birthTime = null;
@@ -320,6 +376,149 @@ class SimpleFortuneCLI {
     return time;
   }
 
+  /**
+   * 生成命盘信息图
+   * @param {Object} jsonData - 命盘JSON数据
+   * @param {string} baseFileName - 基础文件名
+   * @param {string} outputDir - 输出目录
+   * @returns {Object} - { landscape: 横版路径, portrait: 竖版路径 }
+   */
+  async generateInfographic(jsonData, baseFileName, outputDir) {
+    const baziData = jsonData.baziData;
+    const name = jsonData.userInput.name;
+
+    // 构建信息图内容
+    const infographicContent = this.buildInfographicContent(name, baziData);
+
+    // 调用 infographic-generator 的 skill-render.js
+    const infographicSkillPath = path.join(__dirname, '..', 'infographic-generator', 'skill-render.js');
+
+    if (!fs.existsSync(infographicSkillPath)) {
+      throw new Error('infographic-generator skill 未找到');
+    }
+
+    // 创建临时JSON配置
+    const tempConfigPath = path.join(outputDir, `${baseFileName}_infographic_temp.json`);
+    const config = {
+      template: "knowledge",
+      style: "tech",
+      content: infographicContent,
+      output_config: {
+        width: 1920,
+        height: 1080,
+        orientation: "horizontal"
+      }
+    };
+
+    fs.writeFileSync(tempConfigPath, JSON.stringify(config, null, 2), 'utf-8');
+
+    try {
+      // 使用Node.js require方式调用skill-render
+      const { skillRender } = require(infographicSkillPath);
+
+      // 不传递outputPath，让infographic-generator在默认位置生成
+      const result = await skillRender(infographicContent, {
+        saveConfig: false,
+        useConfig: false
+      });
+
+      // 删除临时配置文件
+      if (fs.existsSync(tempConfigPath)) {
+        fs.unlinkSync(tempConfigPath);
+      }
+
+      // skillRender返回的是横版路径，但文件名是 output-infographic
+      // 我们需要找到infographic-generator的output目录
+      const infographOutputDir = path.join(path.dirname(infographicSkillPath), 'output');
+
+      // 查找刚生成的PNG文件
+      const files = fs.readdirSync(infographOutputDir);
+      const latestLandscape = files
+        .filter(f => f.endsWith('-landscape.png'))
+        .map(f => ({
+          name: f,
+          path: path.join(infographOutputDir, f),
+          time: fs.statSync(path.join(infographOutputDir, f)).mtime.getTime()
+        }))
+        .sort((a, b) => b.time - a.time)[0];
+
+      const latestPortrait = files
+        .filter(f => f.endsWith('-portrait.png'))
+        .map(f => ({
+          name: f,
+          path: path.join(infographOutputDir, f),
+          time: fs.statSync(path.join(infographOutputDir, f)).mtime.getTime()
+        }))
+        .sort((a, b) => b.time - a.time)[0];
+
+      if (!latestLandscape || !latestPortrait) {
+        throw new Error('无法找到生成的PNG文件');
+      }
+
+      // 复制到fortune-teller的output目录
+      const targetLandscape = path.join(outputDir, `${baseFileName}_命盘信息图_横版.png`);
+      const targetPortrait = path.join(outputDir, `${baseFileName}_命盘信息图_竖版.png`);
+
+      fs.copyFileSync(latestLandscape.path, targetLandscape);
+      fs.copyFileSync(latestPortrait.path, targetPortrait);
+
+      return {
+        landscape: targetLandscape,
+        portrait: targetPortrait
+      };
+    } catch (error) {
+      // 删除临时配置文件
+      if (fs.existsSync(tempConfigPath)) {
+        fs.unlinkSync(tempConfigPath);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * 构建信息图内容
+   */
+  buildInfographicContent(name, baziData) {
+    const sizhu = baziData.四柱;
+    const wuxing = baziData.五行;
+
+    // 找出五行最旺和最缺
+    let maxWuxing = '';
+    let maxCount = 0;
+    let minWuxing = '';
+    let minCount = 999;
+
+    Object.entries(wuxing).forEach(([wx, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        maxWuxing = wx;
+      }
+      if (count < minCount) {
+        minCount = count;
+        minWuxing = wx;
+      }
+    });
+
+    const wuxingText = `木${wuxing.木}个、火${wuxing.火}个、土${wuxing.土}个、金${wuxing.金}个、水${wuxing.水}个`;
+    const dayunCount = baziData.大运 ? baziData.大运.length : 0;
+    const qiyunAge = baziData.起运时间 || '?';
+
+    // 构建完整的信息图描述
+    const content = `生成${name}的命盘概要信息图，国潮风格，包含以下5个核心要素：
+
+1. 四柱八字：年柱${sizhu.年柱.完整}、月柱${sizhu.月柱.完整}、日柱${sizhu.日柱.完整}、时柱${sizhu.时柱.完整}
+
+2. 日主特质：${baziData.日主}日主（${baziData.日主五行}属性，性格特征根据五行推导）
+
+3. 五行分布：${wuxingText}，五行${maxCount > 2 ? '偏旺于' + maxWuxing : '相对平衡'}${minCount === 0 ? '，缺' + minWuxing : ''}
+
+4. 五行特点：${maxWuxing}最旺（${maxCount}个）${minCount === 0 ? '，' + minWuxing + '缺失' : ''}
+
+5. 大运周期：共${dayunCount}步大运，起运年龄${qiyunAge}岁`;
+
+    return content;
+  }
+
   showUsage() {
     console.log(`
 🔮 FortuneTeller 算命系统 - 增强版 v2.2.0
@@ -343,6 +542,7 @@ class SimpleFortuneCLI {
 输出：
   - JSON数据：命盘数据（四柱、五行、大运等）
   - Markdown框架：分析框架
+  - PNG信息图：命盘可视化（横版+竖版）
   - AI提示词：供AI工具生成完整报告（8000-12000字）
 
 ═════════════════════════════════════════

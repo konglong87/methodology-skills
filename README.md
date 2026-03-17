@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.8.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.9.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -329,6 +329,13 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 - 🔮 **四大派系融合** - 紫微斗数、生辰八字、盲派、南北派
 - 💫 **5轮验证机制** - 确保结论可靠性，LLM反复review推理过程
 - 🌍 **时代背景贯穿** - 大运流年分析包含时代背景
+- 🎨 **一键生成图片** - 自动生成PNG信息图（横版+竖版），无需用户干预
+- 📅 **中文日期支持** - 支持农历中文数字日期（如：农历十月初六）
+
+**v2.3.0 新特性**:
+- ✅ 自动生成PNG信息图（横版1920x1080 + 竖版1080x1920）
+- ✅ 支持中文数字日期解析（农历十月初六、正月初一等）
+- ✅ 完全自动化流程，一键生成JSON+Markdown+PNG
 - 🔍 **智能输入提取** - 支持自然语言任意顺序输入，40个主要城市智能识别
 - 📊 **完整分析报告** - 8000-12000字详细命理分析 + PNG信息图（横版+竖版）
 - 🎯 **严格必填验证** - 所有信息必填，无默认值，确保数据准确性
@@ -676,6 +683,36 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 ---
 
 ## 更新日志
+
+### v1.9.0 (2026-03-17)
+
+**FortuneTeller 算命系统 v2.3.0 一键生成版**：
+
+- ✅ **自动生成PNG信息图** - 自动调用infographic-generator生成命盘可视化
+  - 横版PNG（1920x1080）：适合博客、报告
+  - 竖版PNG（1080x1920）：适合手机分享、小红书
+  - 一键生成，无需用户中途干预
+- ✅ **中文数字日期解析** - 支持农历中文数字日期输入
+  - 支持格式：`农历十月初六`、`正月初一`、`腊月廿三` 等
+  - 自动转换为标准数字格式进行计算
+- ✅ **完全自动化流程** - 用户只需一句话输入
+  - 自动生成：JSON数据 + Markdown框架 + AI提示词 + PNG信息图
+- ✅ **文件输出优化** - 所有输出文件统一保存在output/目录
+- ✅ **兼容性保证** - 不影响微信文章等其他skills的正常使用
+
+**示例输入**:
+```
+张三久 男 2002年农历十月初六 凌晨4点 河北
+```
+
+**输出文件**:
+```
+output/
+├── 张三久_命盘数据.json          # JSON命盘数据（36KB）
+├── 张三久_分析框架.md             # Markdown分析框架
+├── 张三久_命盘信息图_横版.png     # PNG横版（1920x1080，727KB）
+└── 张三久_命盘信息图_竖版.png     # PNG竖版（1080x1920，450KB）
+```
 
 ### v1.8.0 (2026-03-16)
 
