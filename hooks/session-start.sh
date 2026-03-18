@@ -31,7 +31,7 @@ cat <<EOF
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "<恐龙专属指令>\n🎯 目标追踪系统已激活\n\n**Goal-Oriented 思维（强制执行）:**\n\n${goal_oriented_escaped}\n\n</恐龙专属指令>"
+    "additionalContext": "<恐龙专属指令>\n🎯 目标追踪系统已激活\n\n **不忘初心牢记使命**\n\n**Goal-Oriented 思维（强制执行）:**\n\n${goal_oriented_escaped}\n\n</恐龙专属指令>"
   }
 }
 EOF
