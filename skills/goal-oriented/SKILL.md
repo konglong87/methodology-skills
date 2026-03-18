@@ -492,7 +492,6 @@ python tools/goal-tracker.py complete \
 
 ## References
 
-- 《高效能人士的七个习惯》- 以终为始
+- 《高效能人士的七个习惯》- 以终为始，不忘初心，方得始终
 - SMART Goals - Peter Drucker
 - OKR 工作法 - John Doerr
-- [目标管理最佳实践](https://example.com/goal-management)
