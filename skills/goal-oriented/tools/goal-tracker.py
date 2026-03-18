@@ -251,6 +251,63 @@ class GoalTracker:
             "summary": summary
         }
 
+    def list(self, status: Optional[str] = None) -> dict:
+        """
+        列出所有目标
+
+        Args:
+            status: 过滤状态（pending/completed/abandoned）
+
+        Returns:
+            目标列表字典
+        """
+        if not self.goals_dir.exists():
+            print("📝 暂无目标记录")
+            return {"status": "success", "goals": []}
+
+        goals = []
+        for goal_file in sorted(self.goals_dir.glob("*.md")):
+            if goal_file.name == ".gitkeep":
+                continue
+
+            content = goal_file.read_text(encoding="utf-8")
+
+            # 提取状态
+            import re
+            status_match = re.search(r"状态：(pending|completed|abandoned)", content)
+            goal_status = status_match.group(1) if status_match else "pending"
+
+            # 如果指定了状态过滤，跳过不匹配的
+            if status and goal_status != status:
+                continue
+
+            # 提取创建时间（从文件名）
+            time_match = re.search(r"(\d{4}-\d{2}-\d{2}_\d{4})", goal_file.name)
+            created_time = time_match.group(1) if time_match else "未知"
+
+            # 提取具体目标
+            specific_match = re.search(r"\*\*Specific（具体）\*\*: (.+)", content)
+            specific = specific_match.group(1) if specific_match else "未知目标"
+
+            goals.append({
+                "file": str(goal_file.relative_to(self.project_root)),
+                "status": goal_status,
+                "created": created_time,
+                "specific": specific
+            })
+
+        if not goals:
+            print(f"📝 暂无{'状态为 ' + status + ' 的' if status else ''}目标记录")
+        else:
+            print(f"📝 {'状态为 ' + status + ' 的' if status else '所有'}目标：")
+            for i, goal in enumerate(goals, 1):
+                print(f"{i}. [{goal['created']}] {goal['specific']} ({goal['status']})")
+
+        return {
+            "status": "success",
+            "goals": goals
+        }
+
 
 def main():
     """主函数"""
@@ -288,6 +345,10 @@ def main():
     complete_parser = subparsers.add_parser("complete", help="标记目标完成")
     complete_parser.add_argument("--file", required=True, help="目标文件路径")
     complete_parser.add_argument("--summary", required=True, help="完成总结")
+
+    # list 命令
+    list_parser = subparsers.add_parser("list", help="列出所有目标")
+    list_parser.add_argument("--status", help="过滤状态（pending/completed/abandoned）")
 
     args = parser.parse_args()
 
@@ -330,6 +391,9 @@ def main():
             file=args.file,
             summary=args.summary
         )
+
+    elif args.command == "list":
+        result = tracker.list(status=args.status)
 
 
 if __name__ == "__main__":
