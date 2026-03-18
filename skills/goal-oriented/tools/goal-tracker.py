@@ -21,16 +21,16 @@ class GoalTracker:
         初始化目标追踪器
 
         Args:
-            project_root: 项目根目录，默认自动检测
+            project_root: 项目根目录，默认使用当前工作目录
         """
         if project_root is None:
-            # 从脚本位置推导项目根目录
-            script_dir = Path(__file__).parent
-            project_root = script_dir.parent.parent.parent
+            # 使用当前工作目录作为项目根目录
+            # 这样每个项目的目标文件会存在各自的 memory/goals/ 目录
+            project_root = Path.cwd()
 
         self.project_root = project_root
         self.goals_dir = project_root / "memory" / "goals"
-        self.template_path = project_root / "skills" / "goal-oriented" / "templates" / "goal-template.md"
+        self.template_path = Path(__file__).parent.parent / "templates" / "goal-template.md"
 
         # 确保目标目录存在
         self.goals_dir.mkdir(parents=True, exist_ok=True)
