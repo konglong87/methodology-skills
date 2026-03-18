@@ -97,6 +97,96 @@ class GoalTracker:
 
         return self.template_path.read_text(encoding="utf-8")
 
+    def update(self, file: str, milestone: str) -> dict:
+        """
+        更新目标里程碑
+
+        Args:
+            file: 目标文件路径
+            milestone: 里程碑描述
+
+        Returns:
+            操作结果字典
+        """
+        goal_path = self.project_root / file
+
+        if not goal_path.exists():
+            print(f"❌ 目标文件不存在：{file}")
+            return {"status": "error", "message": "目标文件不存在"}
+
+        # 追加里程碑记录
+        with goal_path.open("a", encoding="utf-8") as f:
+            f.write(f"\n### 里程碑：{milestone}\n")
+            f.write(f"更新时间：{datetime.now().strftime('%Y-%m-%d %H:%M')}\n")
+
+        print(f"✅ 已更新里程碑：{milestone}")
+
+        return {
+            "status": "success",
+            "file": file,
+            "milestone": milestone
+        }
+
+    def adjust(self, file: str, reason: str, new_specific: str, new_measurable: str) -> dict:
+        """
+        调整目标
+
+        Args:
+            file: 目标文件路径
+            reason: 调整原因
+            new_specific: 新的具体目标
+            new_measurable: 新的衡量标准
+
+        Returns:
+            操作结果字典
+        """
+        goal_path = self.project_root / file
+
+        if not goal_path.exists():
+            print(f"❌ 目标文件不存在：{file}")
+            return {"status": "error", "message": "目标文件不存在"}
+
+        # 读取现有内容
+        content = goal_path.read_text(encoding="utf-8")
+
+        # 更新版本号
+        import re
+        version_match = re.search(r"当前版本：(\d+)", content)
+        current_version = int(version_match.group(1)) if version_match else 1
+        new_version = current_version + 1
+
+        content = re.sub(r"当前版本：\d+", f"当前版本：{new_version}", content)
+
+        # 更新 SMART 目标
+        content = re.sub(
+            r"\*\*Specific（具体）\*\*: .+",
+            f"**Specific（具体）**: {new_specific}",
+            content
+        )
+        content = re.sub(
+            r"\*\*Measurable（可衡量）\*\*: .+",
+            f"**Measurable（可衡量）**: {new_measurable}",
+            content
+        )
+
+        # 追加调整历史
+        with goal_path.open("a", encoding="utf-8") as f:
+            f.write(f"\n### 版本 {new_version}（{datetime.now().strftime('%Y-%m-%d %H:%M')}）\n")
+            f.write(f"- **调整原因**: {reason}\n")
+            f.write(f"- **SMART-Specific**: {new_specific}\n")
+            f.write(f"- **SMART-Measurable**: {new_measurable}\n")
+
+        print(f"✅ 目标已调整")
+        print(f"📝 调整原因：{reason}")
+        print(f"📊 新版本：{new_version}")
+
+        return {
+            "status": "success",
+            "file": file,
+            "reason": reason,
+            "new_version": new_version
+        }
+
     def verify(self, file: str, ai_assessment: str) -> dict:
         """
         验证目标达成情况
@@ -177,6 +267,18 @@ def main():
     create_parser.add_argument("--smart-specific", required=True, help="SMART 具体目标")
     create_parser.add_argument("--smart-measurable", required=True, help="SMART 可衡量标准")
 
+    # update 命令
+    update_parser = subparsers.add_parser("update", help="更新目标里程碑")
+    update_parser.add_argument("--file", required=True, help="目标文件路径")
+    update_parser.add_argument("--milestone", required=True, help="里程碑描述")
+
+    # adjust 命令
+    adjust_parser = subparsers.add_parser("adjust", help="调整目标")
+    adjust_parser.add_argument("--file", required=True, help="目标文件路径")
+    adjust_parser.add_argument("--reason", required=True, help="调整原因")
+    adjust_parser.add_argument("--new-specific", required=True, help="新的具体目标")
+    adjust_parser.add_argument("--new-measurable", required=True, help="新的衡量标准")
+
     # verify 命令
     verify_parser = subparsers.add_parser("verify", help="验证目标达成情况")
     verify_parser.add_argument("--file", required=True, help="目标文件路径")
@@ -202,6 +304,20 @@ def main():
             smart_measurable=args.smart_measurable
         )
         print(f"✅ 目标已创建：{goal_path}")
+
+    elif args.command == "update":
+        result = tracker.update(
+            file=args.file,
+            milestone=args.milestone
+        )
+
+    elif args.command == "adjust":
+        result = tracker.adjust(
+            file=args.file,
+            reason=args.reason,
+            new_specific=args.new_specific,
+            new_measurable=args.new_measurable
+        )
 
     elif args.command == "verify":
         result = tracker.verify(
