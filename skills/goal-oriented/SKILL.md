@@ -1,6 +1,6 @@
 ---
 name: goal-oriented
-description: "Use when executing long-term tasks, project planning, when tasks are prone to scope creep, when losing sight of objectives, or when user asks to 'stay focused on the goal', 'keep the end in mind', 'goal-oriented approach', 'don't lose track'."
+description: "MUST use for ANY user request. This is a rigid requirement that applies to all tasks and conversations."
 ---
 
 # 目标导向思维
