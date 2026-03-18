@@ -27,7 +27,14 @@ version: 1.0.0
 
 ## Overview
 
-Automated WeChat Official Account article creation skill that generates high-quality articles with AI-powered content creation and infographic generation. The skill follows a structured workflow from content analysis to final output, ensuring professional-quality articles suitable for public account publishing.
+Automated WeChat Official Account article creation skill that generates high-quality articles with AI-powered content creation and infographic generation. The skill uses a **multi-agent collaboration system** with specialized agents for titles, structure, and content, plus a three-layer review process to ensure professional-quality articles suitable for public account publishing.
+
+**Key Features:**
+- **Multi-Agent System**: Specialized agents for titles (100+ techniques), structure design, and content writing
+- **Three-Layer Review**: Theme consistency, design & language, AI removal & colloquial optimization
+- **Multi-Version Output**: 4 variants (full/condensed × markdown/plain text)
+
+See `AGENTS.md` for detailed agent specifications and workflow.
 
 ## When to Use
 
@@ -67,11 +74,17 @@ The AI tool will automatically:
 1. Load preferences from EXTEND.md (if configured)
 2. Analyze the topic and present a plan for confirmation
 3. **Search the web** for latest information (if supported and enabled)
-4. Generate outline and article content (within word count limit)
-5. Review and refine the article for quality
-6. **Generate 2 PNG infographic images** (auto-generated using infographic-generator skill)
-7. Save all outputs to the appropriate directory structure
-8. Provide a summary with next steps
+4. **Generate 3 engaging titles** using Title Specialist Agent (100+ techniques)
+5. **Design article structure** using Structure Specialist Agent
+6. **Write article content** using Content Specialist Agent
+7. **Three-layer Review**:
+   - Review 1: Theme consistency check
+   - Review 2: Design & language check
+   - Review 3: AI removal & colloquial optimization
+8. **Generate 4 article variants** (full/condensed × markdown/plain text)
+9. **Generate 2 PNG infographic images** (auto-generated using infographic-generator skill)
+10. Save all outputs to the appropriate directory structure
+11. Provide a summary with next steps
 
 **Result**: A complete, publish-ready article package with text + images!
 
@@ -88,6 +101,8 @@ Users can create `skills/wechat-article-writer/EXTEND.md` to customize:
 
 **This skill is executed by AI tools (Claude Code, Cursor, OpenClaw, etc.) using their built-in capabilities.**
 
+**Multi-Agent System:** This skill uses a multi-agent collaboration system for article generation. See `AGENTS.md` for detailed agent specifications.
+
 When user invokes `/wechat-article-writer`, the AI tool should:
 
 ### Phase 1: Setup & Analysis
@@ -97,22 +112,29 @@ When user invokes `/wechat-article-writer`, the AI tool should:
 - [ ] **Step 1.5: Web Research (Optional)** - If AI tool supports web search, search for latest information on the topic
 - [ ] **Step 2: Smart Confirm** - Present analysis results to user for confirmation before generation
 
-### Phase 2: Content Generation (Using AI Tool's Built-in Capabilities)
+### Phase 2: Multi-Agent Article Generation
 
-- [ ] **Step 3: Generate Outline** - Use AI tool to create structured outline with sections and key content points
-- [ ] **Step 4: Generate Article (Full Version - Markdown)** - Use AI tool to write full article content following outline and preferences
-- [ ] **Step 4.5: Generate Article Variants** - Generate 3 additional versions for WeChat compatibility:
-  - 1000-word condensed version (Markdown)
-  - 1000-word condensed version (Plain text, no Markdown)
-  - Full-length plain text version (no Markdown)
-- [ ] **Step 5: Review & Refine** - Review article for accuracy, topic relevance, and quality; refine if needed
-- [ ] **Step 6: Generate Infographic Descriptions** - Use AI tool to create visual content descriptions
-- [ ] **Step 7: Generate PNG Images** - Use infographic-generator skill to generate actual PNG images
+- [ ] **Step 3: Generate Titles** - Use Title Specialist Agent to generate 3 engaging titles with 100+ techniques
+- [ ] **Step 4: Design Structure** - Use Structure Specialist Agent to design article framework and outline
+- [ ] **Step 5: Generate Content** - Use Content Specialist Agent to write article based on structure and titles
+- [ ] **Step 6: Review 1 - Theme Consistency** - Check if content aligns with central theme
+- [ ] **Step 7: Review 2 - Design & Language** - Check for typos, grammar, and design issues
+- [ ] **Step 8: Review 3 - AI Removal & Colloquial Optimization** - Remove AI traces and make content natural
 
-### Phase 3: Output & Summary
+### Phase 3: Multi-Version Generation
 
-- [ ] **Step 8: Save Outputs** - Save all generated content to `wechat-articles/{topic-slug}/` directory
-- [ ] **Step 9: Output Summary** - Present final results with file locations and next steps
+- [ ] **Step 9: Generate 4 Article Versions** - Generate multiple versions for different use cases:
+  - Full Markdown version (5000 words)
+  - Condensed Markdown version (1000 words)
+  - Full Plain Text version (WeChat compatible)
+  - Condensed Plain Text version (WeChat compatible, 1000 words)
+- [ ] **Step 10: Generate Infographic Descriptions** - Create detailed descriptions for 2 infographics
+- [ ] **Step 11: Generate PNG Images** - Use infographic-generator skill to generate actual PNG images
+
+### Phase 4: Output & Summary
+
+- [ ] **Step 12: Save Outputs** - Save all generated content to `wechat-articles/{topic-slug}/` directory
+- [ ] **Step 13: Output Summary** - Present final results with file locations and next steps
 
 ## Detailed Execution Guide
 
@@ -579,11 +601,16 @@ wechat-articles/{topic-slug}/
 ├── source.md                  # User's original input
 ├── analysis.md                # Content analysis report
 ├── research.md                # Web research findings (if web search was enabled)
-├── outline.md                 # Article outline
-├── article.md                 # Full article (Markdown, 5000 words)
-├── article-1000.md            # Condensed version (Markdown, 1000 words)
-├── article-1000-plain.txt     # Condensed version (Plain text, 1000 words)
-├── article-plain.txt          # Full version (Plain text, no Markdown)
+├── titles.md                 # 3 titles with techniques and rationales
+├── structure.md              # Article structure and outline
+├── content-initial.md        # Initial content before reviews
+├── review-1.md              # Review 1: Theme consistency
+├── review-2.md              # Review 2: Design and language
+├── review-3.md              # Review 3: AI removal and colloquial
+├── article-full.md          # Full article (Markdown, 5000 words)
+├── article-condensed.md      # Condensed version (Markdown, 1000 words)
+├── article-full-plain.txt   # Full version (Plain text, WeChat compatible)
+├── article-condensed-plain.txt # Condensed version (Plain text, 1000 words)
 ├── infographic/               # Infographic outputs
 │   ├── 01-*.png               # Generated PNG image 1
 │   ├── 02-*.png               # Generated PNG image 2
@@ -595,11 +622,15 @@ wechat-articles/{topic-slug}/
 
 **Save process**:
 1. Create output directory
-2. Save all generated content (including 3 article variants)
-3. Organize infographic assets
-4. Generate metadata file with article stats
+2. Save titles with techniques and rationales
+3. Save article structure and outline
+4. Save initial content before reviews
+5. Save all three review results
+6. Save 4 article variants (full/condensed × markdown/plain text)
+7. Organize infographic assets
+8. Generate metadata file with article stats
 
-### Step 9: Output Summary
+### Step 13: Output Summary
 
 Present comprehensive results to user:
 
@@ -612,26 +643,39 @@ Style: {style}
 Voice: {voice}
 
 Output:
-  📄 article.md               (Full version, Markdown, 5000 words)
-  📄 article-1000.md          (Condensed, Markdown, 1000 words)
-  📄 article-1000-plain.txt   (Condensed, Plain text, 1000 words)
-  📄 article-plain.txt        (Full version, Plain text, no Markdown)
+  📋 titles.md               (3 engaging titles)
+  📋 structure.md            (Article structure)
+  📄 content-initial.md      (Initial content)
+  🔍 review-1.md            (Theme consistency)
+  🔍 review-2.md            (Design & language)
+  🔍 review-3.md            (AI removal & colloquial)
+  📄 article-full.md         (Full version, Markdown, 5000 words)
+  📄 article-condensed.md     (Condensed, Markdown, 1000 words)
+  📄 article-full-plain.txt  (Full version, Plain text, WeChat compatible)
+  📄 article-condensed-plain.txt (Condensed, Plain text, 1000 words)
   🖼️ infographic/
      ├─ 01-*.png             (PNG image 1)
      └─ 02-*.png             (PNG image 2)
   📋 meta.json               (metadata)
 
 Files:
-  ✓ {path}/article.md
-  ✓ {path}/article-1000.md
-  ✓ {path}/article-1000-plain.txt
-  ✓ {path}/article-plain.txt
+  ✓ {path}/titles.md
+  ✓ {path}/structure.md
+  ✓ {path}/content-initial.md
+  ✓ {path}/review-1.md
+  ✓ {path}/review-2.md
+  ✓ {path}/review-3.md
+  ✓ {path}/article-full.md
+  ✓ {path}/article-condensed.md
+  ✓ {path}/article-full-plain.txt
+  ✓ {path}/article-condensed-plain.txt
   ✓ {path}/infographic/01-*.png
   ✓ {path}/infographic/02-*.png
 
 Next Steps:
-  → For WeChat: Use article-plain.txt or article-1000-plain.txt
-  → For Blog: Use article.md or article-1000.md
+  → For WeChat: Use article-full-plain.txt or article-condensed-plain.txt
+  → For Blog: Use article-full.md or article-condensed.md
+  → Review all generated content
   → Preview infographic images
   → Run /baoyu-post-to-wechat to publish
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -679,19 +723,26 @@ wechat-articles/{topic-slug}/
 ```
 
 **Key Deliverables**:
-- ✅ **article.md**: Complete article (Markdown, 5000 words)
-- ✅ **article-1000.md**: Condensed version (Markdown, 1000 words)
-- ✅ **article-1000-plain.txt**: Condensed version for WeChat (Plain text, 1000 words)
-- ✅ **article-plain.txt**: Full version for WeChat (Plain text, no Markdown)
+- ✅ **titles.md**: 3 engaging titles with techniques and rationales
+- ✅ **structure.md**: Article structure and outline
+- ✅ **content-initial.md**: Initial content before reviews
+- ✅ **review-1.md**: Theme consistency review results
+- ✅ **review-2.md**: Design and language review results
+- ✅ **review-3.md**: AI removal and colloquial optimization results
+- ✅ **article-full.md**: Complete article (Markdown, 5000 words)
+- ✅ **article-condensed.md**: Condensed version (Markdown, 1000 words)
+- ✅ **article-full-plain.txt**: Full version for WeChat (Plain text, no Markdown)
+- ✅ **article-condensed-plain.txt**: Condensed version for WeChat (Plain text, 1000 words)
 - ✅ **PNG images**: 2 high-quality infographics (auto-generated)
 - ✅ **research.md**: Latest information and data (if web search enabled)
 - ✅ **meta.json**: SEO metadata for publishing
 
 **WeChat Publishing Guide**:
-- **For WeChat Official Account**: Use `article-plain.txt` or `article-1000-plain.txt`
+- **For WeChat Official Account**: Use `article-full-plain.txt` or `article-condensed-plain.txt`
 - **Why**: These files have no Markdown formatting, ready for direct copy-paste
 - **Note**: Emojis in headers are preserved (WeChat supports emojis)
-- **For other platforms** (blog, knowledge base): Use Markdown versions (article.md, article-1000.md)
+- **For other platforms** (blog, knowledge base): Use Markdown versions (article-full.md, article-condensed.md)
+- **Review process**: All articles go through three layers of review (theme consistency, design & language, AI removal & colloquial optimization)
 
 ## Preferences Configuration
 
