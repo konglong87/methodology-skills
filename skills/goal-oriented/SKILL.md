@@ -54,7 +54,7 @@ description: "MUST use for ANY user request. This is a rigid requirement that ap
 
 **强制动作**：
 ```bash
-python skills/goal-oriented/tools/goal-tracker.py create \
+python tools/goal-tracker.py create \
   --raw "{用户原始表述}" \
   --smart-specific "{提取的具体目标}" \
   --smart-measurable "{可衡量的成功标准}"
@@ -83,7 +83,7 @@ python skills/goal-oriented/tools/goal-tracker.py create \
 
 **强制动作**：
 ```bash
-python skills/goal-oriented/tools/goal-tracker.py adjust \
+python tools/goal-tracker.py adjust \
   --file "{目标文件路径}" \
   --reason "{调整原因}" \
   --new-specific "{新的具体目标}" \
@@ -113,7 +113,7 @@ python skills/goal-oriented/tools/goal-tracker.py adjust \
 
 **强制动作**：
 ```bash
-python skills/goal-oriented/tools/goal-tracker.py verify \
+python tools/goal-tracker.py verify \
   --file "{目标文件路径}" \
   --ai-assessment "{AI 自评完成情况}"
 ```
@@ -302,13 +302,35 @@ digraph goal_oriented_with_tools {
 
 `skills/goal-oriented/tools/goal-tracker.py`
 
-**说明：脚本会自动使用当前工作目录作为项目根目录，目标文件会存在 `<项目根目录>/memory/goals/` 目录。**
+**⚠️ 重要：脚本使用当前工作目录作为项目根目录，目标文件会存在 `<当前目录>/memory/goals/`。**
+
+**AI 工具执行方式**（推荐）：
+```bash
+# AI 工具会自动从项目根目录执行
+python skills/goal-oriented/tools/goal-tracker.py create \
+  --raw "用户原始表述" \
+  --smart-specific "具体目标" \
+  --smart-measurable "衡量标准"
+```
+
+**手动执行方式**：
+```bash
+# 方式1: 从项目根目录执行（如果项目中有 skills/ 目录）
+cd /path/to/your/project
+python skills/goal-oriented/tools/goal-tracker.py create ...
+
+# 方式2: 使用全局安装的 skill
+cd /path/to/your/project
+python ~/.agents/skills/goal-oriented/tools/goal-tracker.py create ...
+```
+
+**⚠️ 注意**：必须在项目根目录执行，否则目标文件会存错位置！
 
 ### 常用命令
 
 **1. 创建目标**（会话开始时强制）
 ```bash
-python tools/goal-tracker.py create \
+python skills/goal-oriented/tools/goal-tracker.py create \
   --raw "用户原始表述" \
   --smart-specific "具体目标" \
   --smart-measurable "衡量标准"
@@ -316,14 +338,14 @@ python tools/goal-tracker.py create \
 
 **2. 更新里程碑**（阶段性完成时）
 ```bash
-python tools/goal-tracker.py update \
+python skills/goal-oriented/tools/goal-tracker.py update \
   --file "memory/goals/2026-03-18_0930_目标关键词.md" \
   --milestone "里程碑描述"
 ```
 
 **3. 调整目标**（用户修改需求时强制）
 ```bash
-python tools/goal-tracker.py adjust \
+python skills/goal-oriented/tools/goal-tracker.py adjust \
   --file "memory/goals/2026-03-18_0930_目标关键词.md" \
   --reason "调整原因" \
   --new-specific "新目标" \
@@ -332,19 +354,19 @@ python tools/goal-tracker.py adjust \
 
 **4. 验证目标**（任务完成时强制）
 ```bash
-python tools/goal-tracker.py verify \
+python skills/goal-oriented/tools/goal-tracker.py verify \
   --file "memory/goals/2026-03-18_0930_目标关键词.md" \
   --ai-assessment "AI自评完成情况"
 ```
 
 **5. 查看所有目标**
 ```bash
-python tools/goal-tracker.py list --status pending
+python skills/goal-oriented/tools/goal-tracker.py list --status pending
 ```
 
 **6. 标记完成**
 ```bash
-python tools/goal-tracker.py complete \
+python skills/goal-oriented/tools/goal-tracker.py complete \
   --file "memory/goals/2026-03-18_0930_目标关键词.md" \
   --summary "完成总结"
 ```
@@ -377,7 +399,7 @@ python tools/goal-tracker.py complete \
 **步骤 1: AI 检测到任务，强制创建目标**
 
 ```bash
-python tools/goal-tracker.py create \
+python skills/goal-oriented/tools/goal-tracker.py create \
   --raw "完善 goal-oriented 的触发条件..." \
   --smart-specific "实现自动目标追踪和验证机制" \
   --smart-measurable "任务记录,会话结束前验证,未达成继续执行"
@@ -390,7 +412,7 @@ python tools/goal-tracker.py create \
 AI 开始执行任务，中途完成脚本开发里程碑：
 
 ```bash
-python tools/goal-tracker.py update \
+python skills/goal-oriented/tools/goal-tracker.py update \
   --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
   --milestone "goal-tracker.py 脚本开发完成"
 ```
@@ -403,7 +425,7 @@ python tools/goal-tracker.py update \
 "对了，还要支持实时调整目标，防止用户在后续会话中改变主意"
 
 ```bash
-python tools/goal-tracker.py adjust \
+python skills/goal-oriented/tools/goal-tracker.py adjust \
   --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
   --reason "用户补充：需要实时调整目标" \
   --new-specific "实现自动目标追踪、验证和动态调整机制" \
@@ -417,7 +439,7 @@ python tools/goal-tracker.py adjust \
 AI 完成所有开发和测试：
 
 ```bash
-python tools/goal-tracker.py verify \
+python skills/goal-oriented/tools/goal-tracker.py verify \
   --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
   --ai-assessment "已完成脚本开发、文档更新、支持动态调整"
 ```
@@ -432,7 +454,7 @@ python tools/goal-tracker.py verify \
 **步骤 5: 标记完成**
 
 ```bash
-python tools/goal-tracker.py complete \
+python skills/goal-oriented/tools/goal-tracker.py complete \
   --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
   --summary "所有目标已达成"
 ```
