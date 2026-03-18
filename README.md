@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.9.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.11.6-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -36,11 +36,28 @@
 
 ### 🎯 目标导向
 
-以最终目标为指引，确保行动不偏离方向。适用于长期任务、项目规划。
+**刚性要求：每个用户请求都必须触发目标追踪**
 
-**适用场景**: 执行长期任务、项目规划、容易偏离目标的任务
+以最终目标为指引，确保行动不偏离方向。通过目标追踪工具自动创建、调整、验证目标，防止范围蔓延和目标偏离。
 
-**触发方式**: 自动识别场景 或 用户说"目标导向地执行"
+**核心特性**:
+- ⚡ **持续触发** - 每个用户消息都会触发目标检查
+- 🎯 **自动追踪** - 自动创建目标文件，记录原始需求和SMART目标
+- 🔄 **动态调整** - 用户修改需求时立即更新目标
+- ✅ **强制验证** - 任务完成前必须验证目标达成情况
+
+**适用场景**:
+- 执行长期任务（周期 > 1分钟 或 步骤 > 2）
+- 项目规划和管理
+- 容易偏离目标的复杂任务
+- 多任务并行，需要优先级判断
+
+**Iron Law 强制执行规则**:
+1. **任务开始时** - 检测到多步骤任务，立即创建目标文件
+2. **任务执行中** - 用户调整需求，立即更新目标文件
+3. **任务完成时** - AI声称完成，强制验证目标是否达成
+
+**触发方式**: **刚性要求** - 每个用户请求都会自动触发，无需用户明确指定
 
 ### 🎯 PDCA 循环
 
@@ -425,7 +442,66 @@ enable_web_search: true     # 启用联网搜索（默认启用）
 
 ---
 
+## 平台支持对比
+
+### Claude Code（推荐 - 完整体验）
+
+**✅ 完整 Hook 支持**：
+- SessionStart Hook 自动注入目标追踪系统
+- 自定义标签：`<恐龙专属指令>`
+- 动态读取 SKILL.md 最新内容
+- 无需用户干预，自动触发
+
+**示例**：
+```xml
+<system-reminder>
+<恐龙专属指令>
+🎯 目标追踪系统已激活
+
+**Goal-Oriented 思维（强制执行）:**
+[完整的 SKILL.md 内容自动加载]
+</恐龙专属指令>
+</system-reminder>
+```
+
+**触发方式**：**全自动** - 会话启动时自动注入
+
+---
+
+### OpenCode / Cursor（降级体验）
+
+**⚠️ 仅支持静态 Skill 文件**：
+- ❌ 无 Hook 系统，无法自动注入上下文
+- ❌ 无法使用自定义标签和动态内容
+- ✅ 核心功能可用：description 触发仍然有效
+- ✅ 需要手动安装（运行安装脚本）
+
+**触发方式**：**依赖 description** - AI 根据 description 字段识别
+
+**用户体验差异**：
+```
+用户消息："实现一个网站"
+AI 判断：检测到 description "MUST use for ANY user request"
+AI 行为：加载 goal-oriented skill 并执行
+```
+
+**限制说明**：
+- 无法像 Claude Code 那样在 system-reminder 中显示自定义标签
+- 无法动态注入完整的 SKILL.md 内容到 system-reminder
+- 但核心的目标追踪功能完全可用
+
+---
+
+**💡 推荐使用 Claude Code 以获得最佳体验**
+
+---
+
 ## 安装
+
+> **⚠️ 重要说明**：
+> - **Claude Code 用户**：推荐使用"快速开始"方式，自动配置 Hook
+> - **OpenCode/Cursor 用户**：请使用下方对应平台的安装脚本，手动安装 Skill 文件
+> - 所有平台的核心功能完全一致，仅 Hook 自动注入功能有差异
 
 ### 快速开始（推荐）
 
@@ -482,57 +558,126 @@ claude mcp list
 
 ### OpenCode
 
+OpenCode 支持全局 skills 安装，将 SKILL.md 文件放置到 `~/.opencode/skills/` 目录即可。
+
+**一键安装所有方法论**：
 ```bash
-# 全局安装 - 第一性原理
-mkdir -p ~/.opencode/skills/first-principles
-curl -o ~/.opencode/skills/first-principles/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md
+# 创建安装脚本
+cat > /tmp/install-methodology-skills.sh << 'EOF'
+#!/bin/bash
+SKILLS=(
+  "first-principles"
+  "goal-oriented"
+  "pdca-cycle"
+  "mvp-first"
+  "ddd-strategic-design"
+  "ddd-tactical-design"
+  "swot-analysis"
+  "prompt-enhancer"
+  "skill-manager"
+  "wechat-article-writer"
+  "infographic-generator"
+  "fortune-teller"
+)
 
-# 全局安装 - 目标导向
+BASE_URL="https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills"
+
+for skill in "${SKILLS[@]}"; do
+  echo "Installing $skill..."
+  mkdir -p ~/.opencode/skills/$skill
+  curl -fsSL "$BASE_URL/$skill/SKILL.md" -o ~/.opencode/skills/$skill/SKILL.md
+done
+
+echo "✅ All methodology skills installed!"
+EOF
+
+# 执行安装
+chmod +x /tmp/install-methodology-skills.sh
+/tmp/install-methodology-skills.sh
+```
+
+**单独安装**：
+```bash
+# 安装目标导向（刚性要求版本）
 mkdir -p ~/.opencode/skills/goal-oriented
-curl -o ~/.opencode/skills/goal-oriented/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md \
+  -o ~/.opencode/skills/goal-oriented/SKILL.md
 
-# 全局安装 - PDCA 循环
-mkdir -p ~/.opencode/skills/pdca-cycle
-curl -o ~/.opencode/skills/pdca-cycle/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/pdca-cycle/SKILL.md
+# 安装第一性原理
+mkdir -p ~/.opencode/skills/first-principles
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md \
+  -o ~/.opencode/skills/first-principles/SKILL.md
 
-# 全局安装 - MVP First
+# 安装 MVP First
 mkdir -p ~/.opencode/skills/mvp-first
-curl -o ~/.opencode/skills/mvp-first/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/mvp-first/SKILL.md
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/mvp-first/SKILL.md \
+  -o ~/.opencode/skills/mvp-first/SKILL.md
+```
 
-# 全局安装 - DDD 战略设计
-mkdir -p ~/.opencode/skills/ddd-strategic-design
-curl -o ~/.opencode/skills/ddd-strategic-design/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/ddd-strategic-design/SKILL.md
-
-# 全局安装 - DDD 战术设计
-mkdir -p ~/.opencode/skills/ddd-tactical-design
-curl -o ~/.opencode/skills/ddd-tactical-design/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/ddd-tactical-design/SKILL.md
-
-# 全局安装 - SWOT分析
-mkdir -p ~/.opencode/skills/swot-analysis
-curl -o ~/.opencode/skills/swot-analysis/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/swot-analysis/SKILL.md
-
-# 全局安装 - 提示词增强器
-mkdir -p ~/.opencode/skills/prompt-enhancer
-curl -o ~/.opencode/skills/prompt-enhancer/SKILL.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/prompt-enhancer/SKILL.md
+**验证安装**：
+```bash
+ls -la ~/.opencode/skills/
 ```
 
 ### Cursor
 
-```bash
-# Cursor 使用相同的 SKILL.md 格式
-mkdir -p ~/.cursor/rules
-curl -o ~/.cursor/rules/first-principles.md \
-  https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md
+Cursor 使用 `.cursor/rules` 目录存放全局规则，SKILL.md 格式完全兼容。
 
-# 重复以上步骤安装其他方法论...
+**一键安装所有方法论**：
+```bash
+# 创建安装脚本
+cat > /tmp/install-methodology-skills-cursor.sh << 'EOF'
+#!/bin/bash
+SKILLS=(
+  "first-principles"
+  "goal-oriented"
+  "pdca-cycle"
+  "mvp-first"
+  "ddd-strategic-design"
+  "ddd-tactical-design"
+  "swot-analysis"
+  "prompt-enhancer"
+  "skill-manager"
+  "wechat-article-writer"
+  "infographic-generator"
+  "fortune-teller"
+)
+
+BASE_URL="https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills"
+
+mkdir -p ~/.cursor/rules
+
+for skill in "${SKILLS[@]}"; do
+  echo "Installing $skill..."
+  curl -fsSL "$BASE_URL/$skill/SKILL.md" -o ~/.cursor/rules/$skill.md
+done
+
+echo "✅ All methodology skills installed!"
+EOF
+
+# 执行安装
+chmod +x /tmp/install-methodology-skills-cursor.sh
+/tmp/install-methodology-skills-cursor.sh
+```
+
+**单独安装**：
+```bash
+# 安装目标导向（刚性要求版本）
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md \
+  -o ~/.cursor/rules/goal-oriented.md
+
+# 安装第一性原理
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md \
+  -o ~/.cursor/rules/first-principles.md
+
+# 安装 MVP First
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/mvp-first/SKILL.md \
+  -o ~/.cursor/rules/mvp-first.md
+```
+
+**验证安装**：
+```bash
+ls -la ~/.cursor/rules/
 ```
 
 ---
@@ -683,6 +828,53 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 ---
 
 ## 更新日志
+
+### v1.11.6 (2026-03-18)
+
+**🎯 Goal-Oriented 重大升级 - 刚性要求与持续触发**
+
+**核心改进**:
+- ✅ **刚性要求** - 每个用户请求都必须触发目标追踪
+- ✅ **持续触发机制** - 无论是否已创建目标，每个用户消息都会触发检查
+- ✅ **自定义标签** - `<恐龙专属指令>` 替代默认标签
+- ✅ **明确触发条件** - 适配 OpenCode 和 Cursor 平台
+
+**Iron Law 完整规则**:
+```markdown
+### ⚡ 核心原则：持续触发
+每个用户消息都必须触发 goal-oriented 检查
+
+### 任务开始时（强制创建目标）
+- 检测标准：多步骤任务（> 2步 或 > 1分钟）
+- 当前无 pending 目标
+- 强制动作：goal-tracker.py create
+
+### 任务执行中（强制调整目标）
+- 已存在 pending 目标
+- 用户补充需求细节 或 修改需求
+- 强制动作：goal-tracker.py adjust
+
+### 任务完成时（强制验证目标）
+- AI 认为"完成了"、"做好了"
+- 强制动作：goal-tracker.py verify
+```
+
+**适配平台**:
+- ✅ Claude Code - SessionStart Hook 自动注入
+- ✅ OpenCode - 全局 SKILL.md 安装
+- ✅ Cursor - 全局 rules 安装
+
+**示例行为**:
+```
+用户: 实现一个物资整理网站
+AI: ✅ 触发 goal-oriented
+    ✅ 创建目标: memory/goals/2026-03-18_1551_物资整理网站.md
+
+用户: 重新实现一个物资整理网站
+AI: ✅ 触发 goal-oriented（持续触发）
+    ✅ 检查现有目标状态
+    ✅ 执行 adjust 或询问用户
+```
 
 ### v1.9.0 (2026-03-17)
 

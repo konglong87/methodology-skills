@@ -5,6 +5,97 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.6] - 2026-03-18
+
+### 🎯 Goal-Oriented 重大升级 - 刚性要求与持续触发
+
+#### ✨ Added
+
+**核心特性**:
+- **刚性要求（Rigid Requirement）** - 每个用户请求都必须触发目标追踪
+- **持续触发机制** - 无论是否已创建目标，每个用户消息都会触发 goal-oriented 检查
+- **自定义标签** - `<恐龙专属指令>` 替代默认的 `<EXTREMELY_IMPORTANT>` 标签
+- **完整的 Iron Law 规则** - 明确规定任务开始、执行中、完成时的强制动作
+
+**Iron Law 完整规则**:
+
+1. **核心原则：持续触发**
+   - 每个用户消息都必须触发 goal-oriented 检查
+   - 根据当前状态执行相应动作：无目标→创建，有目标→调整/验证
+
+2. **任务开始时（强制创建目标）**
+   - 检测标准：多步骤任务（> 2步 或 > 1分钟）
+   - 当前无 pending 目标
+   - 强制动作：`goal-tracker.py create`
+   - 无需询问用户，立即执行
+
+3. **任务执行中（强制调整目标）**
+   - 已存在 pending 目标
+   - 用户补充需求细节或修改需求
+   - 强制动作：`goal-tracker.py adjust`
+   - 用户说"重新实现"时，智能判断是否创建新目标
+
+4. **任务完成时（强制验证目标）**
+   - AI 认为"完成了"、"做好了"、"实现了"
+   - 强制动作：`goal-tracker.py verify`
+   - 验证失败必须继续执行，不得声称"基本完成"
+
+#### 🔧 Changed
+
+**SKILL.md 更新**:
+- `description`: 改为 `"MUST use for ANY user request. This is a rigid requirement..."`
+- 适用场景：`执行长期任务（周期 > 1分钟 或者 步骤>2）`
+- 新增"核心原则：持续触发"章节
+- 明确"已存在 pending 目标"的处理规则
+
+**SessionStart Hook 更新**:
+- 自定义标签：`<恐龙专属指令>`
+- 自定义标题：`🎯 目标追踪系统已激活`
+- 动态读取 SKILL.md 内容，无需修改 hooks 代码
+
+**README.md 更新**:
+- 版本号：v1.9.0 → v1.11.6
+- 目标导向章节：完整说明刚性要求和 Iron Law
+- 安装指南：新增 OpenCode 和 Cursor 一键安装脚本
+
+**CHANGELOG.md 更新**:
+- 新增 v1.11.6 版本记录
+
+#### 🐛 Fixed
+
+**问题修复**:
+- 修复"后续消息不再触发 goal-oriented"的问题
+- 修复"用户重新开始任务时不触发"的问题
+- 修复"AI 问问题后才执行 goal-tracker"的问题（应该立即执行）
+
+**根本原因分析**:
+- 原因 1：description 与 Iron Law 不匹配
+- 原因 2：缺少"持续触发"规则
+- 原因 3：缺少"已存在目标"的处理规则
+
+**解决方案**:
+- 明确"刚性要求"：每个用户请求都必须触发
+- 新增"核心原则：持续触发"
+- 明确"已存在 pending 目标"时的处理流程
+
+#### 📚 Documentation
+
+**新增文档**:
+- Iron Law 完整规则说明
+- 持续触发机制说明
+- OpenCode 和 Cursor 一键安装脚本
+
+**更新文档**:
+- README.md 目标导向章节
+- 安装指南（OpenCode/Cursor）
+
+#### 🔗 Platform Support
+
+**适配平台**:
+- ✅ Claude Code - SessionStart Hook 自动注入
+- ✅ OpenCode - 全局 SKILL.md 安装（一键脚本）
+- ✅ Cursor - 全局 rules 安装（一键脚本）
+
 ## [1.9.0] - 2026-03-17
 
 ### ✨ Added
