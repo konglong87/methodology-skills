@@ -20,7 +20,8 @@ description: "MUST use for ANY user request. This is a rigid requirement that ap
 ## When to Use
 
 **适用场景**：
-- 执行长期任务（周期 > 1分钟 或者 步骤>2）
+- 需要实现新需求、新想法、新任务
+- 执行中长期任务（周期 > 1分钟 或者 步骤>1）
 - 项目规划和管理
 - 容易偏离目标的复杂任务
 - 多任务并行，需要优先级判断
@@ -28,7 +29,7 @@ description: "MUST use for ANY user request. This is a rigid requirement that ap
 - 用户明确要求"目标导向地执行"
 
 **不适用场景**：
-- 简单的、明确的小任务
+- 简单的、明确的小任务，比如计算1+1=？
 - 探索性工作，目标本身不明确
 
 ## ⚠️ 强制执行规则（Iron Law）
@@ -47,9 +48,9 @@ description: "MUST use for ANY user request. This is a rigid requirement that ap
 ### 任务开始时（强制创建目标）
 
 **检测标准**：
-- 用户消息包含行动指令（实现、修复、重构、优化、分析、设计等）
-- 多步骤需求（需要 2+ 步骤完成）
-- 涉及代码编写、文件修改、系统设计
+- 用户消息包含行动指令（实现、修复、重构、优化、分析、设计、review等）
+- 多步骤需求（需要 1+ 步骤完成）
+- 涉及代码编写、文件修改、系统设计、代码审查
 - **当前无 pending 目标**
 
 **强制动作**：
@@ -115,7 +116,7 @@ python tools/goal-tracker.py adjust \
 ```bash
 python tools/goal-tracker.py verify \
   --file "{目标文件路径}" \
-  --ai-assessment "{AI 自评完成情况}"
+  --ai-assessment "{AI 自评review 完成情况}"
 ```
 
 **验证结果处理**：

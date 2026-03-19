@@ -121,6 +121,22 @@ When user invokes `/wechat-article-writer`, the AI tool should:
 - [ ] **Step 7: Review 2 - Design & Language** - Check for typos, grammar, and design issues
 - [ ] **Step 8: Review 3 - AI Removal & Colloquial Optimization** - Remove AI traces and make content natural
 
+**⚠️ 重要:子代理调用实现**
+
+本系统使用Agent工具调用专业子代理,确保真正的专业分工和质量提升。
+
+**子代理配置文件位置:**
+- 标题专家: `skills/wechat-article-writer/agents/title-specialist.md`
+- 结构专家: `skills/wechat-article-writer/agents/structure-specialist.md`
+- 内容专家: `skills/wechat-article-writer/agents/content-specialist.md`
+- Review专家: `skills/wechat-article-writer/agents/review-specialist.md`
+
+**调用原则:**
+1. 每个子代理有独立的角色定位和专业知识
+2. 输入完整上下文,不依赖会话历史
+3. 输出结构化结果,便于后续处理
+4. 失败时有降级策略
+
 ### Phase 3: Multi-Version Generation
 
 - [ ] **Step 9: Generate 4 Article Versions** - Generate multiple versions for different use cases:
@@ -307,19 +323,555 @@ Present analysis to user:
 
 Wait for user confirmation before proceeding.
 
-### Step 3: Generate Outline
+### Step 3: Generate Titles (Using Title Specialist Agent)
 
-Create structured outline with:
-- 3-5 main sections
-- Each section has 2-4 subsections
-- Include title variants (3 options)
-- Include article summary (1-2 sentences)
+**调用标题专家子代理生成标题**
 
-Save to: `wechat-articles/{topic-slug}/outline.md`
+作为主代理,你需要调用标题专家来生成专业标题。以下是具体执行步骤:
 
-### Step 4: Generate Article
+#### 3.1 准备输入参数
 
-Write the full article following:
+从前面的步骤中提取以下信息:
+- **主题**: 从用户输入的主题
+- **目标受众**: 从Step 1分析得到的目标受众
+- **文章风格**: 从用户偏好或默认配置
+- **字数要求**: 15-25字
+
+#### 3.2 调用标题专家
+
+使用Agent工具调用标题专家,按照以下prompt格式:
+
+```
+你现在是【标题专家】,专门为微信公众号文章创作高转化率的标题。
+
+请阅读你的角色配置文件: skills/wechat-article-writer/agents/title-specialist.md
+
+输入参数:
+- 主题: {从用户输入提取的主题}
+- 目标受众: {目标受众}
+- 文章风格: {风格}
+- 字数要求: 15-25字
+
+请严格按照 title-specialist.md 中的规范输出,包括:
+1. 生成3个标题,每个标题标注使用的技巧和理由
+2. 推荐1个最佳标题并说明推荐理由
+```
+
+#### 3.3 处理输出
+
+**解析标题输出:**
+
+标题专家会返回Markdown格式的输出,包含:
+
+```markdown
+**标题1**: {标题内容}
+- **技巧**: {技巧名称}
+- **理由**: {为什么有效}
+
+**标题2**: ...
+
+**标题3**: ...
+
+**推荐**: 标题{N}
+**推荐理由**: {为什么推荐}
+```
+
+**处理步骤:**
+1. 提取3个标题的内容
+2. 记录每个标题对应的技巧和理由
+3. 找到"推荐"部分,记录推荐标题的内容
+4. 验证标题长度是否为15-25字
+
+**保存输出:**
+- 将标题专家的完整输出保存到: `wechat-articles/{topic-slug}/titles.md`
+- 记录推荐标题的内容,用于下一步骤
+
+#### 3.4 质量检查
+
+- [ ] 生成了3个标题
+- [ ] 每个标题标注了技巧和理由
+- [ ] 有明确的推荐标题
+- [ ] 标题长度符合要求(15-25字)
+
+#### 3.5 错误处理
+
+**如果标题专家失败:**
+- 使用降级方案: 生成默认标题 `{主题} - 完整指南`
+- 记录失败原因
+- 继续下一步骤
+
+**如果输出格式不完整:**
+- 提取可用的标题信息
+- 手动选择第一个标题作为推荐
+- 标注"部分输出"
+
+### Step 4: Design Structure (Using Structure Specialist Agent)
+
+**调用结构专家子代理设计结构**
+
+作为主代理,你需要调用结构专家来设计文章结构。以下是具体执行步骤:
+
+#### 4.1 准备输入参数
+
+- **主题**: 从用户输入的主题
+- **选定标题**: 从Step 3得到的推荐标题
+- **目标受众**: 从Step 1分析得到的目标受众
+- **文章风格**: 从用户偏好或默认配置
+- **字数要求**: 默认5000字或用户指定
+
+#### 4.2 调用结构专家
+
+使用Agent工具调用结构专家,按照以下prompt格式:
+
+```
+你现在是【结构专家】,专门为微信公众号文章设计清晰的逻辑框架和段落架构。
+
+请阅读你的角色配置文件: skills/wechat-article-writer/agents/structure-specialist.md
+
+输入参数:
+- 主题: {主题}
+- 选定标题: {从Step 3得到的推荐标题}
+- 目标受众: {目标受众}
+- 文章风格: {风格}
+- 字数要求: {字数}字
+
+请严格按照 structure-specialist.md 中的规范输出,包括:
+1. 选择合适的文章类型并说明理由
+2. 提炼中心思想(一句话概括)
+3. 设计完整的文章结构大纲(开头、主体、结尾)
+4. 分配各部分字数
+```
+
+#### 4.3 处理输出
+
+**解析结构输出:**
+
+结构专家会返回Markdown格式的输出,包含:
+
+```markdown
+**文章类型**: {类型名称}
+**选择理由**: {为什么选择这个类型}
+
+**中心思想**: {一句话概括}
+
+**文章结构大纲**:
+
+**开头部分**
+- 主要内容: {...}
+- 目标: {...}
+- 字数: {N}字
+
+**主体部分**
+- 段落1: {...}
+- 段落2: {...}
+...
+
+**结尾部分**
+- 主要内容: {...}
+- 字数: {N}字
+```
+
+**处理步骤:**
+1. 提取文章类型和选择理由
+2. 提取中心思想(一句话)
+3. 提取完整的结构大纲
+4. 验证各部分字数分配是否合理
+
+**保存输出:**
+- 将结构专家的完整输出保存到: `wechat-articles/{topic-slug}/structure.md`
+- 记录中心思想,用于后续Review验证
+
+#### 4.4 质量检查
+
+- [ ] 选择了合适的文章类型
+- [ ] 提炼了清晰的中心思想
+- [ ] 设计了完整的结构大纲
+- [ ] 字数分配合理
+
+#### 4.5 错误处理
+
+**如果结构专家失败:**
+- 使用降级方案: 采用"总分总"结构
+- 生成默认大纲: 开头(15%) + 主体(70%) + 结尾(15%)
+- 记录失败原因
+
+**如果中心思想不明确:**
+- 根据主题和标题手动提炼中心思想
+- 标注"手动提炼"
+  model: 'sonnet'
+});
+
+// 解析输出
+const structure = parseStructureOutput(structureResult);
+saveToFile(`wechat-articles/${topicSlug}/structure.md`, structureResult);
+
+// 提取中心思想用于后续Review
+const centralTheme = structure.centralTheme;
+```
+
+**输出位置**: `wechat-articles/{topic-slug}/structure.md`
+
+**质量检查:**
+- [ ] 选择了合适的文章类型
+- [ ] 提炼了清晰的中心思想
+- [ ] 设计了完整的结构大纲
+- [ ] 字数分配合理
+
+### Step 5: Generate Content (Using Content Specialist Agent)
+
+**调用内容专家子代理撰写内容**
+
+作为主代理,你需要调用内容专家来撰写文章内容。以下是具体执行步骤:
+
+#### 5.1 准备输入参数
+
+- **主题**: 从用户输入的主题
+- **选定标题**: 从Step 3得到的推荐标题
+- **文章结构**: 从Step 4得到的结构大纲(完整Markdown)
+- **目标受众**: 从Step 1分析得到的目标受众
+- **文章风格**: 从用户偏好或默认配置
+
+#### 5.2 调用内容专家
+
+使用Agent工具调用内容专家,按照以下prompt格式:
+
+```
+你现在是【内容专家】,专门根据结构大纲和标题撰写高质量文章内容。
+
+请阅读你的角色配置文件: skills/wechat-article-writer/agents/content-specialist.md
+
+输入参数:
+- 主题: {主题}
+- 选定标题: {从Step 3得到的推荐标题}
+- 文章结构: {从Step 4得到的完整结构大纲}
+- 目标受众: {目标受众}
+- 文章风格: {风格}
+
+请严格按照 content-specialist.md 中的规范输出,确保:
+1. 完全遵循结构大纲
+2. 内容支撑标题承诺
+3. 段落简短(2-4句),易于阅读
+4. 有具体案例和数据支撑
+5. 符合微信公众号写作规范
+```
+
+#### 5.3 处理输出
+
+**保存内容:**
+- 将内容专家的完整输出保存到: `wechat-articles/{topic-slug}/content-initial.md`
+- 记录内容长度和段落数
+
+#### 5.4 质量检查
+
+- [ ] 内容符合结构大纲
+- [ ] 围绕中心思想展开
+- [ ] 有具体案例和数据
+- [ ] 段落简短易读(2-4句)
+- [ ] 符合字数要求
+
+#### 5.5 错误处理
+
+**如果内容专家失败:**
+- 使用降级方案: 根据结构大纲生成简化内容
+- 记录失败原因
+- 标注"简化版本"
+
+**如果内容偏离结构:**
+- 记录偏离部分
+- 在后续Review中修正
+
+### Step 6: Review 1 - Theme Consistency (Using Review Specialist Agent)
+
+**调用Review专家执行中心思想一致性检查**
+
+作为主代理,你需要调用Review专家执行第一层质量检查。以下是具体执行步骤:
+
+#### 6.1 准备输入参数
+
+- **中心思想**: 从Step 4结构大纲中提取的中心思想
+- **文章内容**: 从Step 5生成的初始内容
+
+#### 6.2 调用Review专家
+
+使用Agent工具调用Review专家,按照以下prompt格式:
+
+```
+你现在是【Review专家】,专门执行文章质量检查。
+
+请阅读你的角色配置文件: skills/wechat-article-writer/agents/review-specialist.md
+
+现在执行【Review 1: 中心思想一致性检查】
+
+输入参数:
+- 中心思想: {从Step 4提取的中心思想}
+- 文章内容: {从Step 5生成的文章内容}
+
+请按照 review-specialist.md 中 Review 1 的规范输出:
+1. 评估结果(通过/需修改)和置信度(0-100)
+2. 问题列表(如有偏离主题的内容,标注位置)
+3. 具体修改建议
+4. 验证标准
+
+如果需要修改,请明确指出问题位置和修改方向。
+```
+
+#### 6.3 处理输出
+
+**解析Review输出:**
+
+Review专家会返回包含评估结果的输出:
+
+```markdown
+**评估结果**: {通过/需修改}
+**置信度**: {0-100}
+
+**问题列表**:
+- 问题1: {描述} (位置: 第N段)
+- 问题2: ...
+
+**修改建议**: {...}
+```
+
+**保存输出:**
+- 将Review 1的完整输出保存到: `wechat-articles/{topic-slug}/review-1.md`
+
+#### 6.4 Review循环机制
+
+**如果评估结果为"需修改":**
+
+1. **检查重试次数:**
+   - 维护重试计数器(初始为0)
+   - 如果重试次数 < 3,继续修改
+   - 如果重试次数 ≥ 3,标记"部分通过",继续Step 7
+
+2. **调用内容专家修改内容:**
+
+   使用Agent工具调用内容专家:
+
+   ```
+   你现在是【内容专家】,需要根据Review 1的反馈优化内容。
+
+   请阅读你的角色配置: skills/wechat-article-writer/agents/content-specialist.md
+
+   输入参数:
+   - 初始内容: {当前文章内容}
+   - Review 1结果: {Review 1的完整输出}
+
+   请根据Review 1的问题列表和修改建议优化内容,然后输出优化后的完整文章。
+
+   当前重试次数: {N}/3
+   优化策略: {根据重试次数选择: 第1次直接修改/第2次分析根源/第3次全面重写}
+   ```
+
+3. **更新重试计数器:** 重试次数 + 1
+
+4. **重新执行Review 1:** 返回Step 6.2
+
+**如果评估结果为"通过":**
+- 继续Step 7
+
+#### 6.5 错误处理
+
+**如果Review专家失败:**
+- 使用降级方案: 标注"未经Review 1检查"
+- 继续Step 7
+
+**如果Review超时(>60秒):**
+- 记录超时
+- 标注"Review 1超时"
+- 继续Step 7
+
+#### 6.6 质量阈值优化(可选)
+
+**引入质量阈值,避免过度Review:**
+
+- 如果置信度 ≥ 80分,即使"需修改"也可选择通过
+- 记录"高分通过"和修改建议
+- 继续Step 7
+
+这样可以减少不必要的重试,提升性能
+
+### Step 7: Review 2 - Design & Language (Using Review Specialist Agent)
+
+**调用Review专家执行设计与语言检查**
+
+作为主代理,你需要调用Review专家执行第二层质量检查。以下是具体执行步骤:
+
+#### 7.1 准备输入参数
+
+- **文章内容**: 当前最新的文章内容(可能已通过Review 1修改)
+
+#### 7.2 调用Review专家
+
+使用Agent工具调用Review专家,按照以下prompt格式:
+
+```
+你现在是【Review专家】,专门执行文章质量检查。
+
+请阅读你的角色配置文件: skills/wechat-article-writer/agents/review-specialist.md
+
+现在执行【Review 2: 设计与语言检查】
+
+输入参数:
+- 文章内容: {当前文章内容}
+
+请按照 review-specialist.md 中 Review 2 的规范输出:
+1. 评估结果(通过/需修改)和置信度(0-100)
+2. 问题列表(错别字、语法错误、语义不通等,标注位置)
+3. 具体修改建议
+4. 验证标准
+```
+
+#### 7.3 处理输出
+
+**保存输出:**
+- 将Review 2的完整输出保存到: `wechat-articles/{topic-slug}/review-2.md`
+
+#### 7.4 Review循环机制
+
+**如果评估结果为"需修改":**
+
+执行与Review 1相同的循环逻辑:
+1. 检查重试次数(最多3次)
+2. 调用内容专家根据Review 2反馈修改
+3. 更新重试计数器
+4. 重新执行Review 7.2
+
+**如果评估结果为"通过":**
+- 继续Step 8
+
+#### 7.5 错误处理
+
+**如果Review专家失败:**
+- 标注"未经Review 2检查"
+- 继续Step 8
+
+**如果Review超时(>60秒):**
+- 记录超时
+- 标注"Review 2超时"
+- 继续Step 8
+
+#### 7.6 质量阈值优化(可选)
+
+- 如果置信度 ≥ 80分,即使"需修改"也可选择通过
+- 记录"高分通过"和修改建议
+- 继续Step 8
+
+### Step 8: Review 3 - AI Removal & Colloquial Optimization (Using Review Specialist Agent)
+
+**调用Review专家执行去AI化与口语化优化**
+
+作为主代理,你需要调用Review专家执行第三层质量检查。以下是具体执行步骤:
+
+#### 8.1 准备输入参数
+
+- **文章内容**: 当前最新的文章内容(可能已通过Review 1和Review 2修改)
+- **目标受众**: 从Step 1分析得到的目标受众
+
+#### 8.2 调用Review专家
+
+使用Agent工具调用Review专家,按照以下prompt格式:
+
+```
+你现在是【Review专家】,专门执行文章质量检查。
+
+请阅读你的角色配置文件: skills/wechat-article-writer/agents/review-specialist.md
+
+现在执行【Review 3: 去AI化与口语化优化】
+
+输入参数:
+- 文章内容: {当前文章内容}
+- 目标受众: {目标受众}
+
+请按照 review-specialist.md 中 Review 3 的规范输出:
+1. 评估结果(通过/需修改)和置信度(0-100)
+2. AI痕迹列表(过度结构化、空洞表达等,标注位置)
+3. 口语化建议(具体给出优化前后对比)
+4. 验证标准
+```
+
+#### 8.3 处理输出
+
+**保存输出:**
+- 将Review 3的完整输出保存到: `wechat-articles/{topic-slug}/review-3.md`
+
+#### 8.4 Review循环机制
+
+**如果评估结果为"需修改":**
+
+执行与Review 1相同的循环逻辑:
+1. 检查重试次数(最多3次)
+2. 调用内容专家根据Review 3反馈修改
+3. 更新重试计数器
+4. 重新执行Step 8.2
+
+**如果评估结果为"通过":**
+- 准备生成最终优化版本
+
+#### 8.5 生成最终优化版本
+
+**Review全部通过后,调用内容专家生成最终版本:**
+
+使用Agent工具调用内容专家:
+
+```
+你现在是【内容专家】,需要根据三层Review的反馈生成最终优化版本。
+
+请阅读你的角色配置: skills/wechat-article-writer/agents/content-specialist.md
+
+输入参数:
+- 初始内容: {当前文章内容}
+- Review 1结果: {Review 1的输出}
+- Review 2结果: {Review 2的输出}
+- Review 3结果: {Review 3的输出}
+
+请整合所有三层Review的修改建议,输出最终的优化文章内容。
+
+要求:
+1. 整合所有有效的修改建议
+2. 确保不引入新问题
+3. 保持文章完整性和连贯性
+```
+
+**保存最终内容:**
+- 将最终优化版本作为后续多版本生成的基础
+
+#### 8.6 错误处理
+
+**如果Review专家失败:**
+- 标注"未经Review 3检查"
+- 使用当前内容继续Step 9
+
+**如果Review超时(>60秒):**
+- 记录超时
+- 标注"Review 3超时"
+- 继续Step 9
+
+#### 8.7 质量阈值优化(可选)
+
+- 如果置信度 ≥ 80分,即使"需修改"也可选择通过
+- 记录"高分通过"和修改建议
+- 继续Step 9
+
+---
+
+**Review循环机制总结:**
+
+每层Review最多重试3次:
+- **第1次修改**: 根据问题列表直接修改
+- **第2次修改**: 分析问题根源,针对性修改
+- **第3次修改**: 全面审查,系统性修改
+
+如果3次后仍未完全通过,标记为"部分通过",记录未解决问题,继续下一步。这样可以避免死循环,同时保证质量。
+
+**性能优化建议:**
+- 引入质量阈值(≥80分即可通过)
+- 设置超时限制(每层Review最多60秒)
+- 并行执行Review 1和Review 2(可选)
+
+---
+
+### Step 9: Generate Article Versions
 - The outline structure
 - User's voice preferences (professional/casual/friendly)
 - **Word count limit**: Stay within the specified word count limit (default 5000 words)
