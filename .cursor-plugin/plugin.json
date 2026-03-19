@@ -1,0 +1,26 @@
+{
+  "name": "methodology-skills",
+  "displayName": "Methodology Skills",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、Skills管理、微信公众号文章生成器、信息图生成器、算命系统等12个Skills",
+  "version": "1.11.7",
+  "author": {
+    "name": "恐龙创新部",
+    "url": "https://github.com/konglong87"
+  },
+  "homepage": "https://github.com/konglong87/methodology-skills",
+  "repository": "https://github.com/konglong87/methodology-skills",
+  "license": "MIT",
+  "keywords": [
+    "methodology",
+    "first-principles",
+    "goal-oriented",
+    "pdca",
+    "ddd",
+    "swot",
+    "mvp-first",
+    "skills",
+    "thinking-framework",
+    "problem-solving"
+  ],
+  "skills": "./skills/"
+}

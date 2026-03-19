@@ -1,17 +1,18 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.11.6-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.11.7-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
   <img src="https://img.shields.io/badge/Cursor-✓-cyan.svg" alt="Cursor">
+  <img src="https://img.shields.io/badge/Codex-✓-magenta.svg" alt="Codex">
   <img src="https://img.shields.io/badge/Exa%20AI%20Search-✓-brightgreen.svg" alt="Exa AI Search">
 </p>
 
 > 让 AI 掌握方法论，更聪明地思考和执行任务
 
-一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor。
+一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor、Codex。
 
 ---
 
@@ -556,6 +557,113 @@ claude mcp list
 - Cursor/OpenCode 使用各自的联网能力
 - 功能依然可用，只是搜索质量略低于 Exa AI
 
+### Cursor
+
+Cursor 支持通过插件市场或手动安装两种方式。
+
+#### 方式一：插件市场安装（推荐）
+
+在 Cursor Agent chat 中安装：
+
+```text
+/add-plugin methodology-skills
+```
+
+或搜索 "methodology-skills" 安装插件。
+
+#### 方式二：手动安装
+
+Cursor 使用 `.cursor/rules` 目录存放全局规则，SKILL.md 格式完全兼容。
+
+**一键安装所有方法论**：
+```bash
+# 创建安装脚本
+cat > /tmp/install-methodology-skills-cursor.sh << 'EOF'
+#!/bin/bash
+SKILLS=(
+  "first-principles"
+  "goal-oriented"
+  "pdca-cycle"
+  "mvp-first"
+  "ddd-strategic-design"
+  "ddd-tactical-design"
+  "swot-analysis"
+  "prompt-enhancer"
+  "skill-manager"
+  "wechat-article-writer"
+  "infographic-generator"
+  "fortune-teller"
+)
+
+BASE_URL="https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills"
+
+mkdir -p ~/.cursor/rules
+
+for skill in "${SKILLS[@]}"; do
+  echo "Installing $skill..."
+  curl -fsSL "$BASE_URL/$skill/SKILL.md" -o ~/.cursor/rules/$skill.md
+done
+
+echo "✅ All methodology skills installed!"
+EOF
+
+# 执行安装
+chmod +x /tmp/install-methodology-skills-cursor.sh
+/tmp/install-methodology-skills-cursor.sh
+```
+
+**单独安装**：
+```bash
+# 安装目标导向（刚性要求版本）
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md \
+  -o ~/.cursor/rules/goal-oriented.md
+
+# 安装第一性原理
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md \
+  -o ~/.cursor/rules/first-principles.md
+
+# 安装 MVP First
+curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/mvp-first/SKILL.md \
+  -o ~/.cursor/rules/mvp-first.md
+```
+
+**验证安装**：
+```bash
+ls -la ~/.cursor/rules/
+```
+
+### Codex
+
+Codex 使用 native skill discovery 机制，通过克隆仓库并创建符号链接即可启用。
+
+**一键安装**：
+```bash
+# 1. 克隆仓库
+git clone https://github.com/konglong87/methodology-skills.git ~/.codex/methodology-skills
+
+# 2. 创建 skills 符号链接
+mkdir -p ~/.agents/skills
+ln -s ~/.codex/methodology-skills/skills ~/.agents/skills/methodology-skills
+
+# Windows (PowerShell)
+# New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.agents\skills"
+# cmd /c mklink /J "$env:USERPROFILE\.agents\skills\methodology-skills" "$env:USERPROFILE\.codex\methodology-skills\skills"
+
+# 3. 重启 Codex
+```
+
+**验证安装**：
+```bash
+ls -la ~/.agents/skills/methodology-skills
+```
+
+**更新**：
+```bash
+cd ~/.codex/methodology-skills && git pull
+```
+
+**详细文档**: [`.codex/INSTALL.md`](.codex/INSTALL.md)
+
 ### OpenCode
 
 OpenCode 支持全局 skills 安装，将 SKILL.md 文件放置到 `~/.opencode/skills/` 目录即可。
@@ -617,67 +725,6 @@ curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/
 **验证安装**：
 ```bash
 ls -la ~/.opencode/skills/
-```
-
-### Cursor
-
-Cursor 使用 `.cursor/rules` 目录存放全局规则，SKILL.md 格式完全兼容。
-
-**一键安装所有方法论**：
-```bash
-# 创建安装脚本
-cat > /tmp/install-methodology-skills-cursor.sh << 'EOF'
-#!/bin/bash
-SKILLS=(
-  "first-principles"
-  "goal-oriented"
-  "pdca-cycle"
-  "mvp-first"
-  "ddd-strategic-design"
-  "ddd-tactical-design"
-  "swot-analysis"
-  "prompt-enhancer"
-  "skill-manager"
-  "wechat-article-writer"
-  "infographic-generator"
-  "fortune-teller"
-)
-
-BASE_URL="https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills"
-
-mkdir -p ~/.cursor/rules
-
-for skill in "${SKILLS[@]}"; do
-  echo "Installing $skill..."
-  curl -fsSL "$BASE_URL/$skill/SKILL.md" -o ~/.cursor/rules/$skill.md
-done
-
-echo "✅ All methodology skills installed!"
-EOF
-
-# 执行安装
-chmod +x /tmp/install-methodology-skills-cursor.sh
-/tmp/install-methodology-skills-cursor.sh
-```
-
-**单独安装**：
-```bash
-# 安装目标导向（刚性要求版本）
-curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md \
-  -o ~/.cursor/rules/goal-oriented.md
-
-# 安装第一性原理
-curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md \
-  -o ~/.cursor/rules/first-principles.md
-
-# 安装 MVP First
-curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/mvp-first/SKILL.md \
-  -o ~/.cursor/rules/mvp-first.md
-```
-
-**验证安装**：
-```bash
-ls -la ~/.cursor/rules/
 ```
 
 ---
@@ -828,6 +875,43 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 ---
 
 ## 更新日志
+
+### v1.11.7 (2026-03-19)
+
+**🎯 新增 Cursor 和 Codex 平台支持**
+
+**核心改进**:
+- ✅ **Cursor 插件支持** - 通过插件市场或手动安装
+  - 支持 `.cursor/rules/` 目录安装
+  - 创建 `.cursor-plugin/plugin.json` 配置文件
+  - 一键安装脚本支持所有 12 个方法论 skills
+- ✅ **Codex Native Skill Discovery** - 通过符号链接启用
+  - 克隆仓库 + 创建符号链接即可使用
+  - 创建 `.codex/INSTALL.md` 详细安装指导
+  - 支持 Windows PowerShell 安装
+- ✅ **OpenCode 安装指导优化** - 参考 superpowers 项目
+  - 创建 `.opencode/INSTALL.md` 完整文档
+  - 支持 native skill discovery 机制
+  - 明确的更新和故障排除指南
+- ✅ **README.md 安装指导重构** - 清晰的分层结构
+  - Cursor → Codex → OpenCode 三平台完整支持
+  - 每个平台都有一键安装和单独安装两种方式
+  - 新增 Codex 平台徽章
+
+**平台支持矩阵**:
+| 平台 | 安装方式 | Hook 支持 | 核心功能 |
+|------|---------|----------|---------|
+| Claude Code | 插件市场 | ✅ 完整 | ✅ 完整 |
+| Cursor | 插件市场/手动 | ❌ 无 | ✅ 完整 |
+| Codex | 符号链接 | ❌ 无 | ✅ 完整 |
+| OpenCode | 手动安装 | ❌ 无 | ✅ 完整 |
+
+**文件变更**:
+- 新增 `.codex/INSTALL.md` - Codex 安装指导
+- 新增 `.cursor-plugin/plugin.json` - Cursor 插件配置
+- 新增 `.opencode/INSTALL.md` - OpenCode 安装指导
+- 更新 `README.md` - 重构安装指导章节
+- 更新版本号: 1.11.6 → 1.11.7
 
 ### v1.11.6 (2026-03-18)
 

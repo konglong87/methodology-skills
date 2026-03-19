@@ -1,6 +1,6 @@
 {
   "name": "methodology-skills",
-  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、Skills管理、微信公众号文章生成器、信息图生成器等11个Skills - 帮助AI更聪明地思考、创作和执行任务",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、Skills管理、微信公众号文章生成器、信息图生成器等11个Skills - 帮助AI更聪明地思考、创作和执行任务。支持 Claude Code、Cursor、Codex、OpenCode 四大平台",
   "owner": {
     "name": "恐龙创新部",
     "url": "https://github.com/konglong87"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "methodology-skills",
-      "description": "方法论工具箱 - 包含12个核心Skills：第一性原理思维、目标导向执行、PDCA循环改进、MVP最小可验证产品、DDD领域驱动设计(战略+战术)、SWOT战略分析、提示词需求澄清、Skills智能管理、微信公众号文章自动生成(集成Exa AI强制优先联网搜索)、信息图智能生成(8种风格+智能标题+横竖双版输出)、算命系统(融合紫微斗数、生辰八字、盲派、南北派四大派系) - 覆盖思维方法、项目管理、内容创作、可视化、命理分析等多个场景",
+      "description": "方法论工具箱 - 包含12个核心Skills：第一性原理思维、目标导向执行、PDCA循环改进、MVP最小可验证产品、DDD领域驱动设计(战略+战术)、SWOT战略分析、提示词需求澄清、Skills智能管理、微信公众号文章自动生成(集成Exa AI强制优先联网搜索)、信息图智能生成(8种风格+智能标题+横竖双版输出)、算命系统(融合紫微斗数、生辰八字、盲派、南北派四大派系) - 覆盖思维方法、项目管理、内容创作、可视化、命理分析等多个场景。支持 Claude Code、Cursor、Codex、OpenCode",
       "version": "1.11.7",
       "source": "./",
       "author": {
