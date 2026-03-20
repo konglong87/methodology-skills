@@ -9,7 +9,10 @@ class InputHandler {
    * 农历转阳历
    */
   lunarToSolar(lunarYear, lunarMonth, lunarDay, isLeapMonth = false) {
-    const lunarDate = lunar.Lunar.fromYmd(lunarYear, lunarMonth, lunarDay, isLeapMonth);
+    // lunar-javascript库使用负数月份表示闰月
+    // 例如：闰四月用 -4 表示
+    const month = isLeapMonth ? -lunarMonth : lunarMonth;
+    const lunarDate = lunar.Lunar.fromYmd(lunarYear, month, lunarDay);
     const solar = lunarDate.getSolar();
     return {
       year: solar.getYear(),
@@ -24,11 +27,16 @@ class InputHandler {
   solarToLunar(solarYear, solarMonth, solarDay) {
     const solarDate = lunar.Solar.fromYmd(solarYear, solarMonth, solarDay);
     const lunarDate = solarDate.getLunar();
+
+    // lunar-javascript库中，闰月用负数表示（如闰四月 = -4）
+    const month = lunarDate.getMonth();
+    const isLeapMonth = month < 0;
+
     return {
       year: lunarDate.getYear(),
-      month: lunarDate.getMonth(),
+      month: isLeapMonth ? Math.abs(month) : month,  // 转为正数
       day: lunarDate.getDay(),
-      isLeapMonth: false
+      isLeapMonth: isLeapMonth
     };
   }
 

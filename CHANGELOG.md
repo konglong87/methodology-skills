@@ -5,6 +5,148 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.8] - 2026-03-20
+
+### 🐛 Bug Fixes
+
+**Fortune-Teller 排盘准确性修复**
+
+修复了 fortune-teller skill 中两个关键 bug，导致八字排盘不准确的问题：
+
+#### 时柱计算错误修复
+
+**问题描述**：
+- 农历2002年十月初六凌晨4点（寅时），时柱错误显示为"庚子"而不是"壬寅"
+- 所有时辰的时柱计算都不准确
+
+**根本原因**：
+- `bazi-calculator.js` 使用 `lunar.Solar.fromDate(birthDate)` 创建 Date 对象
+- Date 对象不包含时间信息，导致 `lunar-javascript` 库无法正确计算时柱
+- 时柱总是默认为"庚子"（子时）
+
+**修复方案**：
+```javascript
+// 修复前
+const solarDate = lunar.Solar.fromDate(birthDate);
+
+// 修复后 - 使用 fromYmdHms 明确包含时间参数
+const solarDate = lunar.Solar.fromYmdHms(
+  birthDate.getFullYear(),
+  birthDate.getMonth() + 1,
+  birthDate.getDate(),
+  hour,
+  0,
+  0
+);
+```
+
+**影响范围**：`skills/fortune-teller/lib/bazi-calculator.js`
+
+#### 闰月处理缺陷修复
+
+**问题描述**：
+- 无法正确识别和转换闰月日期
+- 阳历转农历时，闰月信息丢失（硬编码 `isLeapMonth: false`）
+- 农历转阳历时，闰月标记不起作用
+
+**根本原因**：
+1. `input-handler.js` 的 `solarToLunar` 方法硬编码 `isLeapMonth: false`
+2. 不了解 `lunar-javascript` 库的正确闰月表示方法（负数月份）
+3. 主流程中未传递 `isLeapMonth` 参数
+
+**修复方案**：
+
+1. **阳历转农历**（`input-handler.js:22-37`）：
+```javascript
+// 识别 lunar-javascript 的闰月表示（负数月份）
+const month = lunarDate.getMonth();
+const isLeapMonth = month < 0;
+return {
+  year: lunarDate.getYear(),
+  month: isLeapMonth ? Math.abs(month) : month,
+  day: lunarDate.getDay(),
+  isLeapMonth: isLeapMonth  // 不再硬编码 false
+};
+```
+
+2. **农历转阳历**（`input-handler.js:8-20`）：
+```javascript
+// 使用负数月份表示闰月（lunar-javascript 库的正确用法）
+const month = isLeapMonth ? -lunarMonth : lunarMonth;
+const lunarDate = lunar.Lunar.fromYmd(lunarYear, month, lunarDay);
+```
+
+3. **主流程参数传递**（`index.js:260-268`）：
+```javascript
+// 传递闰月标记
+const isLeapMonth = birthDate.isLeapMonth || false;
+solarDate = this.inputHandler.lunarToSolar(
+  birthDate.year,
+  birthDate.month,
+  birthDate.day,
+  isLeapMonth
+);
+```
+
+**影响范围**：
+- `skills/fortune-teller/lib/input-handler.js`
+- `skills/fortune-teller/index.js`
+
+**关键发现**：
+- `lunar-javascript` 库使用**负数月份**表示闰月（如闰四月 = -4）
+- `Lunar.fromYmd(year, month, day, isLeapMonth)` 的第4个参数无效
+- 正确方法：`Lunar.fromYmd(year, -month, day)` 用负数表示闰月
+
+### ✅ Testing
+
+**测试验证**：
+
+创建了完整的测试套件验证修复：
+
+1. **时柱测试**（`test/bazi-calculator-direct-test.js`）：
+   - 验证时柱计算准确性
+   - 验证五行统计正确性
+
+2. **闰月测试**（`test/leap-month-final-verification.js`）：
+   - 测试2001-2028年所有闰月年份
+   - 验证农历↔阳历双向转换一致性
+   - 验证端到端八字排盘准确性
+
+3. **综合测试**（`test/comprehensive-test-2026-03-20.js`）：
+   - 覆盖闰月和非闰月场景
+   - 覆盖所有12时辰
+
+**测试结果**：
+- ✅ 原始问题验证：农历2002年十月初六凌晨4点 → 八字：壬午 辛亥 壬午 壬寅（时柱已修复）
+- ✅ 闰月识别：2001-2028年所有闰月正确识别和转换
+- ✅ 双向转换一致性：农历↔阳历完全可逆
+- ✅ 所有测试通过（13/13）
+
+### 📝 Documentation
+
+**更新文件**：
+- `plugin.json` - 版本号 1.11.7 → 1.11.8
+- `.claude-plugin/marketplace.json` - 版本号 1.11.7 → 1.11.8
+- `README.md` - 版本徽章更新
+- `CHANGELOG.md` - 新增 v1.11.8 版本记录
+
+### 🔧 Technical Details
+
+**修改文件**：
+1. `skills/fortune-teller/lib/bazi-calculator.js` - 时柱计算修复
+2. `skills/fortune-teller/lib/input-handler.js` - 闰月识别和转换修复
+3. `skills/fortune-teller/index.js` - 闰月参数传递修复
+
+**新增测试**：
+- `test/lunar-conversion-test-2026-03-20.js` - 农历转换测试
+- `test/time-handling-test-2026-03-20.js` - 时辰处理测试
+- `test/fix-validation-test-2026-03-20.js` - 修复验证测试
+- `test/bazi-calculator-direct-test.js` - 直接模块测试
+- `test/comprehensive-test-2026-03-20.js` - 综合测试
+- `test/leap-month-bug-test.js` - 闰月bug测试
+- `test/leap-month-e2e-test.js` - 闰月端到端测试
+- `test/leap-month-final-verification.js` - 最终验证测试
+
 ## [1.11.6] - 2026-03-18
 
 ### 🎯 Goal-Oriented 重大升级 - 刚性要求与持续触发

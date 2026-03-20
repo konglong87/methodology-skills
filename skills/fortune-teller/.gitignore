@@ -1,0 +1,25 @@
+# 测试文件
+test/
+
+# 备份文件
+backup/
+
+# 输出文件
+output/
+
+# 文档
+docs/
+
+# 示例
+examples/
+
+# Node modules
+node_modules/
+
+# 临时文件
+*.tmp
+*.log
+.DS_Store
+
+# 调试文件
+*.bak
