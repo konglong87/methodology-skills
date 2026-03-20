@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-03-20
+
+### 🗑️ Removed
+
+**禁用 skill-manager skill**
+
+将 skill-manager 移动到 backup 目录，最小化改动：
+
+**原因**：
+- skill-manager 功能与其他 skill 存在重叠
+- 减少维护负担，聚焦核心方法论 skills
+- 简化插件结构，提升加载效率
+
+**影响范围**：
+- `skills/skill-manager/` → `backup/skill-manager/`
+- Skills 数量从 12 个减少到 11 个
+- `plugin.json` - 更新描述，移除 "Skills管理"
+- `.claude-plugin/marketplace.json` - 更新描述和版本号
+
+**后续处理**：
+- 如需恢复 skill-manager，可从 backup 目录移回
+- 相关代码保留在 backup 目录，未删除
+
 ## [1.11.9] - 2026-03-20
 
 ### 🔧 Maintenance
