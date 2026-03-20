@@ -40,7 +40,15 @@ class BazilCalculator {
    * @param {string} gender - 性别（男/女）
    */
   calculateBazi(birthDate, hour, gender) {
-    const solarDate = lunar.Solar.fromDate(birthDate);
+    // 使用fromYmdHms确保包含时间信息，这样时柱计算才正确
+    const solarDate = lunar.Solar.fromYmdHms(
+      birthDate.getFullYear(),
+      birthDate.getMonth() + 1, // JavaScript月份从0开始
+      birthDate.getDate(),
+      hour,
+      0,
+      0
+    );
     const lunarDate = solarDate.getLunar();
 
     const yearGanZhi = lunarDate.getYearInGanZhi();

@@ -256,11 +256,13 @@ class FortuneTeller {
 
     // 阳历/农历转换
     if (calendarType === 'lunar') {
-      // 农历转阳历
+      // 农历转阳历（传递闰月标记）
+      const isLeapMonth = birthDate.isLeapMonth || false;
       solarDate = this.inputHandler.lunarToSolar(
         birthDate.year,
         birthDate.month,
-        birthDate.day
+        birthDate.day,
+        isLeapMonth
       );
       // 验证
       const validation = this.inputHandler.validateDateConversion(
