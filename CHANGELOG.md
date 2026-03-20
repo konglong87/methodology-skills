@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.9] - 2026-03-20
+
+### 🔧 Maintenance
+
+**强制刷新插件缓存以加载 goal-oriented skill**
+
+修复了 goal-oriented skill 未被正确加载的问题：
+
+**问题描述**：
+- goal-oriented skill 虽然包含 SKILL.md 文件，但未被 Claude 识别
+- 系统提示显示 "Error reading goal-oriented skill"
+- 插件缓存版本（1.11.7）与实际版本（1.11.8）不一致
+- 缓存中的 goal-oriented 目录缺少 SKILL.md 文件
+
+**根本原因**：
+- Claude Code 使用缓存的旧版本插件（1.11.7）
+- 旧缓存不包含 goal-oriented 的 SKILL.md 文件
+- 版本号未更新导致缓存未刷新
+
+**修复方案**：
+- 版本号从 1.11.8 更新到 1.11.9，强制 Claude Code 刷新插件缓存
+- 更新位置：
+  - `plugin.json`
+  - `.claude-plugin/marketplace.json`
+  - `README.md` 版本徽章
+  - `CHANGELOG.md` 变更记录
+
+**影响范围**：
+- `plugin.json` - version: 1.11.9
+- `.claude-plugin/marketplace.json` - version: 1.11.9
+- `README.md` - 版本徽章更新
+
+**验证方法**：
+- 重启 Claude Code 或重新加载插件
+- 检查 goal-oriented skill 是否出现在可用技能列表中
+- 测试目标追踪功能是否正常工作
+
 ## [1.11.8] - 2026-03-20
 
 ### 🐛 Bug Fixes
