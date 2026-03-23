@@ -53,13 +53,7 @@ description: "MUST use for ANY user request. This is a rigid requirement that ap
 - 涉及代码编写、文件修改、系统设计、代码审查
 - **当前无 pending 目标**
 
-**强制动作**：
-```bash
-python tools/goal-tracker.py create \
-  --raw "{用户原始表述}" \
-  --smart-specific "{提取的具体目标}" \
-  --smart-measurable "{可衡量的成功标准}"
-```
+**强制动作**：使用 Write 工具创建目标文件（见"目标文件操作指南"）
 
 **无需询问用户**，立即执行。
 
@@ -82,14 +76,7 @@ python tools/goal-tracker.py create \
 - 用户补充新的要求或约束
 - 环境变化导致目标不可行
 
-**强制动作**：
-```bash
-python tools/goal-tracker.py adjust \
-  --file "{目标文件路径}" \
-  --reason "{调整原因}" \
-  --new-specific "{新的具体目标}" \
-  --new-measurable "{新的衡量标准}"
-```
+**强制动作**：使用 Edit 工具调整目标文件（见"目标文件操作指南"）
 
 **调整原则**：
 - 立即同步用户的新意图
@@ -112,12 +99,7 @@ python tools/goal-tracker.py adjust \
 - 准备提交代码、创建 PR
 - 准备结束会话
 
-**强制动作**：
-```bash
-python tools/goal-tracker.py verify \
-  --file "{目标文件路径}" \
-  --ai-assessment "{AI 自评review 完成情况}"
-```
+**强制动作**：使用 Read 工具读取目标文件并验证（见"目标文件操作指南"）
 
 **验证结果处理**：
 - ✅ 目标达成 → 可标记完成，准备结束会话
@@ -142,43 +124,43 @@ digraph goal_oriented_with_tools {
 
     "用户首条消息" [shape=box, style=filled, fillcolor="#c8e6c9"];
     "AI 判断：是否包含任务？" [shape=diamond, style=filled, fillcolor="#bbdefb"];
-    "调用 goal-tracker.py create" [shape=box, style=filled, fillcolor="#fff9c4"];
+    "使用 Write 工具创建目标文件" [shape=box, style=filled, fillcolor="#fff9c4"];
     "明确最终目标" [shape=box, style=filled, fillcolor="#c8e6c9"];
     "定义成功标准" [shape=box, style=filled, fillcolor="#bbdefb"];
     "识别关键路径" [shape=box, style=filled, fillcolor="#fff9c4"];
     "执行与监控" [shape=box, style=filled, fillcolor="#f8bbd0"];
     "里程碑完成检查" [shape=diamond, style=filled, fillcolor="#e1bee7"];
-    "调用 goal-tracker.py update" [shape=box, style=filled, fillcolor="#ffccbc"];
+    "使用 Edit 工具更新里程碑" [shape=box, style=filled, fillcolor="#ffccbc"];
     "用户提出调整？" [shape=diamond, style=filled, fillcolor="#e1bee7"];
-    "调用 goal-tracker.py adjust" [shape=box, style=filled, fillcolor="#ffccbc"];
+    "使用 Edit 工具调整目标" [shape=box, style=filled, fillcolor="#ffccbc"];
     "AI 判断任务完成？" [shape=diamond, style=filled, fillcolor="#e1bee7"];
-    "调用 goal-tracker.py verify" [shape=box, style=filled, fillcolor="#ffccbc"];
+    "使用 Read 工具验证目标" [shape=box, style=filled, fillcolor="#ffccbc"];
     "目标达成验证" [shape=diamond, style=filled, fillcolor="#e1bee7"];
     "继续执行缺失部分" [shape=box, style=filled, fillcolor="#f8bbd0"];
-    "标记目标完成" [shape=box, style=filled, fillcolor="#81c784"];
+    "使用 Edit 工具标记完成" [shape=box, style=filled, fillcolor="#81c784"];
     "可结束会话" [shape=doublecircle, style=filled, fillcolor="#81c784"];
     "正常对话" [shape=box, style=filled, fillcolor="#f8bbd0"];
 
     "用户首条消息" -> "AI 判断：是否包含任务？";
-    "AI 判断：是否包含任务？" -> "调用 goal-tracker.py create" [label="是"];
+    "AI 判断：是否包含任务？" -> "使用 Write 工具创建目标文件" [label="是"];
     "AI 判断：是否包含任务？" -> "正常对话" [label="否"];
-    "调用 goal-tracker.py create" -> "明确最终目标";
+    "使用 Write 工具创建目标文件" -> "明确最终目标";
     "明确最终目标" -> "定义成功标准";
     "定义成功标准" -> "识别关键路径";
     "识别关键路径" -> "执行与监控";
     "执行与监控" -> "里程碑完成检查";
-    "里程碑完成检查" -> "调用 goal-tracker.py update" [label="是"];
-    "调用 goal-tracker.py update" -> "用户提出调整？";
+    "里程碑完成检查" -> "使用 Edit 工具更新里程碑" [label="是"];
+    "使用 Edit 工具更新里程碑" -> "用户提出调整？";
     "里程碑完成检查" -> "用户提出调整？" [label="否"];
-    "用户提出调整？" -> "调用 goal-tracker.py adjust" [label="是"];
+    "用户提出调整？" -> "使用 Edit 工具调整目标" [label="是"];
     "用户提出调整？" -> "AI 判断任务完成？" [label="否"];
-    "调用 goal-tracker.py adjust" -> "执行与监控";
-    "AI 判断任务完成？" -> "调用 goal-tracker.py verify" [label="是"];
+    "使用 Edit 工具调整目标" -> "执行与监控";
+    "AI 判断任务完成？" -> "使用 Read 工具验证目标" [label="是"];
     "AI 判断任务完成？" -> "执行与监控" [label="否"];
-    "调用 goal-tracker.py verify" -> "目标达成验证";
+    "使用 Read 工具验证目标" -> "目标达成验证";
     "目标达成验证" -> "继续执行缺失部分" [label="未达成"];
-    "目标达成验证" -> "标记目标完成" [label="达成"];
-    "标记目标完成" -> "可结束会话";
+    "目标达成验证" -> "使用 Edit 工具标记完成" [label="达成"];
+    "使用 Edit 工具标记完成" -> "可结束会话";
     "继续执行缺失部分" -> "执行与监控";
 }
 ```
@@ -190,7 +172,7 @@ digraph goal_oriented_with_tools {
 - 检测任务特征（行动指令、多步骤需求）
 - 决定是否触发目标追踪
 
-**步骤 2: 调用 goal-tracker.py create（强制）**
+**步骤 2: 使用 Write 工具创建目标文件（强制）**
 - 自动创建目标文件
 - 记录用户原始需求
 - 提取 SMART 目标
@@ -219,7 +201,7 @@ digraph goal_oriented_with_tools {
 - 识别阶段性成果
 - 触发里程碑更新
 
-**步骤 8: 调用 goal-tracker.py update（可选）**
+**步骤 8: 使用 Edit 工具更新里程碑（可选）**
 - 更新里程碑进展
 - 保持进度透明
 
@@ -227,7 +209,7 @@ digraph goal_oriented_with_tools {
 - 监听用户需求变更
 - 立即调整目标
 
-**步骤 10: 调用 goal-tracker.py adjust（强制）**
+**步骤 10: 使用 Edit 工具调整目标（强制）**
 - 更新 SMART 目标
 - 保留历史版本
 - 同步新意图
@@ -236,7 +218,7 @@ digraph goal_oriented_with_tools {
 - AI 自我评估
 - 触发强制验证
 
-**步骤 12: 调用 goal-tracker.py verify（强制）**
+**步骤 12: 使用 Read 工具验证目标（强制）**
 - 对比原始目标 vs 实际完成
 - 识别缺失项
 - 输出验证结果
@@ -249,7 +231,7 @@ digraph goal_oriented_with_tools {
 - 补充缺失功能
 - 不得声称"基本完成"
 
-**步骤 15: 标记目标完成**
+**步骤 15: 使用 Edit 工具标记完成**
 - 更新目标文件状态
 - 记录完成时间
 - 准备结束会话
@@ -297,167 +279,461 @@ digraph goal_oriented_with_tools {
 - 讨论偏离认证安全主题
 ```
 
-## 目标追踪工具使用指南
-
-### 工具位置
-
-`skills/goal-oriented/tools/goal-tracker.py`
-
-**⚠️ 重要：脚本使用当前工作目录作为项目根目录，目标文件会存在 `<当前目录>/memory/goals/`。**
-
-**AI 工具执行方式**（推荐）：
-```bash
-# AI 工具会自动从项目根目录执行
-python skills/goal-oriented/tools/goal-tracker.py create \
-  --raw "用户原始表述" \
-  --smart-specific "具体目标" \
-  --smart-measurable "衡量标准"
-```
-
-**手动执行方式**：
-```bash
-# 方式1: 从项目根目录执行（如果项目中有 skills/ 目录）
-cd /path/to/your/project
-python skills/goal-oriented/tools/goal-tracker.py create ...
-
-# 方式2: 使用全局安装的 skill
-cd /path/to/your/project
-python ~/.agents/skills/goal-oriented/tools/goal-tracker.py create ...
-```
-
-**⚠️ 注意**：必须在项目根目录执行，否则目标文件会存错位置！
-
-### 常用命令
-
-**1. 创建目标**（会话开始时强制）
-```bash
-python skills/goal-oriented/tools/goal-tracker.py create \
-  --raw "用户原始表述" \
-  --smart-specific "具体目标" \
-  --smart-measurable "衡量标准"
-```
-
-**2. 更新里程碑**（阶段性完成时）
-```bash
-python skills/goal-oriented/tools/goal-tracker.py update \
-  --file "memory/goals/2026-03-18_0930_目标关键词.md" \
-  --milestone "里程碑描述"
-```
-
-**3. 调整目标**（用户修改需求时强制）
-```bash
-python skills/goal-oriented/tools/goal-tracker.py adjust \
-  --file "memory/goals/2026-03-18_0930_目标关键词.md" \
-  --reason "调整原因" \
-  --new-specific "新目标" \
-  --new-measurable "新标准"
-```
-
-**4. 验证目标**（任务完成时强制）
-```bash
-python skills/goal-oriented/tools/goal-tracker.py verify \
-  --file "memory/goals/2026-03-18_0930_目标关键词.md" \
-  --ai-assessment "AI自评完成情况"
-```
-
-**5. 查看所有目标**
-```bash
-python skills/goal-oriented/tools/goal-tracker.py list --status pending
-```
-
-**6. 标记完成**
-```bash
-python skills/goal-oriented/tools/goal-tracker.py complete \
-  --file "memory/goals/2026-03-18_0930_目标关键词.md" \
-  --summary "完成总结"
-```
+## 目标文件操作指南
 
 ### 目标文件位置
 
-所有目标文件存储在项目根目录的 `memory/goals/` 目录下。
+**存储路径**：`memory/goals/YYYY-MM-DD_HHMM_目标关键词.md`
 
-文件命名格式：`YYYY-MM-DD_HHMM_目标关键词.md`
+**关键词提取规则**：从 `smart_specific` 中提取前20个非空格字符作为文件名
 
-### 目标文件结构
+**目录创建**：如果 `memory/goals/` 目录不存在，需先创建
 
-每个目标文件包含：
-- 原始需求（用户原文）
-- SMART 目标提取
-- 创建信息（时间、会话ID、版本）
-- 目标调整历史（支持版本追溯）
-- 验证记录（每次验证的结果）
-- 最终状态（pending/completed/abandoned）
+---
 
-详见：`skills/goal-oriented/templates/goal-template.md`
+### 操作1：创建目标（create）
+
+**触发时机**：任务开始时（强制）
+
+**执行步骤**：
+
+1. **提取时间戳**
+   ```
+   timestamp = "2026-03-23_2005"  # 格式：YYYY-MM-DD_HHMM
+   ```
+
+2. **提取关键词**
+   ```
+   keywords = smart_specific.replace(" ", "")[:20]
+   # 示例："修复英文页面404错误，确保路由正常工作" → "修复英文页面404错误，确保路由"
+   ```
+
+3. **组装文件路径**
+   ```
+   file_path = f"memory/goals/{timestamp}_{keywords}.md"
+   ```
+
+4. **使用 Write 工具创建文件**，填充以下模板：
+
+```markdown
+# 目标追踪记录
+
+## 原始需求
+{用户原始表述}
+
+## 目标提取（SMART）
+- **Specific（具体）**: {具体目标}
+- **Measurable（可衡量）**: {衡量标准}
+- **Achievable（可实现）**: 待评估
+- **Relevant（相关）**: 待说明
+- **Time-bound（时限）**: 本次会话
+
+## 创建信息
+- 创建时间：{YYYY-MM-DD HH:MM}
+- 会话ID：当前会话
+- 当前版本：1
+
+## 目标调整历史
+
+### 版本 1（{时间}）
+- **SMART-Specific**: {具体目标}
+- **SMART-Measurable**: {衡量标准}
+
+## 验证记录
+（待填写）
+
+## 最终状态
+- 状态：pending
+- 完成时间：-
+- 备注：-
+```
+
+**完整示例**：
+
+```
+用户消息："现在在中文时候跳转一切正常，但是英文时候全是404，和最开始中文的bug一样"
+
+AI 执行：
+1. 提取时间戳："2026-03-23_2005"
+2. 提取关键词："修复英文页面404错误，确保路由"
+3. 文件路径："memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md"
+
+Write(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  content="""
+# 目标追踪记录
+
+## 原始需求
+现在在中文时候跳转一切正常，但是英文时候全是404，和最开始中文的bug一样
+
+## 目标提取（SMART）
+- **Specific（具体）**: 修复英文页面的404错误，确保路由正常工作
+- **Measurable（可衡量）**: 所有英文页面可正常访问，无404错误
+- **Achievable（可实现）**: 待评估
+- **Relevant（相关）**: 待说明
+- **Time-bound（时限）**: 本次会话
+
+## 创建信息
+- 创建时间：2026-03-23 20:05
+- 会话ID：当前会话
+- 当前版本：1
+
+## 目标调整历史
+
+### 版本 1（2026-03-23 20:05）
+- **SMART-Specific**: 修复英文页面的404错误，确保路由正常工作
+- **SMART-Measurable**: 所有英文页面可正常访问，无404错误
+
+## 验证记录
+（待填写）
+
+## 最终状态
+- 状态：pending
+- 完成时间：-
+- 备注：-
+"""
+)
+
+✅ 输出："目标已创建：memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md"
+```
+
+---
+
+### 操作2：更新里程碑（update）
+
+**触发时机**：阶段性完成时
+
+**执行步骤**：
+
+1. **使用 Read 工具读取目标文件**（可选，确认当前内容）
+
+2. **使用 Edit 工具追加里程碑内容**，在 `## 验证记录` 前插入：
+
+```
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="## 验证记录",
+  new_string="""### 里程碑：{里程碑描述}
+更新时间：{YYYY-MM-DD HH:MM}
+
+## 验证记录"""
+)
+```
+
+**完整示例**：
+
+```
+里程碑描述："诊断完成，发现英文路由配置问题"
+时间："2026-03-23 20:10"
+
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="## 验证记录",
+  new_string="""### 里程碑：诊断完成，发现英文路由配置问题
+更新时间：2026-03-23 20:10
+
+## 验证记录"""
+)
+
+✅ 输出："已更新里程碑：诊断完成，发现英文路由配置问题"
+```
+
+---
+
+### 操作3：调整目标（adjust）
+
+**触发时机**：用户修改需求时（强制）
+
+**执行步骤**：
+
+1. **使用 Read 工具读取目标文件**，提取当前版本号
+
+2. **使用 Edit 工具依次更新**：
+   - 更新版本号
+   - 更新 SMART 目标
+   - 追加调整历史
+
+**完整示例**：
+
+```
+用户消息："对了，还要优化路由架构，不只是修复404"
+
+AI 执行：
+
+# 步骤1：读取文件，当前版本号为 1
+Read(file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md")
+
+# 步骤2：更新版本号（1 → 2）
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="当前版本：1",
+  new_string="当前版本：2"
+)
+
+# 步骤3：更新 SMART-Specific
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="- **Specific（具体）**: 修复英文页面的404错误，确保路由正常工作",
+  new_string="- **Specific（具体）**: 修复英文页面404错误，并优化路由架构"
+)
+
+# 步骤4：更新 SMART-Measurable
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="- **Measurable（可衡量）**: 所有英文页面可正常访问，无404错误",
+  new_string="- **Measurable（可衡量）**: 所有英文页面正常访问，路由架构清晰，无冗余路由"
+)
+
+# 步骤5：追加调整历史
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="## 验证记录",
+  new_string="""### 版本 2（2026-03-23 20:15）
+- **调整原因**: 用户要求优化路由架构
+- **SMART-Specific**: 修复英文页面404错误，并优化路由架构
+- **SMART-Measurable**: 所有英文页面正常访问，路由架构清晰，无冗余路由
+
+## 验证记录"""
+)
+
+✅ 输出：
+"目标已调整"
+"调整原因：用户要求优化路由架构"
+"新版本：2"
+```
+
+---
+
+### 操作4：验证目标（verify）
+
+**触发时机**：AI 认为任务完成时（强制）
+
+**执行步骤**：
+
+1. **使用 Read 工具读取目标文件**
+
+2. **提取 SMART 目标**：
+   - Specific（具体）
+   - Measurable（可衡量）
+
+3. **对比 AI 自评完成情况**
+
+4. **输出验证结果**：
+   - ✅ 目标达成
+   - ❌ 目标未达成 + 缺失项列表
+
+**完整示例**：
+
+```
+AI 自评："已修复英文路由配置，优化了路由架构，所有测试通过"
+
+AI 执行：
+
+Read(file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md")
+
+提取目标：
+- Specific: 修复英文页面404错误，并优化路由架构
+- Measurable: 所有英文页面正常访问，路由架构清晰，无冗余路由
+
+对比分析：
+✅ 修复了英文页面404错误
+✅ 优化了路由架构
+✅ 所有测试通过
+
+验证结果：
+📋 原始目标：修复英文页面404错误，并优化路由架构
+🔍 实际完成情况：已修复英文路由配置，优化了路由架构，所有测试通过
+✅ 目标达成验证通过
+```
+
+---
+
+### 操作5：标记完成（complete）
+
+**触发时机**：目标验证通过后
+
+**执行步骤**：
+
+使用 Edit 工具更新状态和完成时间：
+
+**完整示例**：
+
+```
+完成时间："2026-03-23 20:20"
+
+# 步骤1：更新状态
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="状态：pending",
+  new_string="状态：completed"
+)
+
+# 步骤2：更新完成时间
+Edit(
+  file_path="memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md",
+  old_string="完成时间：-",
+  new_string="完成时间：2026-03-23 20:20"
+)
+
+✅ 输出：
+"目标已完成"
+"完成时间：2026-03-23 20:20"
+```
+
+---
+
+### 操作6：列出所有目标（list）
+
+**触发时机**：查看项目所有目标时
+
+**执行步骤**：
+
+1. 使用 Glob 工具查找 `memory/goals/*.md` 文件
+2. 使用 Read 工具读取每个文件的状态和目标
+3. 按状态过滤（可选）
+
+**完整示例**：
+
+```
+查看所有 pending 状态的目标：
+
+Glob(pattern="memory/goals/*.md")
+
+输出：
+1. memory/goals/2026-03-23_2005_修复英文页面404错误，确保路由.md (pending)
+2. memory/goals/2026-03-22_1015_重构用户认证模块.md (completed)
+```
 
 ## Examples
 
-### 案例 1: 完善 goal-oriented 触发条件的完整流程
+### 案例 1: 完善 goal-oriented 的完整流程
 
 **用户消息**：
 "完善 goal-oriented 的触发条件；只要用户下达了什么任务，这个 goal-oriented skills 就要记录..."
 
-**步骤 1: AI 检测到任务，强制创建目标**
+**步骤 1: AI 检测到任务，使用 Write 工具创建目标**
 
-```bash
-python skills/goal-oriented/tools/goal-tracker.py create \
-  --raw "完善 goal-oriented 的触发条件..." \
-  --smart-specific "实现自动目标追踪和验证机制" \
-  --smart-measurable "任务记录,会话结束前验证,未达成继续执行"
+```
+Write(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  content="""
+# 目标追踪记录
+
+## 原始需求
+完善 goal-oriented 的触发条件；只要用户下达了什么任务，这个 goal-oriented skills 就要记录...
+
+## 目标提取（SMART）
+- **Specific（具体）**: 实现自动目标追踪和验证机制
+- **Measurable（可衡量）**: 任务记录,会话结束前验证,未达成继续执行
+- **Achievable（可实现）**: 待评估
+- **Relevant（相关）**: 待说明
+- **Time-bound（时限）**: 本次会话
+
+## 创建信息
+- 创建时间：2026-03-18 09:30
+- 会话ID：当前会话
+- 当前版本：1
+
+## 目标调整历史
+
+### 版本 1（2026-03-18 09:30）
+- **SMART-Specific**: 实现自动目标追踪和验证机制
+- **SMART-Measurable**: 任务记录,会话结束前验证,未达成继续执行
+
+## 验证记录
+（待填写）
+
+## 最终状态
+- 状态：pending
+- 完成时间：-
+- 备注：-
+"""
+)
 ```
 
 ✅ 输出：`目标已创建：memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md`
 
-**步骤 2: AI 执行任务（开发脚本、更新文档）**
+**步骤 2: AI 执行任务，使用 Edit 工具更新里程碑**
 
-AI 开始执行任务，中途完成脚本开发里程碑：
+```
+Edit(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  old_string="## 验证记录",
+  new_string="""### 里程碑：goal-tracker.py 脚本开发完成
+更新时间：2026-03-18 10:00
 
-```bash
-python skills/goal-oriented/tools/goal-tracker.py update \
-  --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
-  --milestone "goal-tracker.py 脚本开发完成"
+## 验证记录"""
+)
 ```
 
 ✅ 输出：`已更新里程碑：goal-tracker.py 脚本开发完成`
 
-**步骤 3: 用户补充需求，AI 强制调整目标**
+**步骤 3: 用户补充需求，使用 Edit 工具调整目标**
 
 **用户消息**：
 "对了，还要支持实时调整目标，防止用户在后续会话中改变主意"
 
-```bash
-python skills/goal-oriented/tools/goal-tracker.py adjust \
-  --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
-  --reason "用户补充：需要实时调整目标" \
-  --new-specific "实现自动目标追踪、验证和动态调整机制" \
-  --new-measurable "任务记录,会话结束前验证,未达成继续执行,实时调整目标"
+```
+# 更新版本号
+Edit(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  old_string="当前版本：1",
+  new_string="当前版本：2"
+)
+
+# 更新 SMART 目标
+Edit(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  old_string="- **Specific（具体）**: 实现自动目标追踪和验证机制",
+  new_string="- **Specific（具体）**: 实现自动目标追踪、验证和动态调整机制"
+)
+
+# 追加调整历史
+Edit(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  old_string="## 验证记录",
+  new_string="""### 版本 2（2026-03-18 10:15）
+- **调整原因**: 用户补充：需要实时调整目标
+- **SMART-Specific**: 实现自动目标追踪、验证和动态调整机制
+- **SMART-Measurable**: 任务记录,会话结束前验证,未达成继续执行,实时调整目标
+
+## 验证记录"""
+)
 ```
 
 ✅ 输出：`目标已调整，新版本：2`
 
-**步骤 4: AI 认为完成，强制验证目标**
+**步骤 4: AI 认为完成，使用 Read 工具验证目标**
 
-AI 完成所有开发和测试：
-
-```bash
-python skills/goal-oriented/tools/goal-tracker.py verify \
-  --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
-  --ai-assessment "已完成脚本开发、文档更新、支持动态调整"
 ```
+Read(file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md")
 
-✅ 输出：
-```
+提取目标：
+- Specific: 实现自动目标追踪、验证和动态调整机制
+- Measurable: 任务记录,会话结束前验证,未达成继续执行,实时调整目标
+
+AI 自评："已完成脚本开发、文档更新、支持动态调整"
+
+验证结果：
 📋 原始目标：实现自动目标追踪、验证和动态调整机制
 🔍 实际完成情况：所有功能已实现并测试通过
 ✅ 目标达成验证通过
 ```
 
-**步骤 5: 标记完成**
+**步骤 5: 使用 Edit 工具标记完成**
 
-```bash
-python skills/goal-oriented/tools/goal-tracker.py complete \
-  --file "memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md" \
-  --summary "所有目标已达成"
+```
+Edit(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  old_string="状态：pending",
+  new_string="状态：completed"
+)
+
+Edit(
+  file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
+  old_string="完成时间：-",
+  new_string="完成时间：2026-03-18 11:00"
+)
 ```
 
 ✅ 输出：`目标已完成`
@@ -487,7 +763,7 @@ python skills/goal-oriented/tools/goal-tracker.py complete \
 
 **结果**: 按时上线，达成目标
 
-### 案例 2: 技术债务清理的目标导向执行
+### 案例 3: 技术债务清理的目标导向执行
 
 **目标**: 降低代码复杂度 30%
 
@@ -522,8 +798,8 @@ python skills/goal-oriented/tools/goal-tracker.py complete \
 - **正确做法**: 如果方向错误，立即调整，不考虑沉没成本
 
 ### 误区 5: 未验证就声称完成
-- **表现**: AI 说"完成了"、"做好了"，但没有调用 goal-tracker.py verify
-- **正确做法**: AI 认为完成时，必须强制调用 verify 命令，对比原始目标
+- **表现**: AI 说"完成了"、"做好了"，但没有使用 Read 工具验证目标
+- **正确做法**: AI 认为完成时，必须使用 Read 工具读取目标文件并验证
 
 ### 误区 6: 验证失败但跳过缺失项
 - **表现**: 验证发现目标未完全达成，但 AI 说"基本完成"、"核心功能都有了"
@@ -531,11 +807,11 @@ python skills/goal-oriented/tools/goal-tracker.py complete \
 
 ### 误区 7: 用户调整需求但未更新目标
 - **表现**: 用户说"算了，改成 XXX"，AI 继续按原目标执行
-- **正确做法**: 立即调用 adjust 命令更新目标，同步用户新意图
+- **正确做法**: 立即使用 Edit 工具调整目标文件，同步用户新意图
 
 ### 误区 8: 执行任务但未创建目标
 - **表现**: AI 开始执行多步骤任务，但没有在开始时创建目标文件
-- **正确做法**: 会话开始时检测到任务，立即调用 create 命令
+- **正确做法**: 会话开始时检测到任务，立即使用 Write 工具创建目标文件
 
 ## References
 
