@@ -1,7 +1,81 @@
 ---
 name: ddd-tactical-design
+version: 2.0.0
 description: "Use when implementing domain logic, designing aggregates, entities, value objects, repositories, domain services, domain model design, ensuring data consistency, or when user mentions 'aggregate design', 'aggregate root', 'entity vs value object', 'domain event', 'repository pattern', 'domain service', 'data consistency', 'invariant protection', 'domain model', 'business rules', 'consistency boundary', 'rich domain model', 'anemic domain model', '领域模型', '领域逻辑', '业务逻辑', '聚合设计', '聚合根', '实体', '值对象', '业务规则', '一致性边界', '充血模型', '贫血模型', '实现领域代码'."
+
+# 技能分类
+category: "design"
+
+# 复杂度标识
+complexity: "high"
+
+# 预计执行时长
+typical_duration: "1hour"
+
+# 依赖关系
+dependencies: []
+benefits-from: [ddd-strategic-design]
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/ddd-tactical/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+
+# 标签（用于技能推荐）
+tags:
+  - "领域建模"
+  - "代码实现"
+  - "DDD"
+  - "业务逻辑"
 ---
+
+# Domain-Driven Design: Tactical Design
+
+## 前置协议
+
+### 环境检测
+
+```bash
+# 检测当前项目信息
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+```
+
+### 前置技能检查
+
+**benefits-from 检查**：
+
+```bash
+# 检查 ddd-strategic-design 工件
+STRATEGIC_ARTIFACT="memory/artifacts/ddd-strategic/latest.json"
+
+if [ -f "$STRATEGIC_ARTIFACT" ]; then
+  echo "FOUND: ddd-strategic-design artifact"
+  # 提取限界上下文信息，指导战术设计
+else
+  echo "INFO: No ddd-strategic-design artifact found"
+  echo "Consider running /ddd-strategic-design first to identify bounded contexts"
+fi
+```
+
+**工件目录初始化**：
+
+```bash
+mkdir -p memory/artifacts/ddd-tactical
+```
 
 # Domain-Driven Design: Tactical Design
 
@@ -462,3 +536,82 @@ class Order {
 - **Domain-Driven Design** by Eric Evans - The original DDD book, Part II: Tactical Design
 - **Implementing Domain-Driven Design** by Vaughn Vernon - Detailed patterns and examples
 - **Domain-Driven Design Distilled** by Vaughn Vernon - Concise tactical patterns
+
+## 后置协议
+
+### 工件输出
+
+保存战术设计结果到工件文件：
+
+```bash
+# 生成工件文件名
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/ddd-tactical/result-$TIMESTAMP.json"
+
+# 写入工件
+cat > "$ARTIFACT_FILE" <<EOF
+{
+  "skill": "ddd-tactical-design",
+  "version": "2.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "project": "$PROJECT_ROOT",
+  "branch": "$BRANCH",
+  "commit": "$COMMIT",
+  "input": {
+    "user_request": "用户的原始请求"
+  },
+  "output": {
+    "aggregates": [
+      {
+        "name": "聚合名称",
+        "root": "聚合根实体",
+        "entities": ["Entity1", "Entity2"],
+        "value_objects": ["VO1", "VO2"],
+        "invariants": ["不变量1", "不变量2"]
+      }
+    ],
+    "repositories": [
+      {
+        "name": "Repository名称",
+        "aggregate": "对应的聚合",
+        "methods": ["findById", "save", "delete"]
+      }
+    ],
+    "domain_services": [
+      {
+        "name": "Domain Service名称",
+        "responsibility": "职责说明"
+      }
+    ]
+  },
+  "next_skills": [
+    "mvp-first",
+    "pdca-cycle"
+  ]
+}
+EOF
+
+echo "ARTIFACT SAVED: $ARTIFACT_FILE"
+ln -sf "$ARTIFACT_FILE" memory/artifacts/ddd-tactical/latest.json
+```
+
+### 目标文件更新
+
+如果存在目标文件，记录战术设计完成。
+
+### 建议后续技能
+
+```markdown
+## 后续建议
+
+基于 DDD 战术设计结果，建议继续执行：
+
+**推荐技能链**：
+1. /mvp-first - 进行 MVP 功能筛选和优先级规划
+2. /pdca-cycle - 进入 PDCA 循环实施阶段
+
+是否继续执行？
+- A) 执行推荐的技能链
+- B) 只执行第一个技能
+- C) 不继续，结束当前任务
+```

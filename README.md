@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.12.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.14.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -12,7 +12,55 @@
 
 > 让 AI 掌握方法论，更聪明地思考和执行任务
 
-一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析等方法论的 Skills 工具箱。支持 Claude Code、OpenCode、Cursor、Codex。
+一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析等方法论的 Skills 工具箱。**支持技能协作、工件传递、智能编排**。支持 Claude Code、OpenCode、Cursor、Codex。
+
+## ✨ v1.14.0 新特性
+
+### 🔄 技能协作机制
+
+技能之间可以通过工件（Artifact）传递数据和上下文：
+
+```
+/goal-oriented → 创建目标
+    ↓ (工件传递目标信息)
+/first-principles → 从本质思考
+    ↓ (工件传递分析结果)
+/ddd-strategic-design → 战略设计
+    ↓ (工件传递上下文信息)
+/ddd-tactical-design → 战术设计
+```
+
+### 📦 工件传递机制
+
+每个技能执行完成后生成标准化工件：
+
+- **存储位置**: `memory/artifacts/{skill-name}/`
+- **格式**: JSON
+- **内容**: 输入、输出、后续推荐
+- **链接**: `latest.json` 指向最新工件
+
+### 🎯 智能技能编排
+
+使用 `/pilot` 自动推荐最佳技能链：
+
+```
+用户："设计一个电商平台"
+
+编排器推荐：
+1. /goal-oriented - 明确目标
+2. /first-principles - 从本质思考
+3. /ddd-strategic-design - 战略设计
+4. /ddd-tactical-design - 战术设计
+5. /mvp-first - MVP 规划
+```
+
+### 📋 统一协议层
+
+所有技能遵循标准化工作流程：
+
+- **前置协议**: 环境检测、前置技能检查、工件目录初始化
+- **核心流程**: 执行技能逻辑
+- **后置协议**: 工件输出、目标更新、后续建议
 
 ---
 

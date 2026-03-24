@@ -5,6 +5,162 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-03-24
+
+### 🚀 Major Release - 技能协作架构
+
+**核心特性：技能协作机制**
+
+让多个技能协同工作，发挥 1+1>2 的效果。
+
+### ✨ Added
+
+**1. 统一协议层**
+- 所有技能添加标准化的前置/后置协议
+- 前置协议：环境检测、前置技能检查、工件目录初始化
+- 后置协议：工件输出、目标更新、后续建议
+- 新增协议模板文档：`docs/templates/protocol-template.md`
+
+**2. 工件传递机制**
+- 技能之间通过工件（Artifact）传递数据和上下文
+- 标准化工件格式（JSON）
+- 工件存储位置：`memory/artifacts/{skill-name}/`
+- 工件格式规范：`docs/artifact-schema.md`
+
+**3. 智能技能编排器**
+- 新增 `pilot` 技能
+- 自动分析任务类型，推荐最佳技能链
+- 提供预设模板（新系统设计、性能优化、技术选型等）
+- 支持内联执行技能链
+
+**4. 依赖声明系统**
+- 每个技能在 YAML frontmatter 中声明依赖关系
+- `dependencies`: 必须先运行的技能
+- `benefits-from`: 推荐但非必须的前置技能
+- `conflicts-with`: 互斥技能
+
+**5. 完整元数据**
+- 所有技能升级到 v2.0.0
+- 新增字段：category、complexity、typical_duration、tags
+- 明确声明 allowed-tools（最小权限原则）
+
+### 🔄 Changed
+
+**升级所有核心技能（v1.x.x → v2.0.0）**：
+
+1. **goal-oriented** (v2.0.0)
+   - 添加完整的前置/后置协议
+   - 添加工件输出机制
+   - 添加技能推荐系统
+   - 新增元数据：category=planning, complexity=low
+
+2. **first-principles** (v2.0.0)
+   - 添加前置技能检查（benefits-from: goal-oriented）
+   - 添加工件输出
+   - 新增元数据：category=analysis, complexity=high
+
+3. **ddd-strategic-design** (v2.0.0)
+   - 添加前置技能检查（benefits-from: goal-oriented, first-principles）
+   - 添加工件输出
+   - 新增元数据：category=design, complexity=high
+
+4. **ddd-tactical-design** (v2.0.0)
+   - 添加前置技能检查（benefits-from: ddd-strategic-design）
+   - 添加工件输出
+   - 新增元数据：category=design, complexity=high
+
+5. **mvp-first** (v2.0.0)
+   - 添加前置技能检查（benefits-from: goal-oriented, first-principles, ddd-strategic-design）
+   - 添加工件输出
+   - 新增元数据：category=planning, complexity=medium
+
+6. **pdca-cycle** (v2.0.0)
+   - 添加前置技能检查（benefits-from: goal-oriented, mvp-first）
+   - 添加工件输出
+   - 新增元数据：category=execution, complexity=medium
+
+7. **swot-analysis** (v2.0.0)
+   - 添加前置技能检查（benefits-from: goal-oriented, first-principles）
+   - 添加工件输出
+   - 新增元数据：category=analysis, complexity=medium
+
+### 📚 Documentation
+
+**新增文档**：
+- `docs/skill-collaboration-guide.md` - 技能协作完整指南
+- `docs/templates/protocol-template.md` - 协议模板文档
+- `docs/artifact-schema.md` - 工件格式规范
+
+**更新文档**：
+- `README.md` - 添加 v1.14.0 新特性说明
+  - 技能协作机制
+  - 工件传递机制
+  - 智能技能编排
+  - 统一协议层
+
+### 🔧 Technical Details
+
+**工件目录结构**：
+```
+memory/
+├── artifacts/              # 所有技能工件的根目录
+│   ├── goal-oriented/
+│   ├── first-principles/
+│   ├── ddd-strategic/
+│   ├── ddd-tactical/
+│   ├── mvp-first/
+│   ├── pdca-cycle/
+│   ├── swot-analysis/
+│   └── pilot/
+├── goals/                 # 目标文件
+└── sessions/              # 会话记录
+```
+
+**技能模板示例**：
+```
+新系统设计：goal-oriented → first-principles → ddd-strategic-design → ddd-tactical-design → mvp-first
+性能优化：goal-oriented → first-principles → pdca-cycle
+技术选型：goal-oriented → first-principles → swot-analysis
+架构重构：goal-oriented → first-principles → ddd-strategic-design → pdca-cycle
+```
+
+### 🎯 Impact
+
+**Before v1.14.0**：
+- 技能独立工作，无协作能力
+- 无工件传递机制
+- 无技能推荐系统
+- 手动选择技能顺序
+
+**After v1.14.0**：
+- 技能协同工作，1+1>2
+- 自动传递数据和上下文
+- 智能推荐技能链
+- 一键执行完整流程
+
+### ⚠️ Breaking Changes
+
+**无破坏性变更**。所有升级向后兼容：
+- 原有的技能使用方式仍然有效
+- 新增的功能为可选增强
+- 用户可以选择使用或不使用新特性
+
+### 📦 Migration Guide
+
+**从 v1.12.0 升级到 v1.14.0**：
+
+1. **自动升级**：插件会自动更新，无需手动操作
+
+2. **新增目录**：首次使用时会自动创建：
+   - `memory/artifacts/`
+   - `memory/sessions/`
+
+3. **技能升级**：所有技能自动升级到 v2.0.0
+
+4. **可选使用**：
+   - 使用编排器：`/pilot`
+   - 或继续手动调用技能：`/goal-oriented`、`/first-principles` 等
+
 ## [1.12.0] - 2026-03-20
 
 ### 🗑️ Removed

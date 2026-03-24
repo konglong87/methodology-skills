@@ -1,7 +1,72 @@
 ---
 name: swot-analysis
+version: 2.0.0
 description: "Use when analyzing strengths/weaknesses/opportunities/threats, strategic planning, decision-making support, problem diagnosis, or when user mentions 'SWOT', '优劣势分析', '战略分析', '机会威胁', '态势分析', '战略规划', '竞品分析', '技术选型', '方案对比', '风险评估', '项目立项', '决策支持'."
+
+# 技能分类
+category: "analysis"
+
+# 复杂度标识
+complexity: "medium"
+
+# 预计执行时长
+typical_duration: "30min"
+
+# 依赖关系
+dependencies: []
+benefits-from: [goal-oriented, first-principles]
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/swot-analysis/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+  - Grep
+  - Glob
+
+# 标签（用于技能推荐）
+tags:
+  - "战略分析"
+  - "决策支持"
+  - "风险评估"
+  - "竞品分析"
 ---
+
+## 前置协议
+
+### 环境检测
+
+```bash
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+```
+
+### 前置技能检查
+
+```bash
+# 检查前置工件
+GOAL_ARTIFACT="memory/artifacts/goal-oriented/latest.json"
+FP_ARTIFACT="memory/artifacts/first-principles/latest.json"
+
+if [ -f "$GOAL_ARTIFACT" ]; then
+  echo "FOUND: goal-oriented artifact"
+fi
+
+if [ -f "$FP_ARTIFACT" ]; then
+  echo "FOUND: first-principles artifact"
+fi
+
+mkdir -p memory/artifacts/swot-analysis
+```
 
 ## Overview
 
@@ -421,3 +486,79 @@ Threats：
 **中文资源**：
 - MBA智库：SWOT分析模型
 - 知乎：SWOT分析实战案例集
+## 后置协议
+
+### 工件输出
+
+保存 SWOT 分析结果到工件文件：
+
+```bash
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/swot-analysis/result-$TIMESTAMP.json"
+
+cat > "$ARTIFACT_FILE" <<EOFJSON
+{
+  "skill": "swot-analysis",
+  "version": "2.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "project": "$PROJECT_ROOT",
+  "branch": "$BRANCH",
+  "commit": "$COMMIT",
+  "input": {
+    "user_request": "用户的原始请求"
+  },
+  "output": {
+    "strengths": [],
+    "weaknesses": [],
+    "opportunities": [],
+    "threats": [],
+    "strategies": [
+      {
+        "type": "SO",
+        "action": ""
+      },
+      {
+        "type": "WO",
+        "action": ""
+      },
+      {
+        "type": "ST",
+        "action": ""
+      },
+      {
+        "type": "WT",
+        "action": ""
+      }
+    ]
+  },
+  "next_skills": [
+    "mvp-first",
+    "pdca-cycle"
+  ]
+}
+EOFJSON
+
+echo "ARTIFACT SAVED: $ARTIFACT_FILE"
+ln -sf "$ARTIFACT_FILE" memory/artifacts/swot-analysis/latest.json
+```
+
+### 目标文件更新
+
+如果存在目标文件，记录 SWOT 分析完成。
+
+### 建议后续技能
+
+```markdown
+## 后续建议
+
+基于 SWOT 分析结果，建议继续执行：
+
+**推荐技能链**：
+1. /mvp-first - 进行 MVP 功能筛选
+2. /pdca-cycle - 进入 PDCA 循环实施阶段
+
+是否继续执行？
+- A) 执行推荐的技能链
+- B) 只执行第一个技能
+- C) 不继续，结束当前任务
+```

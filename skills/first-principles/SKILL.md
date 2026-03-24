@@ -1,9 +1,98 @@
 ---
 name: first-principles
+version: 2.0.0
 description: "Use when facing complex problems requiring innovative solutions, when conventional approaches fail, when breaking down assumptions, or when user asks to 'think from first principles', 'get to the root', 'fundamentally rethink', 'what's the essence', 'strip away assumptions'."
+
+# 技能分类
+category: "analysis"
+
+# 复杂度标识
+complexity: "high"
+
+# 预计执行时长
+typical_duration: "30min"
+
+# 依赖关系
+dependencies: []
+benefits-from: [goal-oriented]
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/first-principles/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+  - Grep
+  - Glob
+
+# 标签（用于技能推荐）
+tags:
+  - "创新思维"
+  - "问题分析"
+  - "架构设计"
+  - "技术选型"
+  - "成本优化"
 ---
 
 # 第一性原理思维
+
+## 前置协议
+
+### 环境检测
+
+```bash
+# 检测当前项目信息
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+```
+
+### 前置技能检查
+
+**benefits-from 检查**（推荐但非必须）：
+
+```bash
+# 检查 goal-oriented 工件
+GOAL_ARTIFACT="memory/artifacts/goal-oriented/latest.json"
+
+if [ -f "$GOAL_ARTIFACT" ]; then
+  echo "FOUND: goal-oriented artifact"
+  # 提取目标信息（使用 Read 工具读取）
+  # 在分析中参考目标上下文
+else
+  echo "INFO: No goal-oriented artifact found"
+  echo "Consider running /goal-oriented first for better context"
+fi
+```
+
+**工件目录初始化**：
+
+```bash
+# 确保工件目录存在
+mkdir -p memory/artifacts/first-principles
+```
+
+### 用户意图确认
+
+根据用户消息判断：
+
+**检查点**：
+- [ ] 用户面临的问题是否需要创新方案
+- [ ] 是否需要打破既有假设和惯例
+- [ ] 问题复杂度是否适合第一性原理分析
+
+**意图分类**：
+1. **创新问题**：需要从本质重新构建解决方案
+2. **性能优化**：找到瓶颈的根本原因
+3. **技术选型**：从根本上分析需求
+4. **架构设计**：从本质出发设计系统
 
 ## Overview
 
@@ -41,12 +130,14 @@ digraph first_principles {
     "质疑假设" [shape=box, style=filled, fillcolor="#fff9c4"];
     "重建方案" [shape=box, style=filled, fillcolor="#bbdefb"];
     "验证可行性" [shape=box, style=filled, fillcolor="#f8bbd0"];
+    "保存工件" [shape=box, style=filled, fillcolor="#81c784"];
 
     "识别问题" -> "拆解到基础元素";
     "拆解到基础元素" -> "质疑假设";
     "质疑假设" -> "重建方案";
     "重建方案" -> "验证可行性";
     "验证可行性" -> "识别问题" [label="不可行", style=dashed];
+    "验证可行性" -> "保存工件" [label="可行"];
 }
 ```
 
@@ -56,6 +147,7 @@ digraph first_principles {
 - 清晰陈述当前面临的问题
 - 区分"症状"和"根本问题"
 - 明确问题的边界和约束
+- 如果存在 goal-oriented 工件，参考目标上下文
 
 **步骤 2: 拆解到基础元素**
 - 将问题分解为最基础的组成部分
@@ -72,11 +164,18 @@ digraph first_principles {
 - 基于基础元素重新构建解决方案
 - 不受现有方案的限制
 - 探索多种可能性
+- 记录每个方案的理由和权衡
 
 **步骤 5: 验证可行性**
 - 检查是否符合基础定律
 - 评估实施成本和风险
 - 如果不可行,回到步骤 1 重新审视问题
+- 如果可行，进入工件保存阶段
+
+**步骤 6: 保存工件**
+- 生成工件 JSON 文件
+- 记录分析过程和结果
+- 推荐后续技能
 
 ## Thinking Framework
 
@@ -158,6 +257,104 @@ digraph first_principles {
 ### 误区 4: 缺乏验证环节
 - **表现**: 提出理论方案后直接实施
 - **正确做法**: 必须进行可行性验证,小范围试点
+
+## 后置协议
+
+### 工件输出
+
+保存第一性原理分析结果到工件文件：
+
+```bash
+# 生成工件文件名
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/first-principles/result-$TIMESTAMP.json"
+
+# 写入工件
+cat > "$ARTIFACT_FILE" <<EOF
+{
+  "skill": "first-principles",
+  "version": "2.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "project": "$PROJECT_ROOT",
+  "branch": "$BRANCH",
+  "commit": "$COMMIT",
+  "input": {
+    "user_request": "用户的原始请求"
+  },
+  "output": {
+    "problem": "识别的问题",
+    "assumptions": [
+      "假设1",
+      "假设2"
+    ],
+    "fundamentals": [
+      "基础元素1",
+      "基础元素2"
+    ],
+    "solution": "重建的解决方案",
+    "validation": "可行性验证结果"
+  },
+  "next_skills": [
+    "ddd-strategic-design",
+    "mvp-first",
+    "pdca-cycle"
+  ]
+}
+EOF
+
+echo "ARTIFACT SAVED: $ARTIFACT_FILE"
+
+# 创建 latest.json 符号链接
+ln -sf "$ARTIFACT_FILE" memory/artifacts/first-principles/latest.json
+```
+
+### 目标文件更新
+
+如果存在目标文件，记录分析完成：
+
+```bash
+# 检查是否有 pending 目标
+GOAL_FILE=$(ls -t memory/goals/*.md 2>/dev/null | head -1)
+
+if [ -n "$GOAL_FILE" ]; then
+  GOAL_STATUS=$(grep "状态：" "$GOAL_FILE" | awk '{print $2}')
+
+  if [ "$GOAL_STATUS" = "pending" ]; then
+    echo "GOAL STATUS: $GOAL_STATUS"
+    echo "Adding milestone: 第一性原理分析完成"
+
+    # 使用 Edit 工具添加里程碑
+    # 例如："第一性原理分析完成 - {时间}"
+  fi
+fi
+```
+
+### 建议后续技能
+
+根据分析结果，推荐后续技能：
+
+**推荐格式**：
+```markdown
+## 后续建议
+
+基于第一性原理分析结果，建议继续执行：
+
+**推荐技能链**：
+1. /ddd-strategic-design - 如果涉及系统架构设计
+2. /mvp-first - 如果是新系统或新功能
+3. /pdca-cycle - 进入迭代执行阶段
+
+**根据解决方案类型选择**：
+- **架构设计类** → /ddd-strategic-design → /ddd-tactical-design
+- **新系统开发** → /mvp-first → /pdca-cycle
+- **性能优化类** → /pdca-cycle
+- **技术选型类** → 直接进入实施
+
+是否继续执行？
+- A) 执行推荐的技能链
+- B) 只执行第一个技能
+- C) 不继续，结束当前任务
+```
 
 ## References
 

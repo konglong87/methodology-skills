@@ -1,7 +1,74 @@
 ---
 name: mvp-first
+version: 2.0.0
 description: Use when user requests complex systems involving multiple modules or subsystems - like "build a XX system", "design XX architecture", or "implement XX with multiple features". Triggers to prevent over-engineering before validating core assumptions.
+
+# 技能分类
+category: "planning"
+
+# 复杂度标识
+complexity: "medium"
+
+# 预计执行时长
+typical_duration: "30min"
+
+# 依赖关系
+dependencies: []
+benefits-from: [goal-oriented, first-principles, ddd-strategic-design]
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/mvp-first/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+  - Grep
+  - Glob
+
+# 标签（用于技能推荐）
+tags:
+  - "产品规划"
+  - "功能筛选"
+  - "MVP"
+  - "敏捷开发"
 ---
+
+# MVP First
+
+## 前置协议
+
+### 环境检测
+
+```bash
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+```
+
+### 前置技能检查
+
+```bash
+# 检查前置工件
+GOAL_ARTIFACT="memory/artifacts/goal-oriented/latest.json"
+DDD_ARTIFACT="memory/artifacts/ddd-strategic/latest.json"
+
+if [ -f "$GOAL_ARTIFACT" ]; then
+  echo "FOUND: goal-oriented artifact"
+fi
+
+if [ -f "$DDD_ARTIFACT" ]; then
+  echo "FOUND: ddd-strategic-design artifact"
+fi
+
+mkdir -p memory/artifacts/mvp-first
+```
 
 # MVP First
 
@@ -485,3 +552,59 @@ MVP 方式：实验 3 天 → 验证失败 → 立即转向 → 节省 2.5 周
 - **The Lean Startup** - Eric Ries（MVP 概念起源）
 - **Running Lean** - Ash Maurya（MVP 实战方法）
 - **The Mom Test** - Rob Fitzpatrick（如何验证需求）
+## 后置协议
+
+### 工件输出
+
+保存 MVP 规划结果到工件文件：
+
+```bash
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/mvp-first/result-$TIMESTAMP.json"
+
+cat > "$ARTIFACT_FILE" <<EOFJSON
+{
+  "skill": "mvp-first",
+  "version": "2.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "project": "$PROJECT_ROOT",
+  "branch": "$BRANCH",
+  "commit": "$COMMIT",
+  "input": {
+    "user_request": "用户的原始请求"
+  },
+  "output": {
+    "mvp_features": [],
+    "non_mvp_features": [],
+    "mvp_timeline": "",
+    "key_assumptions": [],
+    "validation_metrics": []
+  },
+  "next_skills": [
+    "pdca-cycle"
+  ]
+}
+EOFJSON
+
+echo "ARTIFACT SAVED: $ARTIFACT_FILE"
+ln -sf "$ARTIFACT_FILE" memory/artifacts/mvp-first/latest.json
+```
+
+### 目标文件更新
+
+如果存在目标文件，记录 MVP 规划完成。
+
+### 建议后续技能
+
+```markdown
+## 后续建议
+
+基于 MVP 规划结果，建议继续执行：
+
+**推荐技能链**：
+1. /pdca-cycle - 进入 PDCA 循环实施阶段
+
+是否继续执行？
+- A) 执行推荐的技能链
+- B) 不继续，结束当前任务
+```

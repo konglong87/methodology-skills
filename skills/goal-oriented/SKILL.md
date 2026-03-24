@@ -1,9 +1,91 @@
 ---
 name: goal-oriented
+version: 2.0.0
 description: "MUST use for ANY user request. This is a rigid requirement that applies to all tasks and conversations."
+
+# 技能分类
+category: "planning"
+
+# 复杂度标识
+complexity: "low"
+
+# 预计执行时长
+typical_duration: "5min"
+
+# 依赖关系
+dependencies: []
+benefits-from: []
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/goal-oriented/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+
+# 标签（用于技能推荐）
+tags:
+  - "任务规划"
+  - "目标管理"
+  - "需求分析"
+  - "项目启动"
 ---
 
 # 目标导向思维
+
+## 前置协议
+
+### 环境检测
+
+```bash
+# 检测当前项目信息
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+
+# 检查是否在 Git 仓库中
+if [ "$PROJECT_ROOT" = "unknown" ]; then
+  echo "WARNING: Not in a Git repository"
+fi
+```
+
+### 前置技能检查
+
+**dependencies 检查**（无依赖）：
+
+此技能无前置依赖，可直接执行。
+
+**工件目录初始化**：
+
+```bash
+# 确保工件目录和目标目录存在
+mkdir -p memory/artifacts/goal-oriented
+mkdir -p memory/goals
+```
+
+### 用户意图确认
+
+根据用户消息判断：
+
+**检查点**：
+- [ ] 用户请求是否包含任务特征（行动指令、多步骤需求）
+- [ ] 是否需要创建新目标、更新现有目标或验证目标
+- [ ] 确定是纯信息查询还是需要执行的任务
+
+**意图分类**：
+1. **创建目标**：用户提出新任务，当前无 pending 目标
+2. **调整目标**：用户修改需求，当前有 pending 目标
+3. **验证目标**：AI 认为完成，需要验证目标达成情况
+4. **查询/对话**：纯信息查询或简单问答，无需创建目标
 
 ## Overview
 
@@ -138,6 +220,7 @@ digraph goal_oriented_with_tools {
     "目标达成验证" [shape=diamond, style=filled, fillcolor="#e1bee7"];
     "继续执行缺失部分" [shape=box, style=filled, fillcolor="#f8bbd0"];
     "使用 Edit 工具标记完成" [shape=box, style=filled, fillcolor="#81c784"];
+    "保存工件到 memory/artifacts/" [shape=box, style=filled, fillcolor="#81c784"];
     "可结束会话" [shape=doublecircle, style=filled, fillcolor="#81c784"];
     "正常对话" [shape=box, style=filled, fillcolor="#f8bbd0"];
 
@@ -160,7 +243,8 @@ digraph goal_oriented_with_tools {
     "使用 Read 工具验证目标" -> "目标达成验证";
     "目标达成验证" -> "继续执行缺失部分" [label="未达成"];
     "目标达成验证" -> "使用 Edit 工具标记完成" [label="达成"];
-    "使用 Edit 工具标记完成" -> "可结束会话";
+    "使用 Edit 工具标记完成" -> "保存工件到 memory/artifacts/";
+    "保存工件到 memory/artifacts/" -> "可结束会话";
     "继续执行缺失部分" -> "执行与监控";
 }
 ```
@@ -235,6 +319,11 @@ digraph goal_oriented_with_tools {
 - 更新目标文件状态
 - 记录完成时间
 - 准备结束会话
+
+**步骤 16: 保存工件到 memory/artifacts/**
+- 生成工件 JSON 文件
+- 创建 latest.json 符号链接
+- 记录后续建议技能
 
 ## Goal Decomposition Tool
 
@@ -812,6 +901,110 @@ Edit(
 ### 误区 8: 执行任务但未创建目标
 - **表现**: AI 开始执行多步骤任务，但没有在开始时创建目标文件
 - **正确做法**: 会话开始时检测到任务，立即使用 Write 工具创建目标文件
+
+## 后置协议
+
+### 工件输出
+
+保存目标创建/调整结果到工件文件：
+
+```bash
+# 生成工件文件名
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/goal-oriented/result-$TIMESTAMP.json"
+
+# 读取目标文件信息
+GOAL_FILE=$(ls -t memory/goals/*.md 2>/dev/null | head -1)
+
+if [ -n "$GOAL_FILE" ]; then
+  # 提取目标信息
+  SMART_SPECIFIC=$(grep "^\*\*Specific" "$GOAL_FILE" | sed 's/.*: *//')
+  SMART_MEASURABLE=$(grep "^\*\*Measurable" "$GOAL_FILE" | sed 's/.*: *//')
+  GOAL_STATUS=$(grep "状态：" "$GOAL_FILE" | awk '{print $2}')
+
+  # 写入工件
+  cat > "$ARTIFACT_FILE" <<EOF
+{
+  "skill": "goal-oriented",
+  "version": "2.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "project": "$PROJECT_ROOT",
+  "branch": "$BRANCH",
+  "commit": "$COMMIT",
+  "input": {
+    "user_request": "用户的原始请求"
+  },
+  "output": {
+    "goal_file": "$GOAL_FILE",
+    "smart_specific": "$SMART_SPECIFIC",
+    "smart_measurable": "$SMART_MEASURABLE",
+    "status": "$GOAL_STATUS"
+  },
+  "next_skills": [
+    "first-principles",
+    "mvp-first",
+    "pdca-cycle"
+  ]
+}
+EOF
+
+  echo "ARTIFACT SAVED: $ARTIFACT_FILE"
+
+  # 创建 latest.json 符号链接
+  ln -sf "$ARTIFACT_FILE" memory/artifacts/goal-oriented/latest.json
+else
+  echo "No goal file found, skipping artifact generation"
+fi
+```
+
+### 目标文件更新
+
+如果目标文件存在，记录技能执行：
+
+```bash
+# 检查是否有 pending 目标
+GOAL_FILE=$(ls -t memory/goals/*.md 2>/dev/null | head -1)
+
+if [ -n "$GOAL_FILE" ]; then
+  # 检查目标状态
+  GOAL_STATUS=$(grep "状态：" "$GOAL_FILE" | awk '{print $2}')
+
+  if [ "$GOAL_STATUS" = "pending" ]; then
+    echo "GOAL STATUS: $GOAL_STATUS"
+    echo "GOAL FILE: $GOAL_FILE"
+
+    # 可选：使用 Edit 工具添加里程碑记录
+    # 例如："goal-oriented 技能执行完成 - {时间}"
+  fi
+fi
+```
+
+### 建议后续技能
+
+根据目标类型，推荐后续技能：
+
+**推荐格式**：
+```markdown
+## 后续建议
+
+基于当前目标，建议继续执行：
+
+**推荐技能链**：
+1. /first-principles - 从本质思考问题，找到最优解
+2. /mvp-first - 如果是复杂系统，进行 MVP 规划
+3. /pdca-cycle - 进入 PDCA 循环执行阶段
+
+**根据目标类型选择**：
+- **创新问题** → /first-principles
+- **复杂系统** → /ddd-strategic-design → /ddd-tactical-design → /mvp-first
+- **优化任务** → /pdca-cycle
+- **战略分析** → /swot-analysis
+
+是否继续执行？
+- A) 执行推荐的技能链
+- B) 只执行第一个技能
+- C) 不继续，结束当前任务
+```
 
 ## References
 

@@ -1,7 +1,75 @@
 ---
 name: pdca-cycle
+version: 2.0.0
 description: "Use when executing iterative tasks, continuous improvement, quality assurance, process optimization, or when user asks to 'apply PDCA', 'iterate and improve', 'continuous improvement cycle', 'plan-do-check-act'."
+
+# 技能分类
+category: "execution"
+
+# 复杂度标识
+complexity: "medium"
+
+# 预计执行时长
+typical_duration: "15min"
+
+# 依赖关系
+dependencies: []
+benefits-from: [goal-oriented, mvp-first]
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/pdca-cycle/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+
+# 标签（用于技能推荐）
+tags:
+  - "持续改进"
+  - "迭代开发"
+  - "质量保障"
+  - "流程优化"
 ---
+
+# PDCA 循环
+
+## 前置协议
+
+### 环境检测
+
+```bash
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+```
+
+### 前置技能检查
+
+```bash
+# 检查前置工件
+GOAL_ARTIFACT="memory/artifacts/goal-oriented/latest.json"
+MVP_ARTIFACT="memory/artifacts/mvp-first/latest.json"
+
+if [ -f "$GOAL_ARTIFACT" ]; then
+  echo "FOUND: goal-oriented artifact"
+fi
+
+if [ -f "$MVP_ARTIFACT" ]; then
+  echo "FOUND: mvp-first artifact"
+fi
+
+mkdir -p memory/artifacts/pdca-cycle
+```
 
 # PDCA 循环
 
@@ -194,3 +262,58 @@ digraph pdca {
 - Lean Six Sigma - 持续改进方法论
 - Toyota Production System - 精益生产
 - [PDCA 循环实战指南](https://example.com/pdca-guide)
+## 后置协议
+
+### 工件输出
+
+保存 PDCA 循环结果到工件文件：
+
+```bash
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/pdca-cycle/result-$TIMESTAMP.json"
+
+cat > "$ARTIFACT_FILE" <<EOFJSON
+{
+  "skill": "pdca-cycle",
+  "version": "2.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "project": "$PROJECT_ROOT",
+  "branch": "$BRANCH",
+  "commit": "$COMMIT",
+  "input": {
+    "user_request": "用户的原始请求"
+  },
+  "output": {
+    "cycle_number": 1,
+    "plan": {
+      "objective": "",
+      "actions": []
+    },
+    "do": {
+      "completed_actions": [],
+      "issues": []
+    },
+    "check": {
+      "metrics": {},
+      "findings": []
+    },
+    "act": {
+      "decisions": [],
+      "next_cycle": ""
+    }
+  },
+  "next_skills": []
+}
+EOFJSON
+
+echo "ARTIFACT SAVED: $ARTIFACT_FILE"
+ln -sf "$ARTIFACT_FILE" memory/artifacts/pdca-cycle/latest.json
+```
+
+### 目标文件更新
+
+如果存在目标文件，记录 PDCA 循环完成。
+
+### 建议后续技能
+
+根据 PDCA 循环结果，可能需要继续下一轮循环或完成目标。
