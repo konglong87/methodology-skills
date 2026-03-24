@@ -57,6 +57,104 @@ echo "COMMIT: $COMMIT"
 mkdir -p memory/artifacts/pilot
 ```
 
+### 经验读取（推荐）
+
+**触发时机**：分析任务类型前，为当前任务准备最佳实践
+
+**推荐动作**：调用 experience-manager 技能检索相关经验
+
+**执行步骤**：
+
+1. **提取任务关键词**
+   ```
+   从用户请求中提取：
+   - 核心任务关键词
+   - 技术栈关键词
+   - 问题类型关键词
+   ```
+
+2. **写入请求工件**
+   ```json
+   Write(
+     file_path="memory/artifacts/pilot/experience-request.json",
+     content={
+       "requesting_skill": "pilot",
+       "action": "retrieve",
+       "task_keywords": ["关键词1", "关键词2"],
+       "task_type": "bugfix|feature|refactor",
+       "technologies": ["Technology1", "Technology2"]
+     }
+   )
+   ```
+
+3. **读取经验结果**
+   ```
+   result = Read("memory/artifacts/experience-manager/experience-result.json")
+   ```
+
+4. **应用到技能推荐**
+   ```markdown
+   基于历史经验，推荐以下技能链：
+
+   1. /investigate - 快速定位问题（历史成功率 90%）
+   2. /first-principles - 分析根本原因（历史应用 5 次）
+   3. /pdca-cycle - 迭代优化
+
+   ⚠️ 预防措施（来自历史经验）：
+   - 新项目优先检查国际化配置
+   - 使用标准配置模板
+   ```
+
+**价值**：基于历史经验优化技能推荐，提高成功率。
+
+### 错误预防（自动）
+
+**触发时机**：检测到潜在错误风险时
+
+**自动动作**：调用 experience-manager 获取预防建议
+
+**执行步骤**：
+
+1. **检测风险**
+   ```
+   在分析任务类型时，检测常见的错误风险：
+   - 缺少配置检查
+   - 使用了已废弃的API
+   - 忽略了边界情况
+   ```
+
+2. **写入预防请求**
+   ```json
+   Write(
+     file_path="memory/artifacts/pilot/error-prevention-request.json",
+     content={
+       "requesting_skill": "pilot",
+       "action": "prevent",
+       "current_step": "任务分析",
+       "context": {
+         "technology": "...",
+         "feature": "...",
+         "risk_factors": [...]
+       }
+     }
+   )
+   ```
+
+3. **展示预防建议**
+   ```markdown
+   ## 💡 错误预防提醒
+
+   检测到潜在风险：国际化配置缺失
+
+   **预防措施**：
+   - 优先检查 next.config.js 中的 i18n 配置
+   - 使用标准配置模板
+
+   **历史错误**：2026-03-20 类似错误
+   ```
+
+**价值**：提前预防错误，避免重复踩坑。
+
 ## Overview
 
 智能分析用户请求，推荐最佳的方法论技能组合，实现技能协同工作。

@@ -87,6 +87,345 @@ mkdir -p memory/goals
 3. **验证目标**：AI 认为完成，需要验证目标达成情况
 4. **查询/对话**：纯信息查询或简单问答，无需创建目标
 
+### 经验检索（强制）
+
+**触发时机**：使用 Write 工具创建目标文件后
+
+**强制动作**：调用 experience-manager 技能检索历史经验
+
+**执行步骤**：
+
+1. **提取关键词**
+   ```
+   从用户原始需求中提取关键词：
+   - 技术关键词：框架、库、工具名称
+   - 功能关键词：核心功能描述
+   - 问题关键词：错误类型、问题场景
+   ```
+
+2. **写入请求工件**
+   ```json
+   Write(
+     file_path="memory/artifacts/goal-oriented/experience-request.json",
+     content={
+       "requesting_skill": "goal-oriented",
+       "action": "retrieve",
+       "task_keywords": ["关键词1", "关键词2"],
+       "task_type": "bugfix|feature|refactor",
+       "technologies": ["Technology1", "Technology2"]
+     }
+   )
+   ```
+
+3. **等待 experience-manager 处理**
+   - experience-manager 自动检测到请求工件
+   - 执行四层级检索并生成结果工件
+
+4. **读取结果工件**
+   ```
+   result = Read("memory/artifacts/experience-manager/experience-result.json")
+   ```
+
+5. **展示给用户**
+   ```markdown
+   ## 📚 历史经验参考
+
+   ### ⚠️ 错误预防（来自历史任务）
+   ...
+
+   ### 🎯 可复用模式
+   ...
+
+   ### 💡 改进建议
+   ...
+   ```
+
+**价值**：避免重复错误，快速复用成功经验。
+
+### 经验沉淀（强制）
+
+**触发时机**：目标标记为 completed 后
+
+**强制动作**：调用 experience-manager 技能沉淀经验
+
+**执行步骤**：
+
+1. **收集回顾数据**
+   ```
+   从目标文件中提取：
+   - 原始需求（用户表述）
+   - SMART 目标（具体、可衡量）
+   - 执行过程（里程碑、调整历史）
+   - 验证结果（完成情况）
+   ```
+
+2. **生成经验总结**
+   ```markdown
+   - 做得好的（What Went Well）
+   - 需要改进的（What Could Be Improved）
+   - 错误与修复（Errors & Fixes）
+   - 知识沉淀（Knowledge Gained）
+   - 改进建议（Improvements）
+   ```
+
+3. **写入请求工件**
+   ```json
+   Write(
+     file_path="memory/artifacts/goal-oriented/experience-save-request.json",
+     content={
+       "requesting_skill": "goal-oriented",
+       "action": "save",
+       "task_id": "2026-03-24_HHMM_task-keywords",
+       "task_summary": "任务简要描述",
+       "lessons_learned": [...],
+       "errors_fixed": [...],
+       "knowledge_gained": [...]
+     }
+   )
+   ```
+
+4. **等待 experience-manager 处理**
+   - experience-manager 自动检测到请求
+   - 执行四层级沉淀（CLAUDE.md、AGENT.md、MEMORY.md、MCP Memory）
+
+5. **确认沉淀完成**
+   ```
+   result = Read("memory/artifacts/experience-manager/save-result.json")
+   if result.status == "success":
+       print("✅ 经验已沉淀到四层级知识库")
+   ```
+
+**价值**：积累知识资产，持续优化执行策略。
+
+### 里程碑复盘（强制）（新增）
+
+**触发时机**：里程碑完成时
+
+**强制动作**：调用 experience-manager 技能进行复盘
+
+**目的**：保留好的，改掉坏的，持续优化
+
+**执行步骤**：
+
+1. **识别里程碑完成**
+   ```
+   当使用 Edit 工具更新里程碑记录时，检测是否为里程碑完成
+   ```
+
+2. **触发复盘请求**
+   ```json
+   Write(
+     file_path="memory/artifacts/goal-oriented/milestone-review-request.json",
+     content={
+       "requesting_skill": "goal-oriented",
+       "action": "review",
+       "task_id": "当前目标ID",
+       "milestone": "里程碑描述",
+       "milestone_status": "completed",
+       "review_type": "milestone"
+     }
+   )
+   ```
+
+3. **等待 experience-manager 处理**
+   - experience-manager 分析里程碑得失
+   - 保留好的做法，改掉坏的做法
+   - 更新四层级知识库
+
+4. **读取复盘结果**
+   ```
+   result = Read("memory/artifacts/experience-manager/review-result.json")
+
+   展示给用户：
+   ## 🎯 里程碑复盘结果
+
+   ### ✅ 保留好的
+   - 成功经验1
+   - 成功经验2
+
+   ### ❌ 改掉坏的
+   - 改进项1
+   - 改进项2
+
+   ### 💡 后续优化建议
+   - 建议1
+   - 建议2
+   ```
+
+**价值**：阶段性复盘，及时调整策略，避免在错误方向上走太远。
+
+### 整体复盘与反思（强制）（新增）
+
+**触发时机**：目标整体完成后
+
+**强制动作**：调用 experience-manager 技能进行深度复盘和反思
+
+**目的**：深度分析得失，提炼智慧，好则加冕，错则改之
+
+**执行步骤**：
+
+1. **标记目标完成后立即触发**
+   ```
+   当目标状态更新为 "completed" 时，自动触发复盘和反思
+   ```
+
+2. **发起深度复盘**
+   ```json
+   Write(
+     file_path="memory/artifacts/goal-oriented/deep-review-request.json",
+     content={
+       "requesting_skill": "goal-oriented",
+       "action": "review",
+       "task_id": "当前目标ID",
+       "review_type": "project_end",
+       "include_reflection": true,
+       "analyze_milestones": true,
+       "extract_wisdom": true
+     }
+   )
+   ```
+
+3. **等待 experience-manager 深度分析**
+   - 分析整个任务执行过程
+   - 评估每个里程碑的得失
+   - 提炼可迁移的智慧
+   - 识别需要反思的过时经验
+
+4. **读取复盘反思结果**
+   ```
+   result = Read("memory/artifacts/experience-manager/deep-review-result.json")
+
+   展示给用户：
+   ## 🏆 任务整体复盘与反思
+
+   ### 📊 整体表现
+   - 执行时长：X小时
+   - 里程碑数：X个
+   - 成功率：X%
+   - 经验应用：X次
+
+   ### ✅ 保留好的（好则加冕）
+
+   #### 成功经验
+   1. **经验1**
+      - 应用效果：...
+      - 推广建议：写入 CLAUDE.md 强制规则
+
+   2. **经验2**
+      - 应用效果：...
+      - 推广建议：写入 AGENT.md 标准策略
+
+   ### ❌ 改掉坏的（错则改之）
+
+   #### 失败教训
+   1. **教训1**
+      - 失败原因：...
+      - 改进方案：...
+      - 预防措施：...
+
+   2. **教训2**
+      - 失败原因：...
+      - 改进方案：...
+      - 预防措施：...
+
+   ### 🔄 需要反思的经验
+
+   1. **过时经验**
+      - 原经验：...
+      - 失效原因：技术栈升级
+      - 更新方案：...
+
+   2. **不完整经验**
+      - 原经验：...
+      - 局限性：...
+      - 完善方案：...
+
+   ### 💡 智慧提炼
+
+   **表层经验**：
+   - 具体的技术做法
+
+   **深层智慧**：
+   - 方法论层面的思考
+   - 可迁移的模式
+   - 通用的原则
+
+   ### 📋 后续行动
+
+   - [ ] 更新规则（CLAUDE.md）
+   - [ ] 更新策略（AGENT.md）
+   - [ ] 更新知识（MEMORY.md）
+   - [ ] 标记过时经验
+   - [ ] 编写最佳实践指南
+   ```
+
+5. **执行改进计划**
+   ```
+   根据复盘结果，立即执行改进：
+   - 更新四层级知识库
+   - 标记过时经验
+   - 创建改进任务
+   - 通知相关技能维护者
+   ```
+
+**价值**：
+- 深度学习，持续改进
+- 避免重复犯错
+- 积累智慧资产
+- 形成正向循环
+
+**示例**：
+
+```markdown
+## 🏆 任务整体复盘与反思
+
+**任务**: 优化 methodology-skills 项目的文档结构
+
+### ✅ 保留好的（好则加冕）
+
+1. **三级文档目录结构**
+   - 应用效果：5次应用，100%成功
+   - 推广建议：写入 CLAUDE.md 强制规则
+   - 行动：已完成
+
+2. **README.md 导航文件**
+   - 应用效果：提升查找效率50%
+   - 推广建议：写入 AGENT.md 标准策略
+   - 行动：已完成
+
+### ❌ 改掉坏的（错则改之）
+
+1. **文档命名规范不完善**
+   - 问题：design-YYYY-MM-DD.md 排序不直观
+   - 改进：改为 YYYY-MM-DD-design-{title}.md
+   - 行动：已更新 CLAUDE.md
+
+2. **缺少自动化工具**
+   - 问题：手动创建文档结构
+   - 改进：创建文档模板工具
+   - 行动：本周完成
+
+### 🔄 需要反思的经验
+
+1. **假设用户熟悉 DDD**
+   - 原经验：使用 DDD 思想划分文档边界上下文
+   - 问题：部分用户不了解 DDD
+   - 完善：提供简化的文档分类指南
+
+### 💡 智慧提炼
+
+**表层经验**：
+- 文档按功能分类（design/guides/reference）
+
+**深层智慧**：
+- 从用户需求出发设计结构
+- 简单明了优于复杂完美
+- 自动化减少重复劳动
+
+**可迁移模式**：
+- 分析本质需求 → 设计分类体系 → 建立导航机制 → 自动化工具支持
+```
+
 ## Overview
 
 目标导向思维强调以最终目标为指引，所有行动、决策都服务于达成这个目标。它关注的是"我要达到什么结果？"，并确保过程中不偏离方向。

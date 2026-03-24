@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.14.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.15.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -12,7 +12,44 @@
 
 > 让 AI 掌握方法论，更聪明地思考和执行任务
 
-一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析等方法论的 Skills 工具箱。**支持技能协作、工件传递、智能编排**。支持 Claude Code、OpenCode、Cursor、Codex。
+一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析、经验管理等方法论的 Skills 工具箱。**支持四层级知识沉淀、技能协作、工件传递、智能编排**。支持 Claude Code、OpenCode、Cursor、Codex。
+
+## ✨ v1.15.0 新特性
+
+### 🧠 Experience Manager - 经验管理技能
+
+**四层级知识沉淀与智能检索闭环**：
+
+```
+任务完成 → experience-manager 沉淀经验
+    ↓
+四层级同步写入：
+├── CLAUDE.md（规则层）- 项目约定，强约束
+├── AGENT.md（策略层）- AI执行策略，决策规则
+├── MEMORY.md（知识层）- 技术知识，经验总结
+└── MCP Memory（历史层）- 完整历史，智能检索
+    ↓
+新任务开始 → experience-manager 检索经验
+    ↓
+四层级并行读取，按优先级返回
+    ↓
+展示预防措施、可复用模式、改进建议
+    ↓
+避免重复错误，快速复用成功经验
+```
+
+**核心能力**：
+- ⚡ **经验沉淀**：任务完成后四层级同步沉淀
+- 🔍 **经验读取**：任务开始前智能检索历史经验
+- 🛡️ **错误预防**：检测潜在风险，提供预防建议
+- 📊 **效果追踪**：记录经验应用效果，持续优化
+
+**被调用入口**：
+- ✅ `goal-oriented` - 创建目标时检索经验，完成后沉淀经验
+- ✅ `pilot` - 调度前检索经验，检测风险时预防
+- ✅ 其他技能 - 按需调用
+
+---
 
 ## ✨ v1.14.0 新特性
 
@@ -74,6 +111,27 @@
 - [许可证](#许可证)
 
 ## 包含的方法论
+
+### 🧠 经验管理（Experience Manager）
+
+**刚性要求：任务完成后必须沉淀经验，任务开始前必须检索经验**
+
+实现四层级知识沉淀与智能检索闭环，积累知识资产，避免重复错误。
+
+**核心特性**:
+- 📚 **四层级沉淀** - 规则、策略、知识、历史全覆盖
+- 🔍 **智能检索** - 四层级并行读取，优先级排序
+- 🛡️ **错误预防** - 提前预警，避免踩坑
+- 📈 **效果追踪** - 持续优化知识库
+
+**适用场景**:
+- 任务完成后，需要沉淀经验教训
+- 任务开始前，需要参考历史经验
+- 遇到错误，需要查找相似错误的解决方案
+
+**触发方式**: 自动（被 goal-oriented、pilot 等技能调用）
+
+---
 
 ### 🎯 第一性原理
 

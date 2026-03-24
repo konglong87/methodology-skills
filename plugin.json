@@ -1,7 +1,7 @@
 {
   "name": "methodology-skills",
-  "version": "1.14.0",
-  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、技能协作、智能编排等11个Skills。支持技能协作、工件传递、智能编排。",
+  "version": "1.15.0",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、经验管理、技能协作、智能编排等12个Skills。支持四层级知识沉淀、技能协作、工件传递、智能编排。",
   "author": {
     "name": "恐龙创新部",
     "url": "https://github.com/konglong87"
@@ -80,6 +80,15 @@
     "技能管理",
     "智能体工作流",
     "agentic-ai",
+    "experience-manager",
+    "knowledge-management",
+    "lessons-learned",
+    "error-prevention",
+    "knowledge-base",
+    "四层级沉淀",
+    "经验管理",
+    "知识沉淀",
+    "错误预防",
     "exa-search",
     "remotion",
     "动态风格选择",
