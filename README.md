@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.15.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.16.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/OpenCode-✓-orange.svg" alt="OpenCode">
@@ -13,6 +13,124 @@
 > 让 AI 掌握方法论，更聪明地思考和执行任务
 
 一个包含第一性原理、目标导向、PDCA 循环、领域驱动设计(DDD)、SWOT分析、经验管理等方法论的 Skills 工具箱。**支持四层级知识沉淀、技能协作、工件传递、智能编排**。支持 Claude Code、OpenCode、Cursor、Codex。
+
+## ✨ v1.16.0 新特性
+
+### 🎯 Prompt-Enhancer v2.0 - 需求细化与方案探索
+
+**强制触发 + 需求细化 + 方案探索**：
+
+```
+用户请求
+    ↓
+【prompt-enhancer】强制触发
+    ↓
+需求细化（每个关键点问3-4个问题）
+    ├─ 用户场景：谁会用？什么场景？期望体验？痛点？
+    ├─ 技术约束：平台？技术栈？数据存储？第三方集成？
+    ├─ 功能范围：核心功能？扩展功能？不包含？优先级？
+    └─ 成功标准：验收标准？性能要求？安全要求？时间约束？
+    ↓
+方案探索（头脑风暴3-5种方案）
+    ├─ 方案A：实现方案 + 优势 + 劣势
+    ├─ 方案B：实现方案 + 优势 + 劣势
+    ├─ 方案C：实现方案 + 优势 + 劣势
+    └─ ...
+    ↓
+用户确认选定方案
+    ↓
+工件输出：需求方案工件
+```
+
+**核心能力**：
+- ⚡ **强制触发** - 被goal-oriented调用时自动执行
+- 📋 **需求细化** - 每个关键点问3-4个问题，全面澄清需求
+- 💡 **方案探索** - 头脑风暴3-5种方案，充分论证可行性
+- ✅ **用户确认** - 用户选择最终方案，避免理解偏差
+
+**产出工件**：`memory/artifacts/prompt-enhancer/result-{timestamp}.json`
+
+---
+
+### 📋 Planning v1.0 - 实施规划与步骤分解
+
+**实施规划 + 步骤分解 + plan-review**：
+
+```
+选定方案
+    ↓
+【planning】实施规划
+    ↓
+步骤分解（MECE原则，0.5-2天粒度）
+    ├─ 步骤1：目标、任务、产出、依赖、风险
+    ├─ 步骤2：目标、任务、产出、依赖、风险
+    ├─ 步骤3：目标、任务、产出、依赖、风险
+    └─ ...
+    ↓
+依赖识别
+    ├─ 强依赖：必须先完成
+    ├─ 弱依赖：可以并行
+    └─ 无依赖：独立执行
+    ↓
+资源规划
+    ├─ 人力配置
+    ├─ 时间估算
+    ├─ 技术选型
+    └─ 成本预估
+    ↓
+风险评估
+    ├─ 风险识别
+    ├─ 概率评估
+    ├─ 影响评估
+    └─ 应对措施
+    ↓
+plan-review（用户确认）
+    ├─ A) ✅ 确认，开始执行
+    ├─ B) 需要调整
+    └─ C) 需要重新规划
+    ↓
+工件输出：实施计划工件
+```
+
+**核心能力**：
+- 📐 **步骤分解** - MECE原则，细粒度任务分解
+- 🔗 **依赖识别** - 识别强依赖、弱依赖、无依赖
+- 📊 **资源规划** - 人力、时间、技术、成本全面规划
+- ⚠️ **风险评估** - 概率×影响，提前识别风险
+- ✅ **plan-review** - 用户确认后才开始执行
+
+**产出工件**：`memory/artifacts/planning/result-{timestamp}.json`
+
+---
+
+### 🔄 完整工作流程
+
+优化后的完整工作流程：
+
+```
+用户消息
+    ↓
+【goal-oriented】创建目标（强制）
+    ↓
+【prompt-enhancer】需求细化+方案探索（强制）
+    ↓
+【planning】实施规划+plan-review（强制）
+    ↓
+【experience-manager】检索历史经验（强制）
+    ↓
+【执行技能链】
+    ↓
+【experience-manager】复盘+沉淀（强制）
+```
+
+**对比优化前**：
+- ✅ 需求充分细化（原来缺失）
+- ✅ 方案充分论证（原来缺失）
+- ✅ 步骤详细规划（原来缺失）
+- ✅ 降低理解偏差
+- ✅ 知识沉淀闭环
+
+---
 
 ## ✨ v1.15.0 新特性
 

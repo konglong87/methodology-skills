@@ -1,7 +1,7 @@
 {
   "name": "methodology-skills",
-  "version": "1.15.0",
-  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、经验管理、技能协作、智能编排等12个Skills。支持四层级知识沉淀、技能协作、工件传递、智能编排。",
+  "version": "1.16.0",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、经验管理、提示词需求澄清、实施规划、技能协作、智能编排等14个Skills。支持四层级知识沉淀、技能协作、工件传递、智能编排。",
   "author": {
     "name": "恐龙创新部",
     "url": "https://github.com/konglong87"
@@ -105,6 +105,10 @@
     "命宫",
     "五行分析",
     "大运流年",
-    "用神喜忌"
+    "用神喜忌",
+    "planning",
+    "实施规划",
+    "步骤分解",
+    "plan-review"
   ]
 }
