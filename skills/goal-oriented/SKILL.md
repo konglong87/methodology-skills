@@ -1157,14 +1157,14 @@ Write(
 Edit(
   file_path="memory/goals/2026-03-18_0930_完善goal-oriented触发条件.md",
   old_string="## 验证记录",
-  new_string="""### 里程碑：goal-tracker.py 脚本开发完成
+  new_string="""### 里程碑：Write/Update 「功能」开发完成
 更新时间：2026-03-18 10:00
 
 ## 验证记录"""
 )
 ```
 
-✅ 输出：`已更新里程碑：goal-tracker.py 脚本开发完成`
+✅ 输出：`已更新里程碑：Write/Update 「功能」开发完成`
 
 **步骤 3: 用户补充需求，使用 Edit 工具调整目标**
 
