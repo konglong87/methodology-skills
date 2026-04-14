@@ -1,0 +1,27 @@
+{
+  "requesting_skill": "prompt-enhancer",
+  "action": "plan",
+  "requirement": {
+    "original": "用户原始需求",
+    "refined": {
+      "type": "功能开发",
+      "core_features": ["功能1", "功能2"],
+      "target_users": "目标用户",
+      "platform": "平台",
+      "tech_stack": ["技术1", "技术2"],
+      "success_criteria": ["标准1", "标准2"],
+      "timeline": "时间线"
+    }
+  },
+  "solution": {
+    "selected": "选定方案",
+    "reasons": ["理由1", "理由2"],
+    "alternatives": [
+      {
+        "name": "备选方案1",
+        "pros": ["优势"],
+        "cons": ["劣势"]
+      }
+    ]
+  }
+}
