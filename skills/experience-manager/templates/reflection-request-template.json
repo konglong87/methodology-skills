@@ -1,0 +1,11 @@
+{
+  "requesting_skill": "skill-name",
+  "action": "reflect",
+  "experience_id": "observation_id_or_experience_title",
+  "reflection_time": "2026-03-24T10:00:00Z",
+  "reflection_reason": "技术栈升级|应用失败|定期反思",
+  "environment_changes": [
+    "Claude Code v1.16.0 发布",
+    "技能前置协议已完善"
+  ]
+}

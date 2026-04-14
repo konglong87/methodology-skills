@@ -1,0 +1,11 @@
+{
+  "requesting_skill": "skill-name",
+  "action": "review",
+  "task_id": "2026-03-24_HHMM_task-keywords",
+  "review_type": "milestone|project_end|periodic",
+  "milestone": "里程碑描述（如果是里程碑复盘）",
+  "review_time": "2026-03-24T10:00:00Z",
+  "include_reflection": true,
+  "analyze_milestones": true,
+  "extract_wisdom": true
+}

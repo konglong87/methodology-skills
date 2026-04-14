@@ -1,0 +1,7 @@
+{
+  "requesting_skill": "skill-name",
+  "action": "retrieve",
+  "task_keywords": ["关键词1", "关键词2"],
+  "task_type": "bugfix|feature|refactor",
+  "technologies": ["Technology1", "Technology2"]
+}

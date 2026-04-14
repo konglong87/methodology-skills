@@ -1,0 +1,28 @@
+{
+  "requesting_skill": "skill-name",
+  "action": "save",
+  "task_id": "2026-03-24_HHMM_task-keywords",
+  "task_summary": "任务简要描述",
+  "lessons_learned": [
+    {
+      "category": "best_practice",
+      "lesson": "经验教训内容",
+      "importance": "high"
+    }
+  ],
+  "errors_fixed": [
+    {
+      "error": "错误描述",
+      "root_cause": "根本原因",
+      "fix": "修复方案",
+      "prevention": "预防措施"
+    }
+  ],
+  "knowledge_gained": [
+    {
+      "type": "technical",
+      "knowledge": "知识点描述",
+      "code_pattern": "代码模式示例"
+    }
+  ]
+}
