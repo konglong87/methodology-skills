@@ -1,4 +1,5 @@
 import React from "react";
+import { createFontStyle } from "../styles/typography";
 
 interface ContentItem {
   title: string;
@@ -26,7 +27,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
   borderColor = "#E8E8E8",
   cardStyle = "flat",
   decorativeElements = [],
-  fontFamily = "Arial, sans-serif",
+  fontFamily = "system-ui, PingFang SC, Microsoft YaHei, sans-serif",
   isVertical = false
 }) => {
   // Get card styles based on cardStyle type
@@ -209,12 +210,8 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
             )}
             <h3
               style={{
-                fontSize: isVertical ? "32px" : "42px",
-                fontWeight: "bold",
-                color: primaryColor,
-                margin: 0,
-                fontFamily,
-                flex: 1
+                ...createFontStyle(isVertical, 'heading', primaryColor, fontFamily),
+                fontWeight: 700
               }}
             >
               {index + 1}. {item.title}
@@ -223,11 +220,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 
           <p
             style={{
-              fontSize: isVertical ? "24px" : "28px",
-              color: textColor,
-              margin: 0,
-              fontFamily,
-              lineHeight: 1.6,
+              ...createFontStyle(isVertical, 'body', textColor, fontFamily),
               position: "relative",
               zIndex: 1
             }}

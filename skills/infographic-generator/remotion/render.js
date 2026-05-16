@@ -4,6 +4,8 @@
  * - 渲染单帧PNG
  * - 支持动态config传入
  * - 支持横版(1920x1080)和竖版(1080x1920)输出
+ * - 支持Retina 2x/3x渲染
+ * - 支持质量预设 (draft/normal/professional)
  */
 
 const { bundle } = require('@remotion/bundler');
@@ -12,17 +14,57 @@ const path = require('path');
 const fs = require('fs');
 
 /**
+ * 质量预设配置
+ */
+const QUALITY_PRESETS = {
+  draft: {
+    label: '草稿',
+    scale: 1,
+    dpi: 72,
+    description: '快速预览，低分辨率'
+  },
+  normal: {
+    label: '标准',
+    scale: 1,
+    dpi: 150,
+    description: '日常使用，平衡质量与速度'
+  },
+  professional: {
+    label: '专业',
+    scale: 2,
+    dpi: 300,
+    description: '高清输出，适合打印和发布'
+  },
+  retina: {
+    label: 'Retina',
+    scale: 3,
+    dpi: 300,
+    description: '超清输出，适合Retina显示屏'
+  }
+};
+
+/**
  * 使用Remotion渲染信息图为PNG
  * @param {Object} config - 信息图配置对象
  * @param {string} outputPath - 输出PNG文件路径
- * @returns {Promise<{success: boolean, outputPath?: string, error?: string}>}
+ * @param {Object} options - 渲染选项
+ * @param {string} options.quality - 质量预设 (draft|normal|professional|retina)
+ * @param {number} options.scale - 自定义缩放比例 (覆盖quality设置)
+ * @returns {Promise<{success: boolean, outputPath?: string, error?: string, scale?: number}>}
  */
-async function renderWithRemotion(config, outputPath) {
+async function renderWithRemotion(config, outputPath, options = {}) {
   const startTime = Date.now();
 
   try {
     console.log('[Remotion] 开始渲染流程...');
-    console.log('[Remotion] 配置:', JSON.stringify(config, null, 2));
+
+    // 解析质量设置
+    const qualityName = options.quality || config.quality || 'normal';
+    const qualityConfig = QUALITY_PRESETS[qualityName] || QUALITY_PRESETS.normal;
+    const scale = options.scale !== undefined ? options.scale : qualityConfig.scale;
+
+    console.log(`[Remotion] 质量预设: ${qualityConfig.label} (${qualityName})`);
+    console.log(`[Remotion] 渲染缩放: ${scale}x`);
 
     // 验证输出路径
     if (!outputPath || typeof outputPath !== 'string') {
@@ -53,16 +95,18 @@ async function renderWithRemotion(config, outputPath) {
     const targetHeight = config.output_config?.height || 1080;
     const orientation = config.output_config?.orientation || 'horizontal';
 
+    // 如果使用scale，实际输出分辨率会乘以scale
+    const outputWidth = targetWidth * scale;
+    const outputHeight = targetHeight * scale;
     console.log(`[Remotion] 目标尺寸: ${targetWidth}x${targetHeight} (${orientation})`);
+    console.log(`[Remotion] 输出分辨率: ${outputWidth}x${outputHeight} (${scale}x缩放)`);
 
     // 根据尺寸选择正确的composition
-    let compositionId = 'Infographic'; // 默认
+    let compositionId = 'Infographic';
     if (targetHeight > targetWidth) {
-      // 竖版 - 使用Portrait composition
       compositionId = 'Infographic-Portrait';
       console.log('[Remotion] 使用竖版Composition');
     } else {
-      // 横版 - 使用Landscape composition
       compositionId = 'Infographic-Landscape';
       console.log('[Remotion] 使用横版Composition');
     }
@@ -78,19 +122,26 @@ async function renderWithRemotion(config, outputPath) {
 
     console.log('[Remotion] Composition已选择，开始渲染PNG...');
 
-    // 渲染单帧PNG（使用renderStill而不是renderMedia）
-    // 注意：不再需要手动传递width/height，因为composition已经定义了正确的尺寸
-    await renderStill({
+    // 渲染单帧PNG，支持scale参数实现Retina输出
+    const renderOptions = {
       composition,
       serveUrl: bundled,
       output: outputPath,
-      frame: 0, // 渲染第0帧
+      frame: 0,
       inputProps: {
         config: config
       },
       imageFormat: 'png',
-      overwrite: true
-    });
+      overwrite: true,
+    };
+
+    // 当scale > 1时添加缩放参数
+    if (scale > 1) {
+      renderOptions.scale = scale;
+      console.log(`[Remotion] 启用${scale}x Retina渲染`);
+    }
+
+    await renderStill(renderOptions);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log(`[Remotion] 渲染完成！耗时: ${duration}秒`);
@@ -108,13 +159,14 @@ async function renderWithRemotion(config, outputPath) {
       success: true,
       outputPath: outputPath,
       duration: duration,
-      size: stats.size
+      size: stats.size,
+      scale: scale,
+      resolution: `${outputWidth}x${outputHeight}`
     };
 
   } catch (error) {
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.error(`[Remotion] 渲染失败 (${duration}秒):`, error.message);
-    console.error('[Remotion] 错误堆栈:', error.stack);
 
     return {
       success: false,

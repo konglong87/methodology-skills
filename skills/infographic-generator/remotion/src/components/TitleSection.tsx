@@ -1,4 +1,5 @@
 import React from "react";
+import { createFontStyle } from "../styles/typography";
 
 interface TitleSectionProps {
   title: string;
@@ -16,7 +17,7 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
   subtitle,
   primaryColor,
   textColor,
-  fontFamily = "Arial, sans-serif",
+  fontFamily = "system-ui, PingFang SC, Microsoft YaHei, sans-serif",
   gradient,
   decorativeElements = [],
   isVertical = false
@@ -102,13 +103,9 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
 
       <h1
         style={{
-          fontSize: isVertical ? "52px" : "72px",
-          fontWeight: "bold",
-          color: primaryColor,
-          margin: 0,
-          fontFamily,
-          lineHeight: 1.2,
-          textShadow: decorativeElements.includes('sparkles') ? '2px 2px 8px rgba(0,0,0,0.1)' : 'none'
+          ...createFontStyle(isVertical, 'title', primaryColor, fontFamily),
+          textShadow: decorativeElements.includes('sparkles') ? '2px 2px 8px rgba(0,0,0,0.1)' : 'none',
+          fontWeight: 900
         }}
       >
         {title}
@@ -116,12 +113,10 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
       {subtitle && (
         <h2
           style={{
-            fontSize: isVertical ? "28px" : "36px",
-            color: textColor,
+            ...createFontStyle(isVertical, 'subtitle', textColor, fontFamily),
             marginTop: isVertical ? "15px" : "20px",
-            fontFamily,
-            fontWeight: "normal",
-            opacity: 0.9
+            fontWeight: 400,
+            opacity: 0.85
           }}
         >
           {subtitle}

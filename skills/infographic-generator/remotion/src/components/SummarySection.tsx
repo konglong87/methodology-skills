@@ -1,4 +1,5 @@
 import React from "react";
+import { createFontStyle } from "../styles/typography";
 
 interface SummarySectionProps {
   summary?: string | string[];
@@ -14,7 +15,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   accentColor,
   textColor,
   borderColor = "#E8E8E8",
-  fontFamily = "Arial, sans-serif",
+  fontFamily = "system-ui, PingFang SC, Microsoft YaHei, sans-serif",
   isVertical = false
 }) => {
   if (!summary) return null;
@@ -44,12 +45,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           <p
             key={index}
             style={{
-              fontSize: isVertical ? "24px" : "32px",
-              color: textColor,
+              ...createFontStyle(isVertical, index === 0 ? 'heading' : 'body', textColor, fontFamily),
               margin: index < summaryPoints.length - 1 ? "0 0 12px 0" : 0,
-              fontFamily,
-              lineHeight: 1.6,
-              fontWeight: index === 0 ? "bold" : "normal"
+              fontWeight: index === 0 ? 700 : 400
             }}
           >
             {point}

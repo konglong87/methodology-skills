@@ -14,6 +14,7 @@ description: "Use when user needs to generate infographic PNG images. Triggers: 
 **核心能力**：
 - 📊 **6大模板**：知识科普、对比分析、流程说明、数据展示、小红书爆款、科研图表
 - 🎨 **8种风格**：极简、马卡龙、赛博朋克、莫兰迪、国潮、商务、手绘、扁平化
+- 🖼️ **4级质量预设**：草稿(1x/72DPI) → 标准(1x/150DPI) → 专业(2x/300DPI) → Retina(3x/300DPI)
 - ⚡ **一键生成**：从自然语言描述到PNG图片，无需手动配置
 - 🎯 **智能理解**：自动提取关键信息点，识别数量和内容
 - 🤖 **无需外部API**：完全本地运行，无密钥依赖
@@ -279,6 +280,56 @@ Skill会根据内容类型自动推荐：
 
 ## Advanced Usage
 
+### 质量预设
+
+支持4级质量预设，满足不同场景需求：
+
+| 预设 | 缩放 | DPI | 适用场景 |
+|------|------|-----|---------|
+| **draft** | 1x | 72 | 快速预览、迭代调试 |
+| **normal** | 1x | 150 | 日常使用（默认） |
+| **professional** | 2x | 300 | 高清输出、打印发布 |
+| **retina** | 3x | 300 | 超清输出、Retina显示屏 |
+
+```bash
+# 草稿模式（快速预览）
+node skill-render.js "Python信息图" --quality draft
+
+# 专业模式（2x高清）
+node skill-render.js "Python信息图" --quality professional
+
+# Retina模式（3x超清）
+node skill-render.js "Python信息图" --quality retina
+
+# 自定义缩放
+node skill-render.js "Python信息图" --scale 2
+```
+
+### 模板预览
+
+查看所有可用模板：
+
+```bash
+node skill-render.js --list-templates
+```
+
+输出示例：
+```
+🎨 可用模板预览:
+
+  📚  知识科普
+     ID: knowledge
+     用途: 概念解释、知识分享、技术介绍
+     布局: 标题 + 2列内容 + 总结
+     ...
+
+  🔥  小红书爆款
+     ID: xiaohongshu
+     用途: 社交媒体分享、内容营销
+     布局: 吸睛标题 + 卡片 + 互动
+     ...
+```
+
 ### 自定义模板和风格
 
 用户可以指定：
@@ -420,3 +471,6 @@ infographic/{topic-slug}/
 - 支持批量生成
 - 自动缓存模板配置
 - 异步渲染大尺寸图片
+- 4级质量预设（draft/normal/professional/retina）
+- 自动降级渲染（Remotion → HTML+Puppeteer）
+- 渲染失败自动重试（最多2次）

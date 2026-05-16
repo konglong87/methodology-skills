@@ -153,6 +153,7 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${content.title}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -162,6 +163,7 @@ function generateHTMLInfographic(config, outputPath = 'infographic.html') {
 
     body {
       ${bodyStyle}
+      font-family: 'Noto Sans SC', system-ui, -apple-system, PingFang SC, Microsoft YaHei, sans-serif;
     }
 
     .container {
@@ -189,12 +191,13 @@ ${htmlContent.html}
 }
 
 /**
- * 生成知识模板
+ * 生成知识模板（优化版）
  */
 function generateKnowledgeTemplate(style, content, width, height) {
   const itemsHTML = content.items.map((item, index) => `
-    <div class="item">
+    <div class="item" style="animation-delay: ${index * 0.1}s">
       <div class="item-number">${index + 1}</div>
+      ${item.icon ? `<div class="item-icon">${item.icon}</div>` : ''}
       <h3 class="item-title">${item.title}</h3>
       <p class="item-description">${item.description}</p>
     </div>
@@ -208,23 +211,29 @@ function generateKnowledgeTemplate(style, content, width, height) {
 
   return {
     css: `
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
     .title-section {
-      padding: 60px 80px 40px;
+      padding: 80px 80px 50px;
       text-align: center;
+      position: relative;
     }
 
     .main-title {
       font-size: 72px;
-      font-weight: bold;
+      font-weight: 900;
       color: ${style.primary_color};
-      line-height: 1.2;
+      line-height: 1.15;
       margin-bottom: 20px;
+      letter-spacing: 0.02em;
     }
 
     .subtitle {
       font-size: 36px;
       color: ${style.text_color};
-      font-weight: normal;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      opacity: 0.85;
     }
 
     .content-section {
@@ -235,46 +244,66 @@ function generateKnowledgeTemplate(style, content, width, height) {
     }
 
     .item {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 15px;
-      border-left: 6px solid ${style.primary_color};
+      background: ${style.surface_color || 'rgba(255,255,255,0.9)'};
+      padding: 35px 40px;
+      border-radius: 20px;
+      border-left: 8px solid ${style.primary_color};
       position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
     }
 
     .item-number {
-      font-size: 48px;
-      font-weight: bold;
+      font-size: 56px;
+      font-weight: 900;
       color: ${style.primary_color};
       position: absolute;
-      top: -10px;
-      right: 20px;
-      opacity: 0.3;
+      top: -5px;
+      right: 25px;
+      opacity: 0.12;
+      line-height: 1;
+    }
+
+    .item-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
     }
 
     .item-title {
       font-size: 36px;
-      font-weight: bold;
+      font-weight: 700;
       color: ${style.primary_color};
       margin-bottom: 15px;
+      line-height: 1.3;
     }
 
     .item-description {
       font-size: 24px;
-      line-height: 1.5;
+      line-height: 1.7;
+      color: ${style.text_color || '#333'};
+      letter-spacing: 0.005em;
     }
 
     .summary {
       margin: 40px 80px 80px;
-      padding: 40px;
-      background-color: ${style.accent_color};
-      border-radius: 15px;
+      padding: 50px 60px;
+      background: ${style.accent_color};
+      border-radius: 24px;
       text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 2px solid ${style.border_color || '#e8e8e8'};
     }
 
     .summary p {
-      font-size: 28px;
+      font-size: 32px;
       line-height: 1.6;
+      color: ${style.text_color || '#333'};
+      font-weight: 500;
     }
     `,
     html: `
@@ -406,15 +435,17 @@ function generateXiaohongshuTemplate(style, content, width, height) {
 
     .main-title {
       font-size: 56px;
-      font-weight: bold;
+      font-weight: 900;
       margin-bottom: 15px;
-      letter-spacing: 1px;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
     }
 
     .subtitle {
       font-size: 28px;
       color: ${colors.text_secondary};
-      font-weight: normal;
+      font-weight: 400;
+      letter-spacing: 0.01em;
     }
 
     /* 渐变文字 */
@@ -448,15 +479,17 @@ function generateXiaohongshuTemplate(style, content, width, height) {
 
     .card-title {
       font-size: 24px;
-      font-weight: bold;
+      font-weight: 700;
       color: ${colors.text_color};
       margin-bottom: 10px;
+      line-height: 1.3;
     }
 
     .card-desc {
       font-size: 18px;
       color: ${colors.text_secondary};
-      line-height: 1.6;
+      line-height: 1.7;
+      letter-spacing: 0.005em;
     }
 
     /* 数据展示区 */
@@ -528,12 +561,15 @@ function generateXiaohongshuTemplate(style, content, width, height) {
 }
 
 /**
- * 使用Puppeteer截图（自动检测完整高度）
+ * 使用Puppeteer截图（自动检测完整高度，支持Retina）
  */
-async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') {
+async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto', options = {}) {
   const puppeteer = require('puppeteer');
 
-  console.log('📸 使用Puppeteer截图...');
+  const scale = options.scale || 1;
+  const qualityName = options.quality || 'normal';
+
+  console.log(`📸 使用Puppeteer截图 (${scale}x, ${qualityName})...`);
 
   let browser;
   try {
@@ -544,7 +580,12 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
     const page = await browser.newPage();
 
     // 设置视口宽度，高度设为足够大以容纳内容
-    await page.setViewport({ width, height: 5000 });
+    // deviceScaleFactor 控制 Retina 渲染质量
+    await page.setViewport({
+      width,
+      height: 5000,
+      deviceScaleFactor: scale
+    });
 
     const fileUrl = `file://${htmlPath}`;
     await page.goto(fileUrl, { waitUntil: 'networkidle0' });
@@ -557,7 +598,6 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
             return document.body.scrollHeight;
           }
 
-          // 获取容器的实际内容高度（不包括padding和margin）
           const children = Array.from(container.children);
           let maxBottom = 0;
 
@@ -569,17 +609,15 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
             }
           });
 
-          // 添加底部padding和缓冲区
-          // 横屏模式需要更大的缓冲区避免底部截断
           const buffer = viewportWidth > 1080 ? 200 : 160;
-          return Math.max(maxBottom + buffer, 800); // 最小800px高度
+          return Math.max(maxBottom + buffer, 800);
         }, width))
       : height;
 
     console.log(`📐 检测到内容高度: ${actualHeight}px`);
 
     // 重新设置正确的视口高度
-    await page.setViewport({ width, height: actualHeight });
+    await page.setViewport({ width, height: actualHeight, deviceScaleFactor: scale });
 
     await page.screenshot({
       path: pngPath,
@@ -587,7 +625,7 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
     });
 
     console.log(`✅ 截图完成: ${pngPath}`);
-    return { width, height: actualHeight };
+    return { width, height: actualHeight, scale };
   } finally {
     if (browser) {
       await browser.close();
@@ -598,11 +636,13 @@ async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto') 
 /**
  * 完整流程：生成HTML并截图
  */
-async function renderInfographic(config, outputPath = 'output.png') {
+async function renderInfographic(config, outputPath = 'output.png', options = {}) {
   const htmlPath = path.resolve(outputPath.replace('.png', '.html'));
   const absoluteOutputPath = path.resolve(outputPath);
 
-  console.log('🎨 生成HTML信息图...');
+  const scale = options.scale || (options.quality === 'professional' ? 2 : options.quality === 'retina' ? 3 : 1);
+
+  console.log(`🎨 生成HTML信息图 (${scale}x 缩放)...`);
   generateHTMLInfographic(config, htmlPath);
 
   console.log('📸 截图中...');
@@ -610,7 +650,8 @@ async function renderInfographic(config, outputPath = 'output.png') {
     htmlPath,
     absoluteOutputPath,
     config.output?.width || 1920,
-    config.output?.height || 'auto'
+    config.output?.height || 'auto',
+    { scale, quality: options.quality || 'normal' }
   );
 
   return {
@@ -735,21 +776,26 @@ module.exports = {
   testHTMLRender
 };
 /**
- * 生成流程模板
+ * 生成流程模板（优化版）
  */
 function generateProcessTemplate(style, content, width, height) {
   const itemsHTML = content.items.map((item, index) => `
     <div class="process-step">
-      <div class="step-number">步骤 ${index + 1}</div>
-      <div class="step-icon">${item.icon}</div>
-      <h3 class="step-title">${item.title}</h3>
-      <p class="step-description">${item.description}</p>
+      <div class="step-connector">
+        <div class="step-circle">${index + 1}</div>
+        ${index < content.items.length - 1 ? '<div class="step-line"></div>' : ''}
+      </div>
+      <div class="step-content">
+        <div class="step-icon">${item.icon || '📋'}</div>
+        <h3 class="step-title">${item.title}</h3>
+        <p class="step-description">${item.description}</p>
+      </div>
     </div>
   `).join('');
 
   const summaryHTML = content.summary ? `
     <div class="process-summary">
-      <h3>注意事项</h3>
+      <h3>💡 注意事项</h3>
       <ul>
         ${content.summary.map(point => `<li>${point}</li>`).join('')}
       </ul>
@@ -760,73 +806,108 @@ function generateProcessTemplate(style, content, width, height) {
     css: `
     .process-container {
       padding: 60px 80px;
+      font-family: 'Noto Sans SC', system-ui, sans-serif;
     }
 
     .process-title {
       font-size: 64px;
-      font-weight: bold;
+      font-weight: 900;
       color: ${style.primary_color};
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
+      letter-spacing: 0.02em;
     }
 
     .process-subtitle {
       font-size: 28px;
-      color: ${style.gray_color};
+      color: ${style.text_color || '#666'};
       text-align: center;
       margin-bottom: 60px;
+      opacity: 0.8;
     }
 
     .process-steps {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 30px;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
     .process-step {
-      flex: 0 0 calc(50% - 15px);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 30px;
-      border-radius: 15px;
-      border-left: 5px solid ${style.primary_color};
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: flex-start;
+      gap: 30px;
+      background: ${style.surface_color || 'rgba(255,255,255,0.9)'};
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border: 1px solid ${style.border_color || '#eee'};
     }
 
-    .step-number {
-      font-size: 18px;
-      color: ${style.primary_color};
-      font-weight: bold;
-      margin-bottom: 15px;
+    .step-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 60px;
+    }
+
+    .step-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: ${style.primary_color};
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-line {
+      width: 3px;
+      flex: 1;
+      min-height: 30px;
+      background: linear-gradient(180deg, ${style.primary_color}80, transparent);
+      margin: 5px 0;
+    }
+
+    .step-content {
+      flex: 1;
     }
 
     .step-icon {
-      font-size: 48px;
-      margin-bottom: 15px;
+      font-size: 40px;
+      margin-bottom: 10px;
     }
 
     .step-title {
       font-size: 32px;
+      font-weight: 700;
       color: ${style.primary_color};
-      margin-bottom: 15px;
-      font-weight: bold;
+      margin-bottom: 10px;
+      line-height: 1.3;
     }
 
     .step-description {
-      font-size: 20px;
-      color: ${style.text_color};
-      line-height: 1.6;
+      font-size: 22px;
+      color: ${style.text_color || '#333'};
+      line-height: 1.7;
+      letter-spacing: 0.005em;
     }
 
     .process-summary {
-      margin-top: 60px;
-      background: ${style.secondary_color}22;
-      padding: 40px;
-      border-radius: 15px;
+      margin-top: 50px;
+      background: ${style.accent_color || '#f5f5f5'};
+      padding: 40px 50px;
+      border-radius: 20px;
+      border: 1px solid ${style.border_color || '#e8e8e8'};
     }
 
     .process-summary h3 {
-      font-size: 32px;
+      font-size: 28px;
       color: ${style.primary_color};
       margin-bottom: 20px;
     }
@@ -837,11 +918,12 @@ function generateProcessTemplate(style, content, width, height) {
     }
 
     .process-summary li {
-      font-size: 22px;
-      color: ${style.text_color};
-      padding: 15px 0;
-      padding-left: 40px;
+      font-size: 20px;
+      color: ${style.text_color || '#333'};
+      padding: 12px 0;
+      padding-left: 35px;
       position: relative;
+      line-height: 1.6;
     }
 
     .process-summary li:before {
@@ -850,6 +932,7 @@ function generateProcessTemplate(style, content, width, height) {
       left: 0;
       color: ${style.primary_color};
       font-weight: bold;
+      font-size: 22px;
     }
     `,
     html: `
@@ -868,7 +951,7 @@ function generateProcessTemplate(style, content, width, height) {
 }
 
 /**
- * 生成对比模板
+ * 生成对比模板（优化版）
  */
 function generateComparisonTemplate(style, content, width, height) {
   // 支持新的数据结构
@@ -912,63 +995,100 @@ function generateComparisonTemplate(style, content, width, height) {
 
   return {
     css: `
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
     .comparison-container {
       padding: 60px 80px;
+      font-family: 'Noto Sans SC', system-ui, sans-serif;
     }
 
     .comparison-title {
       font-size: 64px;
-      font-weight: bold;
+      font-weight: 900;
       color: ${style.primary_color};
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
+      letter-spacing: 0.02em;
     }
 
     .comparison-subtitle {
       font-size: 28px;
-      color: ${style.gray_color};
+      color: ${style.text_color || '#666'};
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 50px;
+      opacity: 0.8;
     }
 
     .comparison-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      margin-bottom: 60px;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 40px;
+      margin-bottom: 50px;
+      align-items: start;
     }
 
     .comparison-item {
-      background: rgba(255, 255, 255, 0.8);
+      background: ${leftBg};
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 24px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      border: 1px solid ${style.border_color || '#e8e8e8'};
     }
 
     .comparison-item h3 {
-      font-size: 42px;
-      margin-bottom: 30px;
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 25px;
       text-align: center;
       padding-bottom: 20px;
       border-bottom: 3px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .comparison-item.right h3 {
+      color: ${rightPrimary};
+      border-bottom-color: ${rightPrimary};
     }
 
     .item-icon {
-      font-size: 48px;
-      margin-right: 15px;
+      font-size: 40px;
+    }
+
+    .vs-badge {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: ${style.primary_color || '#333'};
+      color: #FFFFFF;
+      font-size: 24px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      align-self: center;
+      flex-shrink: 0;
     }
 
     .comparison-point {
       display: flex;
       align-items: flex-start;
-      padding: 20px 0;
-      border-bottom: 1px solid #eee;
+      padding: 18px 0;
+      border-bottom: 1px solid ${style.border_color || '#eee'};
+    }
+
+    .comparison-point:last-child {
+      border-bottom: none;
     }
 
     .point-icon {
-      font-size: 32px;
-      margin-right: 15px;
+      font-size: 28px;
+      margin-right: 12px;
       flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .point-content {
@@ -976,34 +1096,39 @@ function generateComparisonTemplate(style, content, width, height) {
     }
 
     .point-label {
-      font-size: 20px;
-      color: ${style.gray_color};
-      font-weight: bold;
-      margin-bottom: 5px;
+      font-size: 18px;
+      font-weight: 600;
+      color: ${style.text_secondary || '#666'};
+      margin-bottom: 4px;
+      letter-spacing: 0.01em;
     }
 
     .point-value {
-      font-size: 22px;
-      color: ${style.text_color};
+      font-size: 20px;
+      color: ${style.text_color || '#333'};
+      line-height: 1.5;
     }
 
     .comparison-conclusion {
-      background: ${style.secondary_color}22;
+      background: ${style.accent_color || '#f5f5f5'};
       padding: 40px;
-      border-radius: 20px;
+      border-radius: 24px;
       text-align: center;
+      border: 1px solid ${style.border_color || '#e8e8e8'};
     }
 
     .conclusion-text {
       font-size: 24px;
-      color: ${style.text_color};
+      color: ${style.text_color || '#333'};
       margin-bottom: 15px;
+      line-height: 1.6;
     }
 
     .recommendation-text {
-      font-size: 20px;
+      font-size: 22px;
       color: ${style.primary_color};
-      font-weight: bold;
+      font-weight: 700;
+      letter-spacing: 0.01em;
     }
     `,
     html: `
@@ -1012,16 +1137,18 @@ function generateComparisonTemplate(style, content, width, height) {
       <p class="comparison-subtitle">${content.subtitle || ''}</p>
 
       <div class="comparison-grid">
-        <div class="comparison-item" style="background: ${leftBg};">
-          <h3 style="color: ${leftPrimary};">
+        <div class="comparison-item">
+          <h3>
             <span class="item-icon">${leftIcon}</span>
             ${leftTitle}
           </h3>
           ${leftPointsHTML}
         </div>
 
-        <div class="comparison-item" style="background: ${rightBg};">
-          <h3 style="color: ${rightPrimary};">
+        <div class="vs-badge">VS</div>
+
+        <div class="comparison-item right" style="background: ${rightBg};">
+          <h3>
             <span class="item-icon">${rightIcon}</span>
             ${rightTitle}
           </h3>
@@ -1036,7 +1163,7 @@ function generateComparisonTemplate(style, content, width, height) {
 }
 
 /**
- * 生成数据展示模板
+ * 生成数据展示模板（优化版）
  */
 function generateDataTemplate(style, content, width, height) {
   const itemsHTML = content.items ? content.items.map((item, index) => `
@@ -1049,7 +1176,7 @@ function generateDataTemplate(style, content, width, height) {
 
   const summaryHTML = content.summary ? `
     <div class="data-summary">
-      <h3>关键发现</h3>
+      <h3>🔍 关键发现</h3>
       <ul>
         ${content.summary.map(point => `<li>${point}</li>`).join('')}
       </ul>
@@ -1060,64 +1187,73 @@ function generateDataTemplate(style, content, width, height) {
     css: `
     .data-container {
       padding: 60px 80px;
+      font-family: 'Noto Sans SC', system-ui, sans-serif;
     }
 
-    .data-title {
+    .data-header-title {
       font-size: 64px;
-      font-weight: bold;
+      font-weight: 900;
       color: ${style.primary_color};
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
+      letter-spacing: 0.02em;
     }
 
     .data-subtitle {
       font-size: 28px;
-      color: ${style.gray_color};
+      color: ${style.text_color || '#666'};
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 50px;
+      opacity: 0.8;
     }
 
     .data-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 40px;
-      margin-bottom: 60px;
+      gap: 35px;
+      margin-bottom: 50px;
     }
 
     .data-item {
-      background: rgba(255, 255, 255, 0.9);
+      background: ${style.surface_color || 'rgba(255,255,255,0.95)'};
       padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
       text-align: center;
+      border: 1px solid ${style.border_color || '#eee'};
+      transition: transform 0.3s ease;
     }
 
     .data-icon {
-      font-size: 64px;
+      font-size: 56px;
       margin-bottom: 20px;
     }
 
-    .data-title {
-      font-size: 32px;
+    .data-item .data-title {
+      font-size: 28px;
+      font-weight: 700;
       color: ${style.primary_color};
-      margin-bottom: 15px;
-      font-weight: bold;
+      margin-bottom: 12px;
+      line-height: 1.3;
     }
 
     .data-description {
       font-size: 20px;
-      color: ${style.text_color};
-      line-height: 1.6;
+      color: ${style.text_color || '#333'};
+      line-height: 1.7;
+      letter-spacing: 0.005em;
     }
 
     .data-summary {
-      background: ${style.secondary_color}22;
-      padding: 40px;
+      background: ${style.accent_color || '#f5f5f5'};
+      padding: 40px 50px;
       border-radius: 20px;
+      border: 1px solid ${style.border_color || '#e8e8e8'};
     }
 
     .data-summary h3 {
-      font-size: 32px;
+      font-size: 28px;
+      font-weight: 700;
       color: ${style.primary_color};
       margin-bottom: 20px;
     }
@@ -1128,11 +1264,12 @@ function generateDataTemplate(style, content, width, height) {
     }
 
     .data-summary li {
-      font-size: 22px;
-      color: ${style.text_color};
-      padding: 15px 0;
-      padding-left: 40px;
+      font-size: 20px;
+      color: ${style.text_color || '#333'};
+      padding: 12px 0;
+      padding-left: 35px;
       position: relative;
+      line-height: 1.6;
     }
 
     .data-summary li:before {
@@ -1141,11 +1278,12 @@ function generateDataTemplate(style, content, width, height) {
       left: 0;
       color: ${style.primary_color};
       font-weight: bold;
+      font-size: 22px;
     }
     `,
     html: `
     <div class="data-container">
-      <h1 class="data-title">${content.title}</h1>
+      <h1 class="data-header-title">${content.title}</h1>
       <p class="data-subtitle">${content.subtitle || ''}</p>
 
       <div class="data-grid">
@@ -1159,12 +1297,12 @@ function generateDataTemplate(style, content, width, height) {
 }
 
 /**
- * 生成科研图表模板
+ * 生成科研图表模板（优化版）
  */
 function generateScientificTemplate(style, content, width, height) {
   const itemsHTML = content.items ? content.items.map((item, index) => `
     <div class="scientific-item">
-      <div class="scientific-number">${index + 1}</div>
+      <div class="scientific-number">${String(index + 1).padStart(2, '0')}</div>
       <h3 class="scientific-title">${item.title}</h3>
       <p class="scientific-description">${item.description}</p>
     </div>
@@ -1184,68 +1322,80 @@ function generateScientificTemplate(style, content, width, height) {
     .scientific-container {
       padding: 60px 80px;
       background: #FFFFFF;
+      font-family: 'Noto Sans SC', Georgia, 'Times New Roman', serif;
     }
 
-    .scientific-title {
-      font-size: 56px;
-      font-weight: bold;
-      color: #000000;
-      margin-bottom: 15px;
+    .scientific-header-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 10px;
       text-align: center;
+      letter-spacing: 0.01em;
     }
 
     .scientific-subtitle {
-      font-size: 24px;
-      color: #666666;
+      font-size: 22px;
+      color: #666;
       text-align: center;
       margin-bottom: 50px;
       font-style: italic;
+      font-weight: 400;
     }
 
     .scientific-items {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 30px;
+      gap: 25px;
       margin-bottom: 50px;
     }
 
     .scientific-item {
       background: #F8F9FA;
-      padding: 30px;
-      border-left: 4px solid #000000;
+      padding: 30px 35px;
+      border-left: 4px solid ${style.primary_color || '#2C3E50'};
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .scientific-item:hover {
+      background: #F0F1F2;
     }
 
     .scientific-number {
-      font-size: 20px;
-      color: #666666;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 16px;
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
     }
 
-    .scientific-title {
-      font-size: 28px;
-      color: #000000;
+    .scientific-item .scientific-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
       margin-bottom: 10px;
-      font-weight: bold;
+      line-height: 1.3;
     }
 
     .scientific-description {
-      font-size: 18px;
-      color: #333333;
-      line-height: 1.6;
+      font-size: 17px;
+      color: #444;
+      line-height: 1.7;
+      letter-spacing: 0.005em;
     }
 
     .scientific-summary {
       background: #F0F0F0;
-      padding: 40px;
-      border-radius: 0;
+      padding: 40px 50px;
+      border-radius: 8px;
     }
 
     .scientific-summary h3 {
-      font-size: 28px;
-      color: #000000;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
       margin-bottom: 20px;
-      font-weight: bold;
     }
 
     .scientific-summary ul {
@@ -1254,24 +1404,25 @@ function generateScientificTemplate(style, content, width, height) {
     }
 
     .scientific-summary li {
-      font-size: 20px;
-      color: #333333;
-      padding: 12px 0;
-      padding-left: 30px;
+      font-size: 18px;
+      color: #444;
+      padding: 10px 0;
+      padding-left: 28px;
       position: relative;
+      line-height: 1.6;
     }
 
     .scientific-summary li:before {
-      content: '▪';
+      content: '▸';
       position: absolute;
       left: 0;
-      color: #000000;
-      font-size: 24px;
+      color: ${style.primary_color || '#2C3E50'};
+      font-size: 20px;
     }
     `,
     html: `
     <div class="scientific-container">
-      <h1 class="scientific-title">${content.title}</h1>
+      <h1 class="scientific-header-title">${content.title}</h1>
       <p class="scientific-subtitle">${content.subtitle || ''}</p>
 
       <div class="scientific-items">

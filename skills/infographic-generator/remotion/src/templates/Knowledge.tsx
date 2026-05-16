@@ -3,12 +3,26 @@ import { InfographicConfig } from "../Infographic";
 import { TitleSection } from "../components/TitleSection";
 import { ContentSection } from "../components/ContentSection";
 import { SummarySection } from "../components/SummarySection";
+import { FONT_STACKS, createFontStyle } from "../styles/typography";
 
 export const KnowledgeTemplate: React.FC<{ config: InfographicConfig }> = ({ config }) => {
   const { content, style, output_config } = config;
 
   // 检测是否为竖屏
   const isVertical = output_config?.orientation === 'vertical';
+
+  // 智能布局选择：根据内容项数量自动选择最佳列数
+  const itemCount = content.items?.length || 0;
+  let gridColumns: string;
+  if (isVertical) {
+    gridColumns = "1fr";
+  } else if (itemCount <= 2) {
+    gridColumns = "repeat(2, 1fr)";
+  } else if (itemCount <= 4) {
+    gridColumns = "repeat(2, 1fr)";
+  } else {
+    gridColumns = "repeat(3, 1fr)";
+  }
 
   return (
     <div
@@ -18,7 +32,7 @@ export const KnowledgeTemplate: React.FC<{ config: InfographicConfig }> = ({ con
         display: "flex",
         flexDirection: "column",
         background: style.gradient || style.background_color,
-        // 竖屏时减少整体padding，让内容更紧凑
+        fontFamily: style.font_family || FONT_STACKS.sans,
         padding: isVertical ? "0" : "0"
       }}
     >
