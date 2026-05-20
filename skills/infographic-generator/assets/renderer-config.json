@@ -1,7 +1,7 @@
 {
   "renderer": {
     "name": "Infographic Renderer",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "信息图渲染工具配置 - 支持Retina输出"
   },
   "supported_formats": [

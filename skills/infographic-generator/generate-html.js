@@ -564,7 +564,12 @@ function generateXiaohongshuTemplate(style, content, width, height) {
  * 使用Puppeteer截图（自动检测完整高度，支持Retina）
  */
 async function screenshotHTML(htmlPath, pngPath, width = 1920, height = 'auto', options = {}) {
-  const puppeteer = require('puppeteer');
+  let puppeteer;
+  try {
+    puppeteer = require('puppeteer');
+  } catch (e) {
+    throw new Error('Puppeteer 未安装，无法截图。请运行: cd skills/infographic-generator && npm install');
+  }
 
   const scale = options.scale || 1;
   const qualityName = options.quality || 'normal';

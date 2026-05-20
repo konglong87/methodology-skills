@@ -1,6 +1,6 @@
 {
   "name": "infographic-generator",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "信息图生成器 - 支持Retina输出、专业排版、智能配色",
   "dependencies": {
     "@remotion/bundler": "^4.0.435",

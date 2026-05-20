@@ -154,7 +154,8 @@ function validateConfig(configPath) {
       break;
     case 'process':
       log('⚠️  Process 模板已废弃，请使用 Knowledge 模板代替', 'yellow');
-      return false;
+      result = validateKnowledgeConfig(config);
+      break;
     default:
       log(`❌ 未知的模板类型: ${template}`, 'red');
       return false;

@@ -66,7 +66,7 @@ async function skillRender(input, options = {}) {
   console.log(`🎯 质量预设: ${qualityConfig.label} (${quality}), 缩放: ${effectiveScale}x, DPI: ${qualityConfig.dpi}`);
 
   // 进度追踪
-  const totalSteps = 4;
+  const totalSteps = 5;
   let currentStep = 0;
   renderProgressBar(++currentStep, totalSteps, '生成配置...');
 
@@ -114,40 +114,42 @@ async function skillRender(input, options = {}) {
   }
 
   renderProgressBar(++currentStep, totalSteps, '配置生成完成');
-  renderProgressBar(++currentStep, totalSteps, '渲染横版...');
+  renderProgressBar(++currentStep, totalSteps, '布局智能选择...');
 
   // 确定基础输出路径
   const baseOutputPath = outputPath || path.join(__dirname, 'output-infographic.png');
   const baseFileName = path.basename(baseOutputPath, '.png');
   const outputDir = path.dirname(baseOutputPath);
 
-  // 生成横版版本
-  const horizontalConfig = JSON.parse(JSON.stringify(config));
-  horizontalConfig.output_config = { width: 1920, height: 1080, orientation: 'horizontal' };
+  // 智能选择渲染方向：根据内容点数量自动决定单版本
+  const pointsCount = config.content?.items?.length || 0;
+  const shouldRenderBoth = config.output_config?.orientation === 'both' || options.renderBoth === true;
+  const isXiaohongshu = config.template === 'xiaohongshu';
 
-  const horizontalPath = path.join(outputDir, `${baseFileName}-landscape.png`);
-  const horizontalResult = await renderFromConfig(horizontalConfig, horizontalPath, { quality, scale: effectiveScale });
-  renderProgressBar(++currentStep, totalSteps, '渲染竖版...');
+  if (shouldRenderBoth) {
+    // 双版本：横版+竖版
+    currentStep = await renderSingleOrientation(config, baseOutputPath, outputDir, baseFileName, 'landscape', { quality, scale: effectiveScale }, totalSteps, currentStep);
+    currentStep = await renderSingleOrientation(config, baseOutputPath, outputDir, baseFileName, 'portrait', { quality, scale: effectiveScale }, totalSteps, currentStep);
+  } else {
+    // 单版本：智能选择方向
+    const orientation = isXiaohongshu || pointsCount > 5 ? 'portrait' : 'landscape';
+    currentStep = await renderSingleOrientation(config, baseOutputPath, outputDir, baseFileName, orientation, { quality, scale: effectiveScale }, totalSteps, currentStep);
+  }
 
-  // 生成竖版版本
-  const verticalConfig = JSON.parse(JSON.stringify(config));
-  verticalConfig.output_config = { width: 1080, height: 1920, orientation: 'vertical' };
+  renderProgressBar(totalSteps, totalSteps, '完成！');
 
-  const verticalPath = path.join(outputDir, `${baseFileName}-portrait.png`);
-  const verticalResult = await renderFromConfig(verticalConfig, verticalPath, { quality, scale: effectiveScale });
-  renderProgressBar(currentStep, totalSteps, '完成！');
+  // 收集输出文件路径
+  const orientation = shouldRenderBoth ? 'landscape' : (isXiaohongshu || pointsCount > 5 ? 'portrait' : 'landscape');
+  const outputFilePath = path.join(outputDir, `${baseFileName}-${orientation}.png`);
 
   console.log('\n✅ 技能渲染完成！');
   console.log(`📊 输出摘要:`);
   console.log(`   - 质量: ${qualityConfig.label} (${effectiveScale}x, ${qualityConfig.dpi}DPI)`);
-  console.log(`   - 横版: ${horizontalPath}`);
-  console.log(`   - 竖版: ${verticalPath}`);
-
-  console.log('\n✅ 技能渲染完成！');
+  console.log(`   - 文件: ${outputFilePath}`);
 
   return {
     success: true,
-    outputPath: horizontalResult.outputPath,
+    outputPath: outputFilePath,
     configPath: savedConfigPath,
     config: config
   };
@@ -232,6 +234,33 @@ async function renderFromConfig(config, outputPath, renderOptions = {}, retryCou
       );
     }
   }
+}
+
+/**
+ * 渲染单一方向版本
+ * @param {Object} config - 配置对象
+ * @param {string} baseOutputPath - 基础输出路径
+ * @param {string} outputDir - 输出目录
+ * @param {string} baseFileName - 基础文件名
+ * @param {string} orientation - 'landscape' 或 'portrait'
+ * @param {Object} renderOptions - 渲染选项
+ * @param {number} totalSteps - 总步骤数
+ * @param {number} currentStep - 当前步骤
+ * @returns {number} 更新后的步骤数
+ */
+async function renderSingleOrientation(config, baseOutputPath, outputDir, baseFileName, orientation, renderOptions, totalSteps, currentStep) {
+  const dims = orientation === 'landscape' ? { width: 1920, height: 1080 } : { width: 1080, height: 1920 };
+  const label = orientation === 'landscape' ? '横版' : '竖版';
+
+  const orientationConfig = JSON.parse(JSON.stringify(config));
+  orientationConfig.output_config = { ...dims, orientation };
+
+  const outputPath = path.join(outputDir, `${baseFileName}-${orientation}.png`);
+  renderProgressBar(++currentStep, totalSteps, `渲染${label}...`);
+
+  await renderFromConfig(orientationConfig, outputPath, renderOptions);
+
+  return currentStep;
 }
 
 /**
@@ -368,6 +397,7 @@ if (require.main === module) {
     console.log('  --quality <预设>   质量预设: draft|normal|professional|retina (默认: normal)');
     console.log('  --scale <倍数>     自定义缩放倍数 (1-4, 覆盖--quality设置)');
     console.log('  --list-templates   展示所有可用模板预览');
+    console.log('  --render-both      同时输出横版和竖版两个版本');
     console.log('');
     console.log('质量预设说明:');
     console.log('  draft        1x缩放, 72DPI, 快速预览');
@@ -421,6 +451,8 @@ if (require.main === module) {
     } else if (args[i] === '--scale' && args[i + 1]) {
       options.scale = parseInt(args[i + 1], 10);
       i++;
+    } else if (args[i] === '--render-both') {
+      options.renderBoth = true;
     } else if (args[i] === '--list-templates') {
       const { showTemplatePreviews } = require('./template-preview');
       showTemplatePreviews();
