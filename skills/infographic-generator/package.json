@@ -1,12 +1,8 @@
 {
   "name": "infographic-generator",
-  "version": "2.1.0",
-  "description": "信息图生成器 - 支持Retina输出、专业排版、智能配色",
+  "version": "3.0.0",
+  "description": "公众号配图生成器 - 4主题HTML + Playwright自动截图",
   "dependencies": {
-    "@remotion/bundler": "^4.0.435",
-    "@remotion/cli": "^4.0.435",
-    "@remotion/renderer": "^4.0.435",
-    "puppeteer": "^24.39.0",
-    "remotion": "^4.0.435"
+    "playwright": "^1.60.0"
   }
 }

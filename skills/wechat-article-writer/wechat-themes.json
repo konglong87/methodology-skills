@@ -1,0 +1,404 @@
+{
+  "name": "微信公众号文章排版主题",
+  "description": "4套文章排版主题，每套包含标题、正文、引用、列表、强调、分隔线、代码等元素的完整样式",
+  "themes": {
+    "tech": {
+      "name": "技术深度",
+      "description": "适合编程、架构、技术分析类文章",
+      "global": {
+        "font-size": "15px",
+        "color": "#3e3e3e",
+        "line-height": "1.8",
+        "font-family": "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+        "text-align": "justify",
+        "word-spacing": "1px",
+        "letter-spacing": "0.5px"
+      },
+      "h2": {
+        "font-size": "22px",
+        "font-weight": "bold",
+        "color": "#1a1a1a",
+        "margin": "1.6em 0 0.6em",
+        "padding-bottom": "8px",
+        "border-bottom": "2px solid #5E6AD2",
+        "letter-spacing": "1px"
+      },
+      "h3": {
+        "font-size": "18px",
+        "font-weight": "bold",
+        "color": "#2a2a2a",
+        "margin": "1.2em 0 0.5em",
+        "padding-left": "12px",
+        "border-left": "4px solid #5E6AD2"
+      },
+      "p": {
+        "margin": "0.8em 0",
+        "text-align": "justify"
+      },
+      "blockquote": {
+        "font-size": "14px",
+        "color": "#5a5a5a",
+        "background": "#f5f5fa",
+        "padding": "16px 18px",
+        "margin": "1.2em 0",
+        "border-left": "4px solid #5E6AD2",
+        "border-radius": "0 6px 6px 0",
+        "line-height": "1.7"
+      },
+      "strong": {
+        "color": "#e96900",
+        "font-weight": "bold"
+      },
+      "ul": {
+        "padding-left": "24px",
+        "margin": "0.8em 0",
+        "list-style-type": "disc"
+      },
+      "ol": {
+        "padding-left": "24px",
+        "margin": "0.8em 0",
+        "list-style-type": "decimal"
+      },
+      "li": {
+        "margin-bottom": "0.4em"
+      },
+      "code": {
+        "font-family": "'SF Mono', 'Consolas', 'Courier New', monospace",
+        "font-size": "13px",
+        "background": "#f0f0f5",
+        "color": "#e96900",
+        "padding": "2px 6px",
+        "border-radius": "3px"
+      },
+      "pre": {
+        "font-size": "13px",
+        "line-height": "1.5",
+        "background": "#1E1F25",
+        "color": "#F7F8F8",
+        "padding": "18px 20px",
+        "border-radius": "8px",
+        "overflow-x": "auto",
+        "margin": "1em 0"
+      },
+      "hr": {
+        "height": "1px",
+        "border": "none",
+        "border-top": "1px dashed #d0d0d0",
+        "margin": "2em 0"
+      },
+      "highlight": {
+        "background": "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
+        "padding": "14px 18px",
+        "border-left": "4px solid #5E6AD2",
+        "border-radius": "0 6px 6px 0",
+        "margin": "1em 0",
+        "font-size": "14px",
+        "color": "#4c1d95"
+      },
+      "summary": {
+        "background": "#f8f9fb",
+        "padding": "20px 22px",
+        "border-radius": "8px",
+        "margin": "1.5em 0",
+        "border": "1px solid #e8e8ed"
+      },
+      "summary_title": {
+        "font-size": "16px",
+        "font-weight": "bold",
+        "color": "#1a1a1a",
+        "margin-bottom": "12px"
+      }
+    },
+    "product": {
+      "name": "产品宣发",
+      "description": "适合产品发布、品牌故事类文章",
+      "global": {
+        "font-size": "17px",
+        "color": "#2a2a2a",
+        "line-height": "1.75",
+        "font-family": "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+        "text-align": "justify"
+      },
+      "h2": {
+        "font-size": "26px",
+        "font-weight": "700",
+        "color": "#1d1d1f",
+        "margin": "2em 0 0.8em",
+        "text-align": "center",
+        "letter-spacing": "2px"
+      },
+      "h3": {
+        "font-size": "19px",
+        "font-weight": "600",
+        "color": "#1d1d1f",
+        "margin": "1.4em 0 0.6em"
+      },
+      "p": {
+        "margin": "1em 0",
+        "text-align": "justify"
+      },
+      "blockquote": {
+        "font-size": "16px",
+        "color": "#6E6E73",
+        "background": "#f5f5f7",
+        "padding": "20px 24px",
+        "margin": "1.5em 0",
+        "border-left": "3px solid #0071E3",
+        "border-radius": "0 10px 10px 0",
+        "line-height": "1.7"
+      },
+      "strong": {
+        "color": "#0071E3",
+        "font-weight": "600"
+      },
+      "ul": {
+        "padding-left": "24px",
+        "margin": "0.8em 0"
+      },
+      "ol": {
+        "padding-left": "24px",
+        "margin": "0.8em 0"
+      },
+      "li": {
+        "margin-bottom": "0.5em"
+      },
+      "code": {
+        "font-family": "'SF Mono', 'Consolas', monospace",
+        "font-size": "15px",
+        "background": "#f5f5f7",
+        "color": "#0071E3",
+        "padding": "2px 6px",
+        "border-radius": "4px"
+      },
+      "pre": {
+        "font-size": "14px",
+        "line-height": "1.6",
+        "background": "#1d1d1f",
+        "color": "#f5f5f7",
+        "padding": "20px 24px",
+        "border-radius": "12px",
+        "overflow-x": "auto",
+        "margin": "1.2em 0"
+      },
+      "hr": {
+        "height": "1px",
+        "border": "none",
+        "border-top": "1px solid #d2d2d7",
+        "margin": "2.5em 0"
+      },
+      "highlight": {
+        "background": "#f0f7ff",
+        "padding": "18px 22px",
+        "border-left": "3px solid #0071E3",
+        "border-radius": "0 10px 10px 0",
+        "margin": "1.2em 0",
+        "font-size": "16px",
+        "color": "#1d1d1f"
+      },
+      "summary": {
+        "background": "#f5f5f7",
+        "padding": "24px 26px",
+        "border-radius": "16px",
+        "margin": "2em 0"
+      },
+      "summary_title": {
+        "font-size": "18px",
+        "font-weight": "700",
+        "color": "#1d1d1f",
+        "margin-bottom": "14px"
+      }
+    },
+    "warm": {
+      "name": "人文长文",
+      "description": "适合深度思考、叙事、人物类文章",
+      "global": {
+        "font-size": "18px",
+        "color": "#3a3a30",
+        "line-height": "1.85",
+        "font-family": "Georgia, 'Times New Roman', 'PingFang SC', 'Microsoft YaHei', serif",
+        "text-align": "justify",
+        "letter-spacing": "0.3px"
+      },
+      "h2": {
+        "font-size": "24px",
+        "font-weight": "normal",
+        "color": "#1a1a18",
+        "margin": "1.8em 0 0.8em",
+        "text-align": "center",
+        "font-style": "italic"
+      },
+      "h3": {
+        "font-size": "19px",
+        "font-weight": "bold",
+        "color": "#2a2a20",
+        "margin": "1.4em 0 0.6em"
+      },
+      "p": {
+        "margin": "1em 0",
+        "text-align": "justify"
+      },
+      "blockquote": {
+        "font-size": "17px",
+        "color": "#736D5A",
+        "background": "#F1ECDE",
+        "padding": "20px 24px",
+        "margin": "1.5em 0",
+        "border-left": "3px solid #A04A2A",
+        "font-style": "italic",
+        "line-height": "1.75"
+      },
+      "strong": {
+        "color": "#A04A2A",
+        "font-weight": "bold"
+      },
+      "ul": {
+        "padding-left": "24px",
+        "margin": "0.8em 0"
+      },
+      "ol": {
+        "padding-left": "24px",
+        "margin": "0.8em 0"
+      },
+      "li": {
+        "margin-bottom": "0.5em"
+      },
+      "code": {
+        "font-family": "'SF Mono', 'Consolas', monospace",
+        "font-size": "16px",
+        "background": "#EDE6D4",
+        "color": "#A04A2A",
+        "padding": "2px 6px"
+      },
+      "pre": {
+        "font-size": "15px",
+        "line-height": "1.6",
+        "background": "#1A1A18",
+        "color": "#E6DCC4",
+        "padding": "22px 24px",
+        "overflow-x": "auto",
+        "margin": "1.2em 0"
+      },
+      "hr": {
+        "height": "0",
+        "border": "none",
+        "border-top": "1px solid #C8BEA4",
+        "margin": "2.5em 0"
+      },
+      "highlight": {
+        "background": "#F1ECDE",
+        "padding": "18px 22px",
+        "border-left": "3px solid #A04A2A",
+        "margin": "1.2em 0",
+        "font-size": "17px",
+        "color": "#1A1A18"
+      },
+      "summary": {
+        "background": "#F1ECDE",
+        "padding": "22px 24px",
+        "margin": "2em 0",
+        "border": "1px solid #C8BEA4"
+      },
+      "summary_title": {
+        "font-size": "18px",
+        "font-weight": "bold",
+        "color": "#1A1A18",
+        "margin-bottom": "14px"
+      }
+    },
+    "zen": {
+      "name": "生活美学",
+      "description": "适合生活方式、设计美学类文章",
+      "global": {
+        "font-size": "15px",
+        "color": "#3a3a36",
+        "line-height": "1.9",
+        "font-family": "-apple-system, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+        "text-align": "justify",
+        "letter-spacing": "0.8px"
+      },
+      "h2": {
+        "font-size": "20px",
+        "font-weight": "400",
+        "color": "#2a2a28",
+        "margin": "2em 0 0.8em",
+        "letter-spacing": "2px",
+        "text-align": "center"
+      },
+      "h3": {
+        "font-size": "16px",
+        "font-weight": "500",
+        "color": "#3a3a36",
+        "margin": "1.4em 0 0.6em",
+        "letter-spacing": "1px"
+      },
+      "p": {
+        "margin": "0.9em 0",
+        "text-align": "justify"
+      },
+      "blockquote": {
+        "font-size": "14px",
+        "color": "#7C7B76",
+        "background": "#F4F2EC",
+        "padding": "18px 20px",
+        "margin": "1.5em 0",
+        "line-height": "1.8"
+      },
+      "strong": {
+        "color": "#2a2a28",
+        "font-weight": "600"
+      },
+      "ul": {
+        "padding-left": "24px",
+        "margin": "0.8em 0"
+      },
+      "ol": {
+        "padding-left": "24px",
+        "margin": "0.8em 0"
+      },
+      "li": {
+        "margin-bottom": "0.5em"
+      },
+      "code": {
+        "font-family": "'SF Mono', 'Consolas', monospace",
+        "font-size": "13px",
+        "background": "#EBE8E0",
+        "color": "#5a5a50",
+        "padding": "2px 6px"
+      },
+      "pre": {
+        "font-size": "13px",
+        "line-height": "1.6",
+        "background": "#2A2A28",
+        "color": "#D9D6CD",
+        "padding": "20px 22px",
+        "overflow-x": "auto",
+        "margin": "1.2em 0"
+      },
+      "hr": {
+        "height": "1px",
+        "border": "none",
+        "border-top": "1px solid #D9D6CD",
+        "margin": "2.5em 0"
+      },
+      "highlight": {
+        "background": "#F4F2EC",
+        "padding": "16px 20px",
+        "margin": "1.2em 0",
+        "font-size": "14px",
+        "color": "#2A2A28"
+      },
+      "summary": {
+        "background": "#F4F2EC",
+        "padding": "20px 22px",
+        "margin": "2em 0",
+        "border": "1px solid #D9D6CD"
+      },
+      "summary_title": {
+        "font-size": "16px",
+        "font-weight": "500",
+        "color": "#2A2A28",
+        "margin-bottom": "12px"
+      }
+    }
+  }
+}
