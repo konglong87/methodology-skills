@@ -19,7 +19,7 @@ const { renderArticle, THEMES } = require('./wechat-render.js');
 
 const CHINESE_NUM = /^([一二三四五六七八九十]+)[、.．]\s*/;
 const EMOJI_NUM = /^[0-9]️⃣\s*/;
-const SHORT_COLON = /^.{2,30}[：:]\s*$/;
+const SHORT_COLON = /^.{8,50}[：:]\s*$/;
 
 function parseMarkdown(text) {
   const lines = text.split('\n');
@@ -93,11 +93,12 @@ function parseMarkdown(text) {
     // "案例N：" → h3
     if (/^案例\d+[：:]/.test(line)) { flushP(); flushL(); sections.push({ type: 'h3', text: line }); continue; }
 
-    // Emoji 开头短行 → h3（跳过非中英文非数字开头的短行）
-    const firstChar = line.codePointAt(0);
-    if (firstChar && firstChar > 127 && line.length < 40 && line.length > 3) {
-      flushP(); flushL(); sections.push({ type: 'h3', text: line }); continue;
+    // ⚠️/⚠等短行（警告标记开头）
+    if (/^[⚠⚡🔥❗❌✅️📌💡⭐]/.test(line) && line.length < 40) {
+      flushP(); flushL(); sections.push({ type: 'p', text: line }); continue;
     }
+
+    // 带冒号的短行 → h3（前面规则已处理，这里不再重复）
 
     // 普通段落
     para.push(line);
