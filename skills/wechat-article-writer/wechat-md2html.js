@@ -11,6 +11,7 @@
  *   一、二、… → h2   |   - xxx → ul   |   ▲ 图N → 跳过
  *   1. 2. → h3      |   > xxx → blockquote
  *   **text** → strong (强调色)
+ *   自然段落标题 → h2（含！，？：分隔符的8-30字短行）
  */
 
 const path = require('path');
@@ -20,6 +21,9 @@ const { renderArticle, THEMES } = require('./wechat-render.js');
 const CHINESE_NUM = /^([一二三四五六七八九十]+)[、.．]\s*/;
 const EMOJI_NUM = /^[0-9]️⃣\s*/;
 const SHORT_COLON = /^.{8,50}[：:]\s*$/;
+// 自然段落标题：8-30字、含中文分隔符、不以句号结尾
+const NATURAL_HAS_SEP = /[！，？：]/;
+const NOT_PLAIN_SENTENCE = /[。.]$/;
 
 function parseMarkdown(text) {
   const lines = text.split('\n');
@@ -82,6 +86,15 @@ function parseMarkdown(text) {
     // Markdown 引用
     if (/^>\s/.test(line)) { flushP(); flushL(); sections.push({ type: 'blockquote', text: line.replace(/^>\s*/, '') }); continue; }
 
+    // 仅匹配以中文或英文字母开头的自然标题行
+    if (line.length >= 8 && line.length <= 30 && NATURAL_HAS_SEP.test(line) && !NOT_PLAIN_SENTENCE.test(line) && /^[A-Za-z一-鿿]/.test(line)) {
+      const prevText = para.join(' ');
+      const prevEnds = para.length === 0 || prevText.match(/[。.!！？…]$/) || prevText.length > 30;
+      if (prevEnds) {
+        flushP(); flushL(); sections.push({ type: 'h2', text: line }); continue;
+      }
+    }
+
     // 列表项
     if (/^[-·•]\s/.test(line)) { flushP(); list.push(line.replace(/^[-·•]\s*/, '')); continue; }
     if (/^\d+[.、．]\s/.test(line)) { flushP(); list.push(line.replace(/^\d+[.、．]\s*/, '')); continue; }
@@ -97,8 +110,6 @@ function parseMarkdown(text) {
     if (/^[⚠⚡🔥❗❌✅️📌💡⭐]/.test(line) && line.length < 40) {
       flushP(); flushL(); sections.push({ type: 'p', text: line }); continue;
     }
-
-    // 带冒号的短行 → h3（前面规则已处理，这里不再重复）
 
     // 普通段落
     para.push(line);
