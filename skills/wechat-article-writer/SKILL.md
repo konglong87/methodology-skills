@@ -5,219 +5,87 @@ description: "微信公众号文章写作和排版助手。输入主题+内容�
 
 # 微信公众号文章排版器
 
-## 概述
+## 触发方式
 
-微信公众号文章一体化写作和排版工具。**丢一个 .md 文件进去，自动产出可复制到公众号编辑器的精美排版文章 + 全套配图。**
+- 用户说"公众号文章""写公众号""公众号排版""微信文章""推文"时触发
+- 用户提供 .md 文件或写作主题+大纲
 
-## 快速开始：一键生成
+## 工作流
 
-### 1. 准备 Markdown 文件
+### Phase 1 — 解析输入
 
-写一篇文章，用中文编号分段（一、二、... 或 h2 标题）：
-
-```markdown
-# 我的文章标题
-
-在2026年的今天...
-
-## 一、第一节标题
-
-### 1. 小节标题
-段落文字...
-
-- 要点1
-- 要点2
-
-## 二、第二节标题
-...
-```
-
-### 2. 运行生成命令
-
-```bash
-cd methodology-skills
-node skills/wechat-article-writer/wechat-full.js 我的文章.md -o output/
-```
-
-可选参数：
-- `--theme stripe` — 配图风格（默认 apple 明亮；可选 linear/apple/stripe/muji）
-- `--article-theme tech` — 文章主题（默认自动推断；可选 tech/product/warm/zen）
-- `-o ./我的输出目录/` — 指定输出目录
-
-### 3. 拿到结果
-
-```
-output/
-├── article.html          ← 图文混排预览（浏览器打开看效果）
-├── article-plain.html    ← ⭐ 用浏览器打开，全选复制，粘贴到公众号编辑器
-├── 插入指南.md            ← 配图上传位置对照表
-└── screenshots/
-    └── apple/
-        ├── apple-hero.png        ← 头图
-        ├── apple-section-0.png   ← 每章配图
-        ├── ...
-        └── wide/                 ← 宽屏版（公众号文章实际使用的）
-            ├── apple-hero-wide.png
-            ├── apple-section-0-wide.png
-            └── ...
-```
-
-### 4. 发布到公众号
-
-1. 浏览器打开 `article-plain.html` → `Cmd+A` 全选 → `Cmd+C` 复制
-2. 粘贴到微信公众号编辑器
-3. 把 `screenshots/` 里的配图上传到公众号素材库
-4. 参考 `插入指南.md` 把图片插到对应位置
-5. 预览 → 发布 🎉
-
-## 输入格式说明
-
-### 自动识别的结构
-
-| 写法 | 渲染为 |
-|------|--------|
-| `一、标题` `二、标题` | 一级章节标题（h2） |
-| `1. 小节` `2. 小节` | 二级标题（h3） |
-| 普通段落 | 正文（p） |
-| `- 要点` `· 要点` | 无序列表 |
-| `1. 步骤` `1、步骤` | 编号列表 |
-| `> 引用` | 引用块 |
-| `**强调**` | 加粗（强调色） |
-| `快速回顾` `一句话总结` `划重点` | 高亮块 |
-| `---` | 分隔线 |
-
-### 配图自动生成规则
-
-- **头图**：标题下方（hero 风格）
-- **每章配图**：每个 h2 章节后自动插入一张配图（包含该章核心要点）
-- **文末引导图**：文章末尾 CTA 图
-- 同时产出竖长版（750×1334）和宽屏版（1200×675），文章默认使用宽屏版
-
-## 微信公众号的硬规则
-
-微信公众号编辑器对 HTML 有严格限制。以下是必须遵守的：
-
-| 规则 | 说明 |
-|---|---|
-| **行内样式** | 所有样式必须写在 `style=""` 属性中，禁止 `<style>` 块和外部 CSS |
-| **禁止脚本** | 不能有 `<script>`，不能有事件处理器（onclick 等） |
-| **禁止 iframe** | 不能嵌入外部页面 |
-| **字体限制** | 只能用系统字体：`-apple-system, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif` |
-| **字号范围** | `14px` ~ `20px` 正文最舒适；标题 `18px` ~ `28px` |
-| **颜色范围** | 正文 `#3e3e3e` ~ `#2a2a2a`；不在纯黑 `#000` 也不用纯灰 `#888` |
-| **行间距** | `1.6` ~ `1.8` 公众号阅读最舒适 |
-| **段落间距** | `1em` ~ `1.5em` 上下 margin |
-| **两端对齐** | `text-align: justify` 公众号默认，中英文混排必加 |
-| **图片** | `<img>` 宽度 `100%`，居中，先上传到微信素材库再插入 |
-
-## 4 种文章主题
-
-| 主题 | 字号 | 配色 | 适合内容 |
-|---|---|---|---|
-| **技术深度** | 15px | 深色背景感 + 紫色强调 | 编程、架构、技术分析 |
-| **产品宣发** | 17px | 纯白 + 蓝色强调 | 产品发布、品牌故事 |
-| **人文长文** | 18px | 暖色调 | 深度思考、叙事、人物 |
-| **生活美学** | 15px | 极简去色 | 生活方式推荐、设计美学 |
-
-用户未指定时，根据内容类型自动匹配。
-
-## Workflow
-
-### Phase 1 — 内容生成
-
-收到用户主题和内容大纲后：
-
-1. **理解内容类型** — 技术文/产品文/人文文/生活文 → 自动选主题
-2. **规划文章结构** — 确定各 section 的标题层级和内容密度
-3. **生成文章正文** — 完整的文章内容，包括标题、段落、引用、列表、总结等
+- 如果是 .md 文件路径 → `parseMarkdown(text)` 解析
+- 如果用户口述主题+大纲 → 先生成 Markdown 内容，再解析
+- 自动推断文章主题（tech/product/warm/zen）
 
 ### Phase 2 — 排版渲染
 
-调用 `node wechat-render.js` 将结构化文章数据转换为 WeChat 兼容的 HTML：
+- `wechat-render.js` 渲染结构化 sections → WeChat 兼容 HTML
+- 所有样式使用行内 `style=""`，禁止 `<style>` 块、`<script>`、外部 CSS
+- 输出：`article.html`（预览版，含 `<img>`） + `article-plain.html`（公众号粘贴版，图片用虚线占位框替换）
 
-```json
-{
-  "title": "文章标题",
-  "author": "作者",
-  "theme": "tech|product|warm|zen",
-  "sections": [
-    {"type": "h2", "text": "章节标题"},
-    {"type": "p", "text": "段落文字..."},
-    {"type": "blockquote", "text": "引用文字..."},
-    {"type": "ul", "items": ["要点1", "要点2"]},
-    {"type": "highlight", "text": "重点强调"},
-    {"type": "separator"},
-    {"type": "summary", "title": "总结", "items": ["要点1", "要点2"]}
-  ]
-}
-```
+### Phase 3 — 配图生成（通过 infographic-generator）
 
-输出为完整的 WeChat 兼容 HTML（所有样式已内联）。
+- `buildSectionPageConfigs` 为每个 h2 section 生成独立花园页面配置
+- `takeMultiPageScreenshots` 通过 Playwright 截图：竖长（750×1334）+ 宽屏（1200×675 16:9）
+- 宽屏图存入 `{theme}/wide/` 子目录
+- `buildImageMap` 将宽屏图映射到文章各位置
 
-### Phase 3 — 配套配图（可选）
+## Markdown 解析规则
 
-生成配图调用 `infographic-generator` skill：
-- 从文章内容自动提取关键标题和要点
-- 生成 4 种风格的配图截图
-- 用户挑选喜欢的插入文章
+| 输入模式 | 输出类型 |
+|----------|----------|
+| `一、标题` `二、标题` | h2 |
+| `1. 小节` `2. 小节` | h3 |
+| `### text` `## text` | h3 / h2 |
+| `- 要点` `· 要点` `1. 步骤` | ul |
+| `> 引用` | blockquote |
+| `**强调**` | strong（强调色） |
+| `快速回顾` `一句话总结` `划重点` | highlight |
+| `---` `***` | separator |
+| `案例N：` / 带冒号短行(8-50字) | h3 |
 
-## 使用示例
+## 配图映射规则
 
-```
-用户: 帮我写一篇公众号文章，主题是「多智能体编排模式入门」
-      内容大纲：1.什么是多智能体编排 2.核心角色 3.模式类型 4.应用案例 5.总结
-```
+| 图片 | 插入位置 |
+|------|----------|
+| hero | 文章标题下方 |
+| section-N | 第 N 个 h2 之后 |
+| cta | 文末 |
 
-产出：
-- `output/article.html` — 可直接复制粘贴到公众号编辑器的排好版的文章
-- `output/screenshots/` — 4 套配套配图
+默认主题：apple（明亮）。可用：linear/apple/stripe/muji。
 
-## 文件说明
-
-| 文件 | 用途 |
-|---|---|
-| `SKILL.md` | 本文件 — 工作流定义 |
-| `wechat-render.js` | Markdown/JSON → WeChat 兼容 HTML 渲染器 |
-| `wechat-themes.json` | 4 种文章排版主题定义 |
-| `test_content/` | 测试用文章内容存放目录 |
-
-## 公众号排版最佳实践
-
-### 字号和间距
+## 输出目录结构
 
 ```
-标题 h2: 22px, bold, margin-bottom: 0.8em
-标题 h3: 18px, bold, margin-bottom: 0.6em
-正文 p:  15-17px, line-height: 1.8, margin: 0.8em 0
-引用:    14-15px, line-height: 1.6, 左侧彩色边框
-列表:    15-16px, line-height: 1.8
+output/
+├── article.html             ← 图文混排预览（含真实 <img>）
+├── article-plain.html       ← 公众号粘贴版（图片为虚线占位框）
+├── 插入指南.md               ← 图片位置对照表
+└── screenshots/{theme}/
+    ├── {theme}-hero.png     ← 竖长头图
+    ├── {theme}-section-N.png ← 竖长章节图
+    ├── {theme}-cta.png      ← 竖长尾图
+    └── wide/                ← 宽屏版（公众号文章实际引用）
+        ├── {theme}-hero-wide.png
+        ├── {theme}-section-N-wide.png
+        └── {theme}-cta-wide.png
 ```
 
-### 颜色搭配
+## WeChat 约束
 
-```
-正文: #3e3e3e（85% 黑，柔和护眼）
-强调: #e96900（暖橙，用于关键词加粗）
-链接: #1e6bb8（蓝色，可点击感）
-引用: #6b6b6b（灰色，区分层级）
-```
+- 所有样式行内 `style=""`，无 `<style>` 块、`<script>`、`<iframe>`、事件处理器
+- 字体仅系统字体栈
+- 颜色用 6 位 hex 不简写
+- 图片先上传到微信素材库再插入，本地路径粘贴后丢失
 
-### 内容结构
+## 文件清单
 
-```
-开篇（Hook）→ 问题（Pain）→ 方案（Solution）→ 展开（Details）→ 总结（CTA）
-```
-
-### 配图规范
-
-- 封面图：900×500（2.35:1），公众号素材库上传
-- 正文图：宽度 640-900px，居中
-- 每个章节最好有一张配图
-- 图片 alt 文字有助于 SEO 和阅读体验
-
-## 技术说明
-
-- WeChat 不支持 CSS 变量、不支持 flexbox 部分属性、不支持 grid
-- 布局靠 `margin/padding/text-align` 而非 flexbox
-- 颜色用 6 位 hex 不用简写（`#333333` 而非 `#333`）
-- 图片必须上传到微信素材库后插入，`file://` 和本地路径图片粘贴后会丢失
+| 文件 | 角色 |
+|------|------|
+| `wechat-full.js` | 一站式编排入口（解析→配图→渲染） |
+| `wechat-md2html.js` | Markdown 解析器 |
+| `wechat-render.js` | WeChat HTML 渲染器 |
+| `wechat-themes.json` | 4 种文章主题 |
+| `../infographic-generator/generate-garden-page.js` | 配图 HTML 生成（require 依赖） |
+| `../infographic-generator/theme-recipes.json` | 配图主题 CSS token |
