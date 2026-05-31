@@ -311,13 +311,13 @@ async function takeMultiPageScreenshots(pageConfigs, outputDir, themeFilter) {
 function buildImageMap(article, screenshotResult, themeId) {
   const map = [];
 
-  // Hero → 标题下方
+  // Hero → 标题下方（使用宽屏图）
   const heroScreenshots = screenshotResult['hero'];
-  if (heroScreenshots && heroScreenshots[themeId]) {
-    map.push({ afterIndex: -1, file: themeId + '/' + heroScreenshots[themeId], label: '文章头图' });
+  if (heroScreenshots && heroScreenshots.wide && heroScreenshots.wide[themeId]) {
+    map.push({ afterIndex: -1, file: themeId + '/wide/' + heroScreenshots.wide[themeId], label: '文章头图' });
   }
 
-  // 每个 h2 section → 对应位置
+  // 每个 h2 section → 对应位置（使用宽屏图）
   const h2Indices = article.sections.reduce((a, s, i) => {
     if (s.type === 'h2') a.push(i);
     return a;
@@ -326,19 +326,19 @@ function buildImageMap(article, screenshotResult, themeId) {
   for (let gi = 0; gi < h2Indices.length; gi++) {
     const key = 'section-' + gi;
     const sectionScreenshots = screenshotResult[key];
-    if (sectionScreenshots && sectionScreenshots[themeId]) {
+    if (sectionScreenshots && sectionScreenshots.wide && sectionScreenshots.wide[themeId]) {
       const h2Text = article.sections[h2Indices[gi]].text.replace(/<[^>]+>/g, '');
       // 标签：优先用章序号，否则用标题前 8 个字
       const prefix = h2Text.match(/^[一二三四五六七八九十]+[、.．]/);
       const label = prefix ? '第' + prefix[0].replace(/[、.．]/, '') + '章 · 配图' : (h2Text.substring(0, 10) + '…配图');
-      map.push({ afterIndex: h2Indices[gi], file: themeId + '/' + sectionScreenshots[themeId], label });
+      map.push({ afterIndex: h2Indices[gi], file: themeId + '/wide/' + sectionScreenshots.wide[themeId], label });
     }
   }
 
-  // CTA → 文末
+  // CTA → 文末（使用宽屏图）
   const ctaScreenshots = screenshotResult['cta'];
-  if (ctaScreenshots && ctaScreenshots[themeId]) {
-    map.push({ afterIndex: article.sections.length + 100, file: themeId + '/' + ctaScreenshots[themeId], label: '文末引导图' });
+  if (ctaScreenshots && ctaScreenshots.wide && ctaScreenshots.wide[themeId]) {
+    map.push({ afterIndex: article.sections.length + 100, file: themeId + '/wide/' + ctaScreenshots.wide[themeId], label: '文末引导图' });
   }
 
   return map;
