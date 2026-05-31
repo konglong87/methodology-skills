@@ -18,7 +18,7 @@ Phase 2: 生成 HTML → 内置 CSS 变量，4 套主题可一键切换
    ↓
 Phase 3: 自动截图 → 4 主题 × N 个 section → PNG
    ↓
-输出目录: screenshots/{dark,light,warm,zen}/ 各 10+ 张 PNG
+输出目录: screenshots/{linear,apple,stripe,muji}/
 ```
 
 ## 4 种设计风格
@@ -27,10 +27,10 @@ Phase 3: 自动截图 → 4 主题 × N 个 section → PNG
 
 | 风格 | 文件夹 | 配色 | 适合场景 |
 |---|---|---|---|
-| **暗黑** | `dark/` | 深黑 `#08090A` + 紫色 | 技术类、SaaS、开发者 |
-| **明亮** | `light/` | 纯白 + 蓝色 | 产品发布、品牌宣发 |
-| **人文** | `warm/` | 奶油色 + 赭色 + Georgia 衬线 | 深度长文、人文内容 |
-| **侘寂** | `zen/` | 纸白 + 极简去色 | 生活方式、设计美学 |
+| **暗黑** | `linear/` | 深黑 `#08090A` + 紫色 | 技术类、SaaS、开发者 |
+| **明亮** | `apple/` | 纯白 + 蓝色 | 产品发布、品牌宣发 |
+| **人文** | `stripe/` | 奶油色 + 赭色 + Georgia 衬线 | 深度长文、人文内容 |
+| **侘寂** | `muji/` | 纸白 + 极简去色 | 生活方式、设计美学 |
 
 风格选择规则：
 - **未指定** → 4 种全部生成
@@ -42,10 +42,6 @@ Phase 3: 自动截图 → 4 主题 × N 个 section → PNG
 触发关键词：
 - "帮我做配图" / "公众号配图" / "生成截图" / "生成信息图"
 - 同时提供写作主题和内容大纲/要点
-
-不触发：
-- 纯数据图表需求 → 用原有 Remotion 渲染
-- 只需要一张图 → 指定 section 即可
 
 ## 工作流
 
@@ -68,17 +64,17 @@ Phase 3: 自动截图 → 4 主题 × N 个 section → PNG
 
 ### Phase 3 — 自动截图
 
-运行 `node auto-screenshot.js <html-file>`，输出：
+由 `wechat-full.js` 调用 Playwright 完成多页面截图。
 
 ```
 screenshots/
-├── dark/     (full + hero-screen + sections + per-screen)
-├── light/    (同上结构)
-├── warm/     (同上结构)
-└── zen/      (同上结构)
+├── linear/   (暗黑)
+├── apple/    (明亮)
+├── stripe/   (人文)
+└── muji/     (侘寂)
 ```
 
-截图参数：750×1334 手机竖屏，2x Retina，全页长截图 + 每个 section 独立截图 + 逐屏分页截图。
+截图参数：750×1334 手机竖屏，2x Retina，全页长截图。
 
 ## 文件说明
 
@@ -87,8 +83,6 @@ screenshots/
 | `SKILL.md` | 工作流定义 |
 | `theme-recipes.json` | 4 套主题 CSS token 定义（唯一真相源） |
 | `generate-garden-page.js` | 内容驱动的 HTML 页面生成器 |
-| `auto-screenshot.js` | 自动截图脚本 |
-| `shared-styles.css` | 共享样式（不依赖主题的部分） |
 
 ## 技术说明
 
