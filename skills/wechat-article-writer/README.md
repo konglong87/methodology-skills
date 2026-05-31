@@ -39,7 +39,7 @@ node skills/wechat-article-writer/wechat-full.js 我的文章.md -o output/
 
 ```
 output/
-├── article-plain.html    ⭐ 用浏览器打开，全选复制，粘贴到公众号编辑器
+├── article-plain.html    ⭐ 内容已自动复制到剪贴板
 ├── article.html          图文混排预览（浏览器打开看效果）
 ├── 插入指南.md            配图上传位置对照表
 └── screenshots/{theme}/
@@ -48,11 +48,10 @@ output/
 
 ### 4. 发布
 
-1. 浏览器打开 `article-plain.html` → `Cmd+A` → `Cmd+C`
-2. 粘贴到微信公众号编辑器
-3. 上传 `screenshots/` 里的配图到公众号素材库
-4. 看 `插入指南.md` 把图片插到对应位置
-5. 预览 → 发布
+1. 直接 `Cmd+V` 粘贴到微信公众号编辑器（生成后已自动复制）
+2. 上传 `screenshots/` 里的配图到公众号素材库
+3. 看 `插入指南.md` 把图片插到对应位置
+4. 预览 → 发布
 
 ## 输入格式自动识别
 

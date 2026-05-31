@@ -609,9 +609,25 @@ async function main() {
     console.log('  ' + path.join(outDir, 'screenshots/') + ' ← ' + Object.keys(screenshotResult).length + ' 套配图');
     console.log('  ' + path.join(outDir, 'screenshots/' + themeDir + '/wide/') + ' ← 宽屏版配图 (16:9)');
   }
+  // 自动复制 plain HTML 到剪贴板
+  const { execSync } = require('child_process');
+  try {
+    const os = require('os');
+    if (os.platform() === 'darwin') {
+      execSync('pbcopy', { input: plainHTML });
+    } else if (os.platform() === 'linux') {
+      execSync('xclip -selection clipboard', { input: plainHTML });
+    } else if (os.platform() === 'win32') {
+      execSync('clip', { input: plainHTML });
+    }
+    console.log('\n✅ 排版内容已复制到剪贴板，直接 Cmd+V 粘贴到公众号编辑器即可！');
+  } catch (_) {
+    console.log('\n⚠️  自动复制失败，请手动打开 article-plain.html 复制内容');
+  }
+
   console.log('\n下一步:');
-  console.log('  1. 浏览器打开 article.html 查看图文混排效果');
-  console.log('  2. 把 article-plain.html 内容粘贴到公众号编辑器');
+  console.log('  1. Cmd+V 粘贴到公众号编辑器');
+  console.log('  2. 浏览器打开 article.html 预览图文混排效果');
   console.log('  3. 参考插入指南把配图上传并插到对应位置');
 }
 
