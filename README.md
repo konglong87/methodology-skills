@@ -23,7 +23,7 @@
 - [安装](#安装)
 - [使用示例](#使用示例)
 - [技能组合使用](#技能组合使用)
-- [更新日志](#更新日志)
+- [微信公众号一键排版](#微信公众号一键排版)
 - [许可证](#许可证)
 
 ---
@@ -435,62 +435,29 @@ Act: 标准化配置，下一轮优化测试并行度
 
 ---
 
-## 更新日志
+## 📝 微信公众号一键排版
 
-### v1.17.1 (2026-04-14)
+丢一个 Markdown 文件进去，自动产出可复制到公众号编辑器的精美排版文章 + 全套配图。
 
-**🎯 Planning Skill 重大升级 - 完整技能协作体系**
+```bash
+node skills/wechat-article-writer/wechat-full.js 我的文章.md -o output/
+```
 
-**核心改进**:
-- ✅ **版本号统一** - Planning v2.0.0，与 Goal-Oriented 和 Prompt-Enhancer 保持一致
-- ✅ **description优化** - 明确前置技能，强调核心能力
-- ✅ **工件传递机制** - 完整的输入/输出工件路径和格式说明
-- ✅ **goal-oriented协作** - 明确触发来源和触发流程图
-- ✅ **next_skills修正** - 避免循环依赖，改为 experience-manager
-- ✅ **AskUserQuestion示例** - plan-review流程明确工具调用
-- ✅ **完整工具调用案例** - 从读取工件到生成工件的完整流程
+**一键流程**：
+1. 解析 Markdown → 自动识别章节结构（`一、` `二、` 中文编号、`##` 标题等）
+2. 渲染 WeChat 兼容 HTML → 所有样式行内 `style=""`，公众号直接粘贴不丢样式
+3. 生成配图 → 每章自动生成头图、章节图、尾图（竖长 + 宽屏双版）
+4. **内容自动复制到剪贴板** → `Cmd+V` 直接粘贴到公众号编辑器
 
-**文件变更**:
-- 更新 `skills/planning/SKILL.md` - 870行 → 1387行（+517行）
-- 新增工件传递机制、goal-oriented协作说明、AskUserQuestion示例、完整工具调用案例
+**输出**：
+- `article-plain.html` — 公众号粘贴版（图片为占位框，粘贴后手动上传替换）
+- `article.html` — 图文混排预览（浏览器打开看效果）
+- `插入指南.md` — 配图位置对照表
+- `screenshots/{theme}/` — 全套配图
 
-**技能体系完整性**:
-- ✅ goal-oriented → prompt-enhancer → planning → execution → experience-manager
-- ✅ 完整的工件传递机制
-- ✅ 强制前置技能链
-- ✅ 知识沉淀闭环
+可选参数：`--theme stripe`（配图风格）、`--article-theme tech`（排版主题）、`--no-screenshots`（跳过配图）
 
----
-
-### v1.17.0 (2026-03-26)
-
-**🎯 重大重构：专注方法论核心，分离非方法论技能**
-
-**迁移详情**:
-- ❌ 移除 - 微信公众号文章生成器 → 迁移至 play_play
-- ❌ 移除 - 算命系统 → 迁移至 play_play  
-- ❌ 移除 - bionic-memory → 迁移至 play_play
-- ✅ 保留 - 专注方法论核心12个技能
-
-**核心改进**:
-- ✅ 项目定位清晰化 - 专注方法论核心技能
-- ✅ 技能迁移 - 非方法论技能分离
-- ✅ 文档优化 - README精简，更新关键词
-
----
-
-### v1.16.0 (2026-03-25)
-
-**🎯 Prompt-Enhancer v2.0 + Planning v1.0**
-
-**核心改进**:
-- ✅ Prompt-Enhancer v2.0 - 强制前置，需求细化，方案探索
-- ✅ Planning v1.0 - 实施规划，步骤分解，plan-review
-- ✅ 完整工作流程 - goal-oriented → prompt-enhancer → planning → execution → experience-manager
-
----
-
-**完整更新日志**: 见 [CHANGELOG.md](CHANGELOG.md)
+详见 [skills/wechat-article-writer/README.md](skills/wechat-article-writer/README.md)
 
 ---
 
