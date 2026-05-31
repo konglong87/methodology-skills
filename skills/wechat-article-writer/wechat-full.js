@@ -26,6 +26,7 @@ const { parseMarkdown } = require('./wechat-md2html.js');
 const GEN_DIR = path.join(__dirname, '..', 'infographic-generator');
 const RECIPES = JSON.parse(fs.readFileSync(path.join(GEN_DIR, 'theme-recipes.json'), 'utf-8'));
 const THEME_IDS = Object.keys(RECIPES.themes);
+const DEFAULT_THEME = 'apple'; // 默认明亮风格，非暗黑
 
 // ── 从解析出的 article 提取每个 h2 section 的配图页面配置 ──
 function buildSectionPageConfigs(article, themeId) {
@@ -224,15 +225,18 @@ async function takeMultiPageScreenshots(pageConfigs, outputDir, themeFilter) {
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: vp, deviceScaleFactor: dsf });
 
+  // 确保输出目录存在
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
   // 结果结构: { key: { themeId: filename } }
   const result = {};
 
   for (const pc of pageConfigs) {
     result[pc.key] = {};
 
-    // 渲染 HTML 到临时文件
+    // 渲染 HTML 到临时文件（放在 outputDir 上级目录，避免混入 screenshots）
     const pageHTML = renderPageHTML(pc.config);
-    const tmpPath = path.join(outputDir, '_tmp_' + pc.key + '.html');
+    const tmpPath = path.join(path.dirname(outputDir), '_tmp_' + pc.key + '.html');
     fs.writeFileSync(tmpPath, pageHTML, 'utf-8');
 
     for (const theme of themes) {
@@ -498,7 +502,7 @@ async function main() {
   if (!noScreenshots) {
     // ── Step 2: 为每个 h2 section 生成配图页面 ──
     console.log('\n2/4 生成配图 HTML...');
-    const primaryThemeId = themeFilter || THEME_IDS[0];
+    const primaryThemeId = themeFilter || DEFAULT_THEME;
     const pageConfigs = buildSectionPageConfigs(article, primaryThemeId);
     console.log('   配图页面数: ' + pageConfigs.length + ' (hero + ' + h2Count + ' section + cta)');
 
@@ -515,7 +519,7 @@ async function main() {
 
   // ── Step 4: 生成最终文章 ──
   console.log('\n4/4 生成文章...');
-  const primaryThemeId = themeFilter || THEME_IDS[0];
+  const primaryThemeId = themeFilter || DEFAULT_THEME;
   const imageMap = buildImageMap(article, screenshotResult, primaryThemeId);
 
   // 获取主题配色用于占位符边框颜色
