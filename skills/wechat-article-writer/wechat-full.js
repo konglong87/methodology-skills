@@ -625,10 +625,25 @@ async function main() {
     console.log('\n⚠️  自动复制失败，请手动打开 article-plain.html 复制内容');
   }
 
+  // 自动在浏览器中打开 article.html 预览
+  try {
+    const { execSync } = require('child_process');
+    const os = require('os');
+    if (os.platform() === 'darwin') {
+      execSync('open ' + JSON.stringify(articleOutPath));
+    } else if (os.platform() === 'linux') {
+      execSync('xdg-open ' + JSON.stringify(articleOutPath));
+    } else if (os.platform() === 'win32') {
+      execSync('start "" ' + JSON.stringify(articleOutPath));
+    }
+    console.log('\n🌐 已在浏览器中打开 article.html，可直接查看图文混排效果');
+  } catch (_) {
+    // 静默失败，不影响主流程
+  }
+
   console.log('\n下一步:');
   console.log('  1. Cmd+V 粘贴到公众号编辑器');
-  console.log('  2. 浏览器打开 article.html 预览图文混排效果');
-  console.log('  3. 参考插入指南把配图上传并插到对应位置');
+  console.log('  2. 参考插入指南把配图上传并插到对应位置');
 }
 
 main().catch(err => { console.error(err); process.exit(1); });
