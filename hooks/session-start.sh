@@ -9,7 +9,34 @@ PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Read goal-oriented SKILL.md content
 goal_oriented_path="${PLUGIN_ROOT}/skills/goal-oriented/SKILL.md"
-goal_oriented_content=$(cat "$goal_oriented_path" 2>&1 || echo "Error reading goal-oriented skill")
+
+if [ ! -f "$goal_oriented_path" ]; then
+  # File not found, output empty context and exit gracefully
+  cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": ""
+  }
+}
+EOF
+  exit 0
+fi
+
+goal_oriented_content=$(cat "$goal_oriented_path" 2>&1 || echo "")
+
+# If content is empty, skip injection
+if [ -z "$goal_oriented_content" ]; then
+  cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": ""
+  }
+}
+EOF
+  exit 0
+fi
 
 # Escape string for JSON embedding using bash parameter substitution.
 # Each ${s//old/new} is a single C-level pass - orders of magnitude

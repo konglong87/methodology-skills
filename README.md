@@ -1,7 +1,7 @@
 # Methodology Skills
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.17.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.20.1-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Claude%20Code-✓-purple.svg" alt="Claude Code">
   <img src="https://img.shields.io/badge/Cursor-✓-cyan.svg" alt="Cursor">
@@ -9,16 +9,16 @@
   <img src="https://img.shields.io/badge/Exa%20AI%20Search-✓-brightgreen.svg" alt="Exa AI Search">
 </p>
 
-> 🧠 AI 方法论工具箱 - 让 AI 掌握第一性原理、目标导向、PDCA 循环、DDD 设计等12个方法论技能
+> 🧠 AI 方法论工具箱 - 让 AI 掌握第一性原理、目标导向、PDCA 循环、DDD 设计等13个方法论技能
 
-一个包含12个核心方法论技能的 Claude Code/Cursor/OpenCode 插件。支持四层级知识沉淀、技能协作、工件传递、智能编排。
+一个包含13个核心方法论技能的 Claude Code/Cursor/OpenCode 插件。支持四层级知识沉淀、技能协作、工件传递、智能编排。
 
 ---
 
 ## 📑 目录
 
 - [核心特性](#-核心特性)
-- [包含的12个方法论技能](#-包含的12个方法论技能)
+- [包含的13个方法论技能](#-包含的13个方法论技能)
 - [完整工作流程](#-完整工作流程)
 - [安装](#安装)
 - [使用示例](#使用示例)
@@ -72,7 +72,7 @@ experience-manager → 经验沉淀
 
 ---
 
-## 🧠 包含的12个方法论技能
+## 🧠 包含的13个方法论技能
 
 ### 1. 🎯 Goal-Oriented（目标导向） - 刚性要求
 

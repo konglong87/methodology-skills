@@ -17,6 +17,8 @@
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+const { execSync } = require('child_process');
 const { chromium } = require('playwright');
 
 // 加载各模块
@@ -243,26 +245,28 @@ async function takeMultiPageScreenshots(pageConfigs, outputDir, themeFilter) {
       const tmpPath = path.join(path.dirname(outputDir), '_tmp_' + pc.key + '.html');
       fs.writeFileSync(tmpPath, pageHTML, 'utf-8');
 
-      for (const theme of themes) {
-        const page = await context.newPage();
-        await page.goto('file://' + tmpPath, { waitUntil: 'networkidle' });
-        await page.waitForTimeout(300);
-        if (theme.attr) {
-          await page.evaluate(t => document.body.setAttribute('data-theme', t), theme.attr);
+      try {
+        for (const theme of themes) {
+          const page = await context.newPage();
+          await page.goto('file://' + tmpPath, { waitUntil: 'networkidle' });
+          await page.waitForTimeout(300);
+          if (theme.attr) {
+            await page.evaluate(t => document.body.setAttribute('data-theme', t), theme.attr);
+          }
+          await page.waitForTimeout(400);
+
+          const dir = path.join(outputDir, theme.id);
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+          const filename = theme.id + '-' + pc.key + '.png';
+          await page.screenshot({ path: path.join(dir, filename), fullPage: true });
+          result[pc.key][theme.id] = filename;
+
+          await page.close();
         }
-        await page.waitForTimeout(400);
-
-        const dir = path.join(outputDir, theme.id);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-        const filename = theme.id + '-' + pc.key + '.png';
-        await page.screenshot({ path: path.join(dir, filename), fullPage: true });
-        result[pc.key][theme.id] = filename;
-
-        await page.close();
+      } finally {
+        if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
       }
-
-      fs.unlinkSync(tmpPath);
     }
     await context.close();
   }
@@ -276,29 +280,31 @@ async function takeMultiPageScreenshots(pageConfigs, outputDir, themeFilter) {
       const tmpPath = path.join(path.dirname(outputDir), '_tmp_wide_' + pc.key + '.html');
       fs.writeFileSync(tmpPath, pageHTML, 'utf-8');
 
-      for (const theme of themes) {
-        const page = await wideContext.newPage();
-        await page.goto('file://' + tmpPath, { waitUntil: 'networkidle' });
-        await page.waitForTimeout(300);
-        if (theme.attr) {
-          await page.evaluate(t => document.body.setAttribute('data-theme', t), theme.attr);
+      try {
+        for (const theme of themes) {
+          const page = await wideContext.newPage();
+          await page.goto('file://' + tmpPath, { waitUntil: 'networkidle' });
+          await page.waitForTimeout(300);
+          if (theme.attr) {
+            await page.evaluate(t => document.body.setAttribute('data-theme', t), theme.attr);
+          }
+          await page.waitForTimeout(400);
+
+          const wideDir = path.join(outputDir, theme.id, 'wide');
+          if (!fs.existsSync(wideDir)) fs.mkdirSync(wideDir, { recursive: true });
+
+          const filename = theme.id + '-' + pc.key + '-wide.png';
+          await page.screenshot({ path: path.join(wideDir, filename), fullPage: true });
+
+          // 记录宽屏图（不影响竖长图的 result 结构）
+          if (!result[pc.key].wide) result[pc.key].wide = {};
+          result[pc.key].wide[theme.id] = filename;
+
+          await page.close();
         }
-        await page.waitForTimeout(400);
-
-        const wideDir = path.join(outputDir, theme.id, 'wide');
-        if (!fs.existsSync(wideDir)) fs.mkdirSync(wideDir, { recursive: true });
-
-        const filename = theme.id + '-' + pc.key + '-wide.png';
-        await page.screenshot({ path: path.join(wideDir, filename), fullPage: true });
-
-        // 记录宽屏图（不影响竖长图的 result 结构）
-        if (!result[pc.key].wide) result[pc.key].wide = {};
-        result[pc.key].wide[theme.id] = filename;
-
-        await page.close();
+      } finally {
+        if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
       }
-
-      fs.unlinkSync(tmpPath);
     }
     await wideContext.close();
   }
@@ -610,9 +616,7 @@ async function main() {
     console.log('  ' + path.join(outDir, 'screenshots/' + themeDir + '/wide/') + ' ← 宽屏版配图 (16:9)');
   }
   // 自动复制 plain HTML 到剪贴板
-  const { execSync } = require('child_process');
   try {
-    const os = require('os');
     if (os.platform() === 'darwin') {
       execSync('pbcopy', { input: plainHTML });
     } else if (os.platform() === 'linux') {
@@ -627,8 +631,6 @@ async function main() {
 
   // 自动在浏览器中打开 article.html 预览
   try {
-    const { execSync } = require('child_process');
-    const os = require('os');
     if (os.platform() === 'darwin') {
       execSync('open ' + JSON.stringify(articleOutPath));
     } else if (os.platform() === 'linux') {

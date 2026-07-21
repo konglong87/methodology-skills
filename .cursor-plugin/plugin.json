@@ -1,8 +1,8 @@
 {
   "name": "methodology-skills",
   "displayName": "Methodology Skills",
-  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、Skills管理、微信公众号文章生成器、信息图生成器、算命系统等12个Skills",
-  "version": "1.11.7",
+  "description": "方法论工具箱：第一性原理、目标导向、PDCA循环、MVP First、DDD战略/战术设计、SWOT分析、提示词增强、经验管理、实施规划、智能编排、微信公众号文章生成器、信息图生成器等13个Skills",
+  "version": "1.20.1",
   "author": {
     "name": "恐龙创新部",
     "url": "https://github.com/konglong87"
@@ -20,7 +20,13 @@
     "mvp-first",
     "skills",
     "thinking-framework",
-    "problem-solving"
+    "problem-solving",
+    "wechat-article",
+    "infographic",
+    "experience-manager",
+    "prompt-enhancer",
+    "planning",
+    "pilot"
   ],
   "skills": "./skills/"
 }

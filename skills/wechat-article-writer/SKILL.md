@@ -1,6 +1,37 @@
 ---
 name: wechat-article-writer
+version: 1.0.0
 description: "微信公众号文章写作和排版助手。输入主题+内容大纲→自动生成结构完整、排版精美的公众号文章（WeChat兼容HTML+行内样式），同时可配套调用infographic-generator生成4主题配图。触发词：'公众号文章','写公众号','公众号排版','微信文章','推文'。"
+
+# 技能分类
+category: "execution"
+
+# 复杂度标识
+complexity: "medium"
+
+# 预计执行时长
+typical_duration: "5min"
+
+# 依赖关系
+dependencies: []
+benefits-from: [infographic-generator]
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/wechat-article-writer/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+
+# 标签（用于技能推荐）
+tags:
+  - "公众号文章"
+  - "微信排版"
+  - "文章生成"
+  - "配图生成"
 ---
 
 # 微信公众号文章排版器

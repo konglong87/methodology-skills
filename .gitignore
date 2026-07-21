@@ -24,56 +24,31 @@ __pycache__/
 
 # Environment
 .env
-*.env
 .env.local
+.env.*
 
 # Project specific
 .claude/
 CLAUDE.md
 AGENTS.md
+AGENT.md
 docs/plans/
 */plans/*
+*/PLAN/*
 */output/*
 *.backup
-*examples*
-docs/
-*design.md
-
 konglong-logo-animation
 wechat-articles
 */backup/*
-*/PLAN/*
-*.png
-.jpeg
-.jpeg
 *-lock.json
-test-*
-test*
 
-
-*goals*
-# AI Assistant Files (symlinked to claude_agent_md)
-CLAUDE.md
+# AI Assistant Files
 claude.md
-.claude/
-plans/
-plan/
-*.env
-.env.*
-.idea/
 .cursorrules
 NOTES.md
 PROJECT_PLAN.md
 
-
-# AI Assistant Files (symlinked to claude_agent_md)
-CLAUDE.md
-claude.md
-.claude/
-AGENT.md
-.cursorrules
-
-# Documentation Files (symlinked to claude_agent_md)
+# Documentation Files (auto-generated, not committed)
 CHANGELOG.md
 CONTINUATION_SUMMARY.md
 BIONIC_MEMORY_SUMMARY.md
@@ -81,18 +56,17 @@ CONTRIBUTING.md
 INTRODUCTION.md
 QUICK_REFERENCE.md
 USER_GUIDE.md
-NOTES.md
-PROJECT_PLAN.md
-/README.md
 
-# Project Structure (symlinked to claude_agent_md)
+# Project Structure (session-local)
 plans/
 plan/
 memory/
-docs/plans/
 
-# IDE and Config Files
-.idea/
-*.env
-.env.*
+# Design files (session-local)
+*design.md
 
+# Screenshots and generated images (in output dirs)
+*/screenshots/*.png
+
+# Test artifacts (in output dirs, not test data)
+test-output/

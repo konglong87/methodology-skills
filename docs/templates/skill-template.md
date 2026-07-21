@@ -1,9 +1,63 @@
 ---
 name: your-methodology-name
+version: 1.0.0
 description: "Use when [触发条件描述]. Triggered by [关键词]."
+
+# 技能分类
+category: "planning | analysis | execution | design | knowledge-management"
+
+# 复杂度标识
+complexity: "low | medium | high"
+
+# 预计执行时长
+typical_duration: "5min | 15min | 30min | 1hour"
+
+# 依赖关系
+dependencies: []          # hard deps (must complete before this skill)
+benefits-from: []         # soft deps (recommended but optional)
+conflicts-with: []        # mutually exclusive skills
+
+# 工件配置
+output_artifact: "memory/artifacts/your-methodology-name/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - AskUserQuestion
+
+# 标签（用于技能推荐）
+tags:
+  - "标签1"
+  - "标签2"
+  - "标签3"
 ---
 
 # [方法论名称]
+
+## 前置协议
+
+### 环境检测
+
+```bash
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "PROJECT: $PROJECT_ROOT"
+echo "BRANCH: $BRANCH"
+echo "COMMIT: $COMMIT"
+```
+
+### 工件目录初始化
+
+```bash
+mkdir -p memory/artifacts/your-methodology-name
+```
 
 ## Overview
 
@@ -88,6 +142,34 @@ digraph process {
 
 ### 误区 2: [标题]
 ...
+
+## 后置协议
+
+### 工件输出
+
+保存执行结果到工件文件：
+
+```bash
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+ARTIFACT_FILE="memory/artifacts/your-methodology-name/result-$TIMESTAMP.json"
+
+cat > "$ARTIFACT_FILE" <<EOF
+{
+  "skill": "your-methodology-name",
+  "version": "1.0.0",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "input": { ... },
+  "output": { ... },
+  "next_skills": [...]
+}
+EOF
+
+ln -sf "$ARTIFACT_FILE" memory/artifacts/your-methodology-name/latest.json
+```
+
+### 建议后续技能
+
+根据执行结果，推荐后续技能。
 
 ## References
 

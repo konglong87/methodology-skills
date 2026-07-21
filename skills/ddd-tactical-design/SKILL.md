@@ -18,7 +18,7 @@ benefits-from: [ddd-strategic-design]
 conflicts-with: []
 
 # 工件配置
-output_artifact: "memory/artifacts/ddd-tactical/"
+output_artifact: "memory/artifacts/ddd-tactical-design/"
 
 # 工具权限
 allowed-tools:

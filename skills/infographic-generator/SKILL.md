@@ -1,6 +1,37 @@
 ---
 name: infographic-generator
+version: 3.0.0
 description: "Use when user needs 公众号配图 or wants to generate rich HTML pages with multi-theme screenshots. Triggers: '生成配图', '公众号配图', '帮我做配图', '生成截图', '生成信息图', 'infographic', or when user provides a writing topic + content/outline for visual article images."
+
+# 技能分类
+category: "execution"
+
+# 复杂度标识
+complexity: "medium"
+
+# 预计执行时长
+typical_duration: "5min"
+
+# 依赖关系
+dependencies: []
+benefits-from: []
+conflicts-with: []
+
+# 工件配置
+output_artifact: "memory/artifacts/infographic-generator/"
+
+# 工具权限
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+
+# 标签（用于技能推荐）
+tags:
+  - "信息图"
+  - "配图生成"
+  - "截图生成"
+  - "可视化"
 ---
 
 # 信息图 / 公众号配图生成器

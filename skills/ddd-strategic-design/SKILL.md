@@ -18,7 +18,7 @@ benefits-from: [goal-oriented, first-principles]
 conflicts-with: []
 
 # 工件配置
-output_artifact: "memory/artifacts/ddd-strategic/"
+output_artifact: "memory/artifacts/ddd-strategic-design/"
 
 # 工具权限
 allowed-tools:

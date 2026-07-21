@@ -51,20 +51,21 @@ You should see a symlink (or junction on Windows) pointing to your methodology-s
 
 ## Available Skills
 
-After installation, you'll have access to 12 methodology skills:
+After installation, you'll have access to 13 methodology skills:
 
-- **first-principles** - First principles thinking for innovative solutions
 - **goal-oriented** - Goal-oriented execution with mandatory tracking (MUST use for ANY request)
+- **prompt-enhancer** - Systematic clarification for vague requests
+- **planning** - Implementation planning with MECE decomposition and plan-review
+- **experience-manager** - Knowledge management with 4-layer deposition and retrieval
+- **first-principles** - First principles thinking for innovative solutions
 - **pdca-cycle** - PDCA continuous improvement methodology
 - **mvp-first** - MVP-first approach to avoid over-engineering
 - **ddd-strategic-design** - Domain-driven design strategic patterns
 - **ddd-tactical-design** - Domain-driven design tactical patterns
 - **swot-analysis** - SWOT strategic planning tool
-- **prompt-enhancer** - Systematic clarification for vague requests
-- **skill-manager** - Skills management and discovery
-- **wechat-article-writer** - WeChat official account article generator
-- **infographic-generator** - Professional infographic generator
-- **fortune-teller** - Comprehensive fortune-telling system
+- **pilot** - Intelligent skill router and orchestrator
+- **infographic-generator** - Professional infographic generator with 4 themes
+- **wechat-article-writer** - WeChat official account article formatter
 
 ## Usage
 
