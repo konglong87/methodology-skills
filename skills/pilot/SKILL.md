@@ -1,6 +1,6 @@
 ---
 name: pilot
-version: 1.0.0
+version: 2.0.0
 description: "Intelligent skill router for methodology-skills. Analyzes user request and recommends the best methodology sequence. Use when user asks 'which skill should I use', 'help me choose a methodology', or when starting complex tasks."
 
 # 技能分类

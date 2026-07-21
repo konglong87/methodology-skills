@@ -1,0 +1,8 @@
+{
+  "name": "wechat-article-writer",
+  "version": "1.0.0",
+  "description": "微信公众号文章排版器 - Markdown→WeChat兼容HTML+配图生成",
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}

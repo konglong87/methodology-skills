@@ -212,6 +212,14 @@ experience-manager → 经验沉淀
 
 ---
 
+### 🔮 Fortune Teller（算命系统） — 独立仓库
+
+算命技能已独立为单独项目，不在本工具箱内：
+
+👉 [konglong87/play_play](https://github.com/konglong87/play_play)
+
+---
+
 ## 🔄 完整工作流程
 
 优化后的完整方法论工作流程：
@@ -266,13 +274,9 @@ claude mcp add exa-search "https://api.exa.ai/mcp?key=YOUR_EXA_API_KEY" -t http
 
 ### Cursor
 
-**一键安装**：
+**手动安装**：
 
 ```bash
-# 创建安装脚本
-curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/scripts/install-cursor.sh | bash
-
-# 或手动安装
 mkdir -p ~/.cursor/rules
 curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md -o ~/.cursor/rules/goal-oriented.md
 curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/first-principles/SKILL.md -o ~/.cursor/rules/first-principles.md
@@ -287,13 +291,9 @@ ls -la ~/.cursor/rules/
 
 ### OpenCode
 
-**一键安装**：
+**手动安装**：
 
 ```bash
-# 创建安装脚本
-curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/scripts/install-opencode.sh | bash
-
-# 或手动安装
 mkdir -p ~/.opencode/skills/goal-oriented
 curl -fsSL https://raw.githubusercontent.com/konglong87/methodology-skills/main/skills/goal-oriented/SKILL.md -o ~/.opencode/skills/goal-oriented/SKILL.md
 ```

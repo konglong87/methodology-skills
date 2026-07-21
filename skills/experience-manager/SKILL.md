@@ -1,6 +1,6 @@
 ---
 name: experience-manager
-version: 1.0.0
+version: 2.0.0
 description: "管理项目经验知识的沉淀与读取，实现知识闭环"
 
 # 技能分类

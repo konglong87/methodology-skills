@@ -1,7 +1,7 @@
 ---
 name: mvp-first
 version: 2.0.0
-description: Use when user requests complex systems involving multiple modules or subsystems - like "build a XX system", "design XX architecture", or "implement XX with multiple features". Triggers to prevent over-engineering before validating core assumptions.
+description: "Use when user requests complex systems involving multiple modules or subsystems - like 'build a XX system', 'design XX architecture', or 'implement XX with multiple features'. Triggers to prevent over-engineering before validating core assumptions."
 
 # 技能分类
 category: "planning"
